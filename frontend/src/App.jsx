@@ -13,6 +13,7 @@ import VistaAdministrador from './pages/vista_administrador';
 
 
 
+
 import { useLocation } from 'react-router-dom';
 import { 
   Car, 
@@ -389,6 +390,7 @@ const PitLineApp = () => {
       <AppLayout>
         <style>{customStyles}</style>
         <Routes>
+          
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/pantalla_completa" element={<PantallaCompleta />} />
