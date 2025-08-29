@@ -58,8 +58,8 @@ const customStyles = `
     background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
     color: white;
     padding: 4rem 0;
-    margin-top: 56px;
-    margin-bottom: -2rem;
+    margin-top: 50px;
+    margin-bottom: -4rem;
     position: relative;
     width: 100%;
   }
@@ -67,7 +67,7 @@ const customStyles = `
   .hero-section::after {
     content: '';
     position: absolute;
-    bottom: -50px;
+    bottom: -40px;
     left: 0;
     right: 0;
     height: 100px;
@@ -149,7 +149,7 @@ const customStyles = `
   }
   
   .full-width-row {
-    margin-bottom: 5rem;
+    margin-bottom: 0rem;
     width: 100%;
     margin-left: 0;
     margin-right: 0;
@@ -164,7 +164,7 @@ const customStyles = `
     background: linear-gradient(135deg, #fd0d0dff 0%, #750b0bff 100%);
     color: white;
     border-radius: 1rem;
-    padding: 2rem;
+    padding: 1rem;
     position: relative;
     overflow: hidden;
   }
@@ -172,7 +172,7 @@ const customStyles = `
   .current-turn-card::before {
     content: '';
     position: absolute;
-    top: -50%;
+    top: -40%;
     right: -50%;
     width: 100%;
     height: 200%;
@@ -236,14 +236,21 @@ const customStyles = `
 // Layout condicional
 const AppLayout = ({ children }) => {
   const location = useLocation();
+  
+  // Rutas que no deben mostrar header ni footer
   const noHeaderFooterRoutes = ['/pantalla_completa'];
+  
+  // Rutas que solo deben mostrar header pero no footer
+  const noFooterRoutes = ['/formulario_turno', '/']; // Agrega aquí otras rutas si es necesario
+  
   const hideHeaderFooter = noHeaderFooterRoutes.includes(location.pathname);
+  const hideFooterOnly = noFooterRoutes.includes(location.pathname);
 
   return (
     <>
       {!hideHeaderFooter && <Header />}
       {children}
-      {!hideHeaderFooter && <Footer />}
+      {!hideHeaderFooter && !hideFooterOnly && <Footer />}
     </>
   );
 };
@@ -256,19 +263,19 @@ const Dashboard = () => {
     <div className="full-width-container">
       <div className="hero-section">
         <div className="container-fluid text-center">
-          <h2 className="display-4 fw-bold mb-4">Bienvenido a PitLine</h2>
+          <h2 className="display-4 fw-bold mb-1">Bienvenido a PitLine</h2>
           <p className="lead opacity-75">
             Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
           </p>
         </div>
       </div>
 
-      <div className="container-fluid" style={{ marginTop: '-2rem', padding: '0 15px' }}>
+      <div className="container-fluid" style={{ marginTop: '-5rem', padding: '0 15px' }}>
         <div className="row full-width-row g-4">
           <div className="col-lg-8">
-            <div className="card shadow-lg full-width-card">
+            <div className="card shadow-lg full-width-card" >
               <div className="card-body p-5">
-                <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center">
+                <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center" style={{ marginTop: '-2rem'}}>
                   <Wrench size={24} className="text-danger me-3" />
                   Acciones Rápidas
                 </h3>
