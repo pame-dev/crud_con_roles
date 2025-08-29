@@ -9,6 +9,8 @@ import Footer from './layouts/Footer';
 import PantallaCompleta from "./pages/pantalla_completa";
 import FormularioTurno from "./pages/formulario_turno";
 import Login from "./pages/login";
+import VistaAdministrador from './pages/vista_administrador';
+
 
 
 import { useLocation } from 'react-router-dom';
@@ -392,6 +394,7 @@ const PitLineApp = () => {
           <Route path="/pantalla_completa" element={<PantallaCompleta />} />
           <Route path="/formulario_turno" element={<FormularioTurno />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/vista_administrador" element={<VistaAdministrador />} />
         </Routes>
       </AppLayout>
     </Router>
