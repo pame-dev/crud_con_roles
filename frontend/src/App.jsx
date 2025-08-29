@@ -299,9 +299,9 @@ const Dashboard = () => {
                   Cola Actual
                 </h3>
                 <div className="d-flex flex-column gap-3">
-                  <QueueItem turn={{ turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting", priority: "alta" }} />
-                  <QueueItem turn={{ turn_number: 123, name: "María García", reason: "reparacion", status: "waiting", priority: "normal" }} />
-                  <QueueItem turn={{ turn_number: 124, name: "Carlos López", reason: "reparacion", status: "in_progress", priority: "normal" }} />
+                  <QueueItem turn={{ turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting" }} />
+                  <QueueItem turn={{ turn_number: 123, name: "María García", reason: "reparacion", status: "waiting" }} />
+                  <QueueItem turn={{ turn_number: 124, name: "Carlos López", reason: "reparacion", status: "in_progress" }} />
                 </div>
               </div>
             </div>
