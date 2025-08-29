@@ -13,7 +13,7 @@ const PantallaCompleta = () => {
 
   const handleExit = () => {
     setIsExiting(true);
-    setTimeout(() => navigate("/dashboard"), 500); // ⏳ espera animación
+    setTimeout(() => navigate("/"), 500); // ⏳ espera animación
   };
 
   return (
