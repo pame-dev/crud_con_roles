@@ -1,3 +1,5 @@
+// App incluye router y rutas, tambien algunas configuraciones globales
+
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,36 +8,14 @@ import Header from './layouts/Header';
 import Footer from './layouts/Footer';
 import './styles/custom.css';
 
+import { useLocation } from 'react-router-dom';
+
 // Páginas
 import Dashboard from "./pages/dashboard";
 import PantallaCompleta from "./pages/pantalla_completa";
 import FormularioTurno from "./pages/formulario_turno";
 import Login from "./pages/login";
 import VistaAdministrador from "./pages/vista_administrador";
-
-
-
-import { useLocation } from 'react-router-dom';
-import {
-  Car, 
-  Clock, 
-  Users, 
-  Settings, 
-  User, 
-  Phone, 
-  MapPin, 
-  Wrench, 
-  CheckCircle, 
-  PlayCircle, 
-  Edit,
-  Trash2,
-  AlertTriangle,
-  Flag,
-  Calendar,
-  TrendingUp,
-  Star,
-  Zap
-} from 'lucide-react';
 
 // Layout condicional
 const AppLayout = ({ children }) => {

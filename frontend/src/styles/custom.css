@@ -36,6 +36,7 @@ body, html, #root {
     clip-path: ellipse(70% 100% at 50% 0%);
 }
 
+
 .form-control:focus {
     border-color: #dc3545;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
@@ -49,9 +50,9 @@ body, html, #root {
 .btn-primary {
     background-color: #dc3545;
     border-color: #dc3545;
-  }
+}
   
-  .btn-primary:hover {
+.btn-primary:hover {
     background-color: #c82333;
     border-color: #c82333;
   }

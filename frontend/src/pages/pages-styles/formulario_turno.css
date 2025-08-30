@@ -15,7 +15,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: url('../assets/fondo-naranja.jpg') no-repeat center center fixed;
+  background: url('../../assets/fondo-naranja.jpg') no-repeat center center fixed;
   background-size: cover;
   background-repeat: no-repeat;
   
