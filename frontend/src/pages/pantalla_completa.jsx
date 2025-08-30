@@ -70,7 +70,7 @@ const PantallaCompleta = () => {
                   <div className="card-body p-4">
                     <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center">
                       <Flag size={20} className="text-danger me-2" />
-                      Cola Actual
+                      Fila Actual
                     </h3>
                     <div className="d-flex flex-column gap-3">
                       <QueueItem 
