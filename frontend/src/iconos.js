@@ -19,7 +19,8 @@ import {
   TrendingUp,
   Star,
   Zap,
-  ChevronLeft
+  ChevronLeft,
+  ArrowLeft
 } from 'lucide-react';
 
 export {
@@ -41,6 +42,7 @@ export {
   TrendingUp,
   Star,
   Zap,
-  ChevronLeft
+  ChevronLeft,
+  ArrowLeft
 };
 
