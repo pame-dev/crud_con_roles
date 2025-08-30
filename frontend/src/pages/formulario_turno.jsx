@@ -1,7 +1,8 @@
 // src/pages/formulario_turno.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import './formulario_turno.css'
+import './pages-styles/formulario_turno.css';
+
 <link 
   rel="stylesheet" 
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
