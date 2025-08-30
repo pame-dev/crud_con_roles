@@ -1,0 +1,59 @@
+/*estilos globales*/
+
+body, html, #root {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-custom {
+    background: linear-gradient(90deg, #212529 0%, #dc3545 50%, #212529 100%);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+  
+.form-select:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.btn-primary {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+  
+.btn-primary:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+  }
+  
+  /* Asegurar que todo ocupe el 100% del ancho */
+.full-width-container {
+    width: 100%; 
+    max-width: 100%;
+    padding-right: 0px;
+    padding-left: 0px;
+    margin-right: auto;
+    margin-left: auto;
+}
+  
+.full-width-row {
+    margin-bottom: 0rem;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+}
+  
+.full-width-card {
+    width: 100%;
+}
