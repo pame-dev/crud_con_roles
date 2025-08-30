@@ -2,6 +2,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './formulario_turno.css'
+<link 
+  rel="stylesheet" 
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+></link>
 
 const FormularioTurno = () => {
   const navigate = useNavigate();
@@ -61,7 +65,7 @@ const FormularioTurno = () => {
         <form onSubmit={handleSubmit} className="compact-form">
           <div className="form-compact-row">
             <div className="form-compact-group">
-              <label className="form-compact-label">Nombre *</label>
+              <label className="form-compact-label"><i className="fas fa-user"></i> Nombre *</label>
               <input 
                 type="text" 
                 className="form-compact-control" 
@@ -74,7 +78,7 @@ const FormularioTurno = () => {
             </div>
 
             <div className="form-compact-group">
-              <label className="form-compact-label">Apellido *</label>
+              <label className="form-compact-label"><i className="fas fa-id-card"></i> Apellido *</label>
               <input 
                 type="text" 
                 className="form-compact-control" 
@@ -89,7 +93,7 @@ const FormularioTurno = () => {
 
           <div className="form-compact-row">
             <div className="form-compact-group">
-              <label className="form-compact-label">Teléfono *</label>
+              <label className="form-compact-label"><i className="fas fa-phone"></i> Teléfono *</label>
               <input 
                 type="tel" 
                 className="form-compact-control" 
@@ -102,7 +106,7 @@ const FormularioTurno = () => {
             </div>
 
             <div className="form-compact-group">
-              <label className="form-compact-label">Área *</label>
+              <label className="form-compact-label"><i className="fas fa-wrench"></i> Área *</label>
               <select 
                 className="form-compact-select" 
                 name="area"
