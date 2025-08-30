@@ -13,7 +13,7 @@ const PantallaCompleta = () => {
 
   const handleExit = () => {
     setIsExiting(true);
-    setTimeout(() => navigate("/"), 500); // ⏳ espera animación
+    setTimeout(() => navigate("/ "), 500); // ⏳ espera animación
   };
 
   return (
@@ -55,7 +55,7 @@ const PantallaCompleta = () => {
                       Acciones Rápidas
                     </h3>
                     <div className="row g-4">
-                      <div className="col-md-60">
+                      <div className="col-md-12">
                         <CurrentTurnCard />
                       </div>
                     </div>
@@ -101,11 +101,10 @@ const PantallaCompleta = () => {
             .hero-section {
               background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
               color: white;
-              padding: 2rem 0; 
-              margin-top: -2.5rem; 
-              margin-bottom: -1rem;
+              padding: 2rem 2rem 2rem 2rem;
+              margin: -3.5rem 0rem -4rem -1.3rem; 
               position: relative;
-              width: 100%;
+              width: 100vw;
             }
 
             .hero-section::after {
@@ -166,7 +165,7 @@ const PantallaCompleta = () => {
             .current-turn-badge {
               position: absolute;
               top: 1rem;
-              right: 1rem;
+              right: 0.5rem;
               background: rgba(255, 255, 255, 0.2);
               padding: 0.5rem 1rem;
               border-radius: 2rem;

@@ -9,6 +9,7 @@ const Login = () => {
       justifyContent: "center",
       alignItems: "center",
       backgroundColor: "#dee2e6"
+      
     }}>
       <h1>Login Funciona ✅</h1>
     </div>

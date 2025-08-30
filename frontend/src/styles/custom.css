@@ -19,9 +19,8 @@ body, html, #root {
 .hero-section {
     background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
     color: white;
-    padding: 4rem 0;
-    margin-top: 56px; /* Altura de la navbar */
-    margin-bottom: auto;
+    padding: 2rem 2rem 2rem 2rem;
+    margin: 3rem 0rem 2rem -1.3rem; 
     position: relative;
     width: 100vw;
 }
@@ -29,7 +28,7 @@ body, html, #root {
 .hero-section::after {
     content: '';
     position: absolute;
-    bottom: -40px;
+    bottom: -50px;
     left: 0;
     width: 100vw;
     height: 100px;
@@ -61,14 +60,12 @@ body, html, #root {
 .full-width-container {
     width: 100%; 
     max-width: 100%;
-    padding-right: 0px;
-    padding-left: 0px;
     margin-right: auto;
     margin-left: auto;
 }
   
 .full-width-row {
-    margin-bottom: 0rem;
+    margin-bottom: -0.3rem;
     width: 100%;
     margin-left: 0;
     margin-right: 0;

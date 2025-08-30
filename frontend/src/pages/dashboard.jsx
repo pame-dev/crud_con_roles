@@ -6,12 +6,12 @@ import './dashboard.css';
 const CurrentTurnCard = () => (
   <div className="current-turn-card h-100 position-relative">
     <div className="current-turn-badge d-flex align-items-center">
-      <Zap size={16} className="me-1" fill="currentColor" />
-      <span style={{ fontSize: '12px' }}>En Atención</span>
+      <Zap size={12} className="me-1" fill="currentColor" />
+      <span style={{ fontSize: '10px' }}>En Atención</span>
     </div>
     
     <div className="text-center">
-      <div className="turn-number-display" style={{ fontSize: '35px' }}>#124</div>
+      <div className="turn-number-display" style={{ fontSize: '30px' }}>#124</div>
       <div className="customer-name" style={{ fontSize: '20px' }}>Ventanilla de Reparación</div>
       <div className="customer-name" style={{ fontSize: '15px' }}>Carlos López</div>
       <div className="mb-3">
