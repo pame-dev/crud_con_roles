@@ -1,0 +1,14 @@
+.queue-item {
+  border-left: 4px solid;
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 1rem;
+  background-color: #0057ae;
+}
+
+.priority-high {
+  border-left-color: #dc3545;
+}
+
+.priority-normal {
+  border-left-color: #fd7e14;
+}
