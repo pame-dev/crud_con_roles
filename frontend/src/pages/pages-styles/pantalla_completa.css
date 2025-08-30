@@ -1,23 +1,24 @@
-.hero-section {
+.hero-section-pc {
     background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
     color: white;
     padding: 4rem 0;
-    margin-top: 56px; /* Altura de la navbar */
+    margin-top: 0 ; 
     margin-bottom: auto;
     position: relative;
     width: 100%;
     max-width: 100vw;
-    left: 0;
-    right: 0;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    
 }
   
-.hero-section .text-center {
+.hero-section-pc .text-center {
     max-width: 1200px;         /* opcional: limita contenido centrado */
     margin: 0 auto;
     padding: 0 15px;
 }
 
-.hero-section::after {
+.hero-section-pc::after {
     content: '';
     position: absolute;
     bottom: -40px;
@@ -28,57 +29,30 @@
     clip-path: ellipse(70% 100% at 50% 0%);
 }
 
-.full-width-container {
-    width: 100vw;
-    padding: 0;
-    margin: 0;
-    overflow-x: hidden;
+.full-width-row {
+    margin-bottom: 0rem;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
 }
 
-.stat-card {
-    border-radius: 1rem;
-    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    border: none;
-    position: relative;
-    z-index: 2;
+.full-width-card {
+    width: 100%;
 }
-  
-.stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0,0,0,0.15);
-  }
-  
-.stat-card.clickable {
-    cursor: pointer;
-}
-  
+            
+
 .action-card {
     border: 2px solid #e9ecef;
     border-radius: 0.75rem;
     transition: all 0.3s ease;
 }
-  
+
 .action-card:hover {
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     border-color: rgba(220, 53, 69, 0.3);
     transform: translateY(-2px);
 }
-  
-.queue-item {
-    border-left: 4px solid;
-    border-radius: 0 0.5rem 0.5rem 0;
-}
-  
-.priority-high {
-    border-left-color: #dc3545;
-}
-  
-.priority-normal {
-    border-left-color: #fd7e14;
-}
-    
-/* Estilos para el turno en atención */
+
 .current-turn-card {
     background: linear-gradient(135deg, #fd0d0dff 0%, #750b0bff 100%);
     color: white;
@@ -87,11 +61,11 @@
     position: relative;
     overflow: hidden;
 }
-  
+
 .current-turn-card::before {
     content: '';
     position: absolute;
-    top: -40%;
+    top: -50%;
     right: -50%;
     width: 100%;
     height: 200%;
@@ -99,7 +73,7 @@
     transform: rotate(45deg);
     z-index: 1;
 }
-  
+
 .current-turn-badge {
     position: absolute;
     top: 1rem;
@@ -110,23 +84,22 @@
     font-weight: bold;
     z-index: 2;
 }
-  
 .turn-number-display {
     font-size: 4rem;
     font-weight: bold;
-    margin-bottom: 0.5rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 0.2rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     z-index: 2;
     position: relative;
 }
-  
+
 .customer-name {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
     z-index: 2;
     position: relative;
 }
-  
+
 .turn-details {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 0.75rem;
@@ -135,18 +108,31 @@
     z-index: 2;
     position: relative;
 }
-  
+
 .detail-item {
     display: flex;
     align-items: center;
     margin-bottom: 0.5rem;
 }
-  
+
 .detail-item:last-child {
     margin-bottom: 0;
 }
-  
+
 .detail-icon {
     margin-right: 0.75rem;
     width: 20px;
+}
+
+.queue-item {
+    border-left: 4px solid;
+    border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.priority-high {
+    border-left-color: #dc3545;
+}
+
+.priority-normal {
+    border-left-color: #fd7e14;
 }
