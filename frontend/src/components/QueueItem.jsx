@@ -1,0 +1,18 @@
+import React from "react";
+import { Clock, PlayCircle, CheckCircle, AlertTriangle } from '../iconos';
+import StatusBadge from './StatusBadge';
+
+// Componente para un ítem en la cola de turnos
+const QueueItem = ({ turn }) => (
+  <div className={`queue-item p-3 bg-light ${turn.priority === 'alta' ? 'priority-high' : 'priority-normal'}`}>
+    <div className="d-flex justify-content-between align-items-start mb-2">
+      <div>
+        <h6 className="fw-bold text-dark mb-1">#{turn.turn_number} - {turn.name}</h6>
+        <small className="text-muted">{turn.reason === 'cotizacion' ? 'Cotización' : 'Reparación'}</small>
+      </div>
+      <StatusBadge status={turn.status} priority={turn.priority} />
+    </div>
+  </div>
+);
+
+export default QueueItem;
