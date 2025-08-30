@@ -1,6 +1,8 @@
 import React from "react";
 import { Clock, PlayCircle, CheckCircle, AlertTriangle } from '../iconos';
+import './QueueItem.css';
 import StatusBadge from './StatusBadge';
+
 
 // Componente para un ítem en la cola de turnos
 const QueueItem = ({ turn }) => (
