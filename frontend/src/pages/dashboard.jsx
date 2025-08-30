@@ -1,72 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Wrench, Calendar, Clock, PlayCircle, CheckCircle, Flag, Zap } from 'lucide-react';
-import './dashboard.css';
+import { Wrench, Calendar, Clock, PlayCircle, CheckCircle, Flag, Zap, AlertTriangle } from '../iconos';
+import CurrentTurnCard from '../components/CurrentTurnCard';
+import QueueItem from '../components/QueueItem';
+import StatusBadge from '../components/StatusBadge';
+import './pages-styles/dashboard.css';
 
-const CurrentTurnCard = () => (
-  <div className="current-turn-card h-100 position-relative">
-    <div className="current-turn-badge d-flex align-items-center">
-      <Zap size={16} className="me-1" fill="currentColor" />
-      <span style={{ fontSize: '12px' }}>En Atención</span>
-    </div>
-    
-    <div className="text-center">
-      <div className="turn-number-display" style={{ fontSize: '35px' }}>#124</div>
-      <div className="customer-name" style={{ fontSize: '20px' }}>Ventanilla de Reparación</div>
-      <div className="customer-name" style={{ fontSize: '15px' }}>Carlos López</div>
-      <div className="mb-3">
-        <span className="badge bg-light text-dark fs-6">
-          <Wrench size={14} className="me-1" />
-          <span style={{ fontSize: '12px' }}>Reparación</span>
-        </span>
-      </div>
-    </div>
-    
-    <div className="turn-details">
-      <div className="detail-item">
-        <Clock size={18} className="detail-icon" />
-        <span style={{ fontSize: '12px' }}>Iniciado: 10:45 AM</span>
-      </div>
-    </div>
-  </div>
-);
-
-const QueueItem = ({ turn }) => (
-  <div className={`queue-item p-3 bg-light ${turn.priority === 'alta' ? 'priority-high' : 'priority-normal'}`}>
-    <div className="d-flex justify-content-between align-items-start mb-2">
-      <div>
-        <h6 className="fw-bold text-dark mb-1">#{turn.turn_number} - {turn.name}</h6>
-        <small className="text-muted">{turn.reason === 'cotizacion' ? 'Cotización' : 'Reparación'}</small>
-      </div>
-      <StatusBadge status={turn.status} priority={turn.priority} />
-    </div>
-  </div>
-);
-
-const StatusBadge = ({ status, priority }) => {
-  const statusConfig = {
-    waiting: { color: 'warning', text: 'En Espera', icon: <Clock size={12} /> },
-    in_progress: { color: 'primary', text: 'En Proceso', icon: <PlayCircle size={12} /> },
-    completed: { color: 'success', text: 'Completado', icon: <CheckCircle size={12} /> }
-  };
-  
-  const config = statusConfig[status];
-  
-  return (
-    <div className="d-flex flex-column align-items-end gap-1">
-      <span className={`badge bg-${config.color} d-flex align-items-center gap-1`}>
-        {config.icon}
-        {config.text}
-      </span>
-      {priority === 'alta' && (
-        <span className="badge bg-danger d-flex align-items-center gap-1">
-          <AlertTriangle size={12} />
-          Prioridad Alta
-        </span>
-      )}
-    </div>
-  );
-};
 
 const Dashboard = () => {
   const navigate = useNavigate(); // hook declarado correctamente
