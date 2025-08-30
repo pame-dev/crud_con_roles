@@ -1,5 +1,6 @@
 import React from 'react';
 import { Wrench, Clock, Zap } from '../iconos';
+import './CurrentTurnCard.css';
 
 // Componente para la tarjeta del turno actual
 const CurrentTurnCard = () => (
