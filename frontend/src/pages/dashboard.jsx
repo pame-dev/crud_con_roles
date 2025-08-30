@@ -11,7 +11,7 @@ const Dashboard = () => {
   const navigate = useNavigate(); // hook declarado correctamente
 
   return (
-    <div className="full-width-container">
+    <div className="full-width-container" style={{ padding: 0, margin: 0 }}>
       <div className="hero-section">
         <div className="text-center">
           <h2 className="display-4 fw-bold mb-1">Bienvenido a PitLine</h2>
@@ -21,7 +21,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="container-fluid" style={{ marginTop: '-5rem', padding: '0 15px' }}>
+      <div className="container" style={{ marginTop: '-5rem', padding: '0' }}>
         <div className="row full-width-row g-4">
           <div className="col-lg-8">
             <div className="card shadow-lg full-width-card" >

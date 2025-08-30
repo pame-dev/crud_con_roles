@@ -18,7 +18,8 @@ import {
   Calendar,
   TrendingUp,
   Star,
-  Zap
+  Zap,
+  ChevronLeft
 } from 'lucide-react';
 
 export {
@@ -39,6 +40,7 @@ export {
   Calendar,
   TrendingUp,
   Star,
-  Zap
+  Zap,
+  ChevronLeft
 };
 
