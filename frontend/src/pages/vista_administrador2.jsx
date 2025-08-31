@@ -24,14 +24,14 @@
       name: "Carlos López",
       reason: "reparacion",
       status: "in_progress",
-      priority: "alta"
+      priority: "baja"
     });
 
     const [filtro, setFiltro] = useState("reparacion");
     const [historial, setHistorial] = useState([]);
 
     const siguienteTurno = () => {
-    const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro && t.priority === "alta");
+    const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro && t.priority === "baja");
     if (siguiente) {
       setTurnos(turnos.map(t =>
         t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
@@ -41,7 +41,7 @@
       }
       setTurnoActual(siguiente);
     } else {
-      alert("No hay más turnos pendientes de alta prioridad en " + filtro);
+      alert("No hay más turnos pendientes de baja prioridad en " + filtro);
     }
   };
 
@@ -53,7 +53,10 @@
       alert("Día finalizado, se limpiaron los turnos.");
     };
 
-    const colaFiltrada = turnos.filter(t => t.reason === filtro && t.status === "waiting");
+    const colaFiltrada = turnos.filter(
+      t => t.reason === filtro && t.status === "waiting" && t.priority === "baja"
+    );
+
 
     return (
       <div className="full-width-container"> {/* Contenedor de ancho completo */}
@@ -77,7 +80,7 @@
                     <Zap size={20} className="text-danger me-2" /> Turno en Atención
                   </h4>
 
-                  {turnoActual && turnoActual.priority === "alta" ? (
+                  {turnoActual && turnoActual.priority === "baja" ? (
                     <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
                   ) : (
                     <p>No hay turno en atención.</p>
