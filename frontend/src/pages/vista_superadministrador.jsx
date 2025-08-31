@@ -6,6 +6,7 @@ import QueueItem from '../components/QueueItem';
 import StatusBadge from '../components/StatusBadge';
 import './pages-styles/superadmin.css';
 
+
 // Vista Administrador
 const VistaSuperadministrador = () => {
   const navigate = useNavigate();
