@@ -6,8 +6,9 @@ const footerStyles = `
   .footer {
     background: linear-gradient(90deg, #212529 0%, #dc3545 50%, #212529 100%);
     color: white;
-    padding: 2rem 1rem;
-    margin-top: 4rem;
+    padding: 1rem 2rem;
+    margin-top: 0rem;
+    
   }
 
   .footer a {
@@ -28,19 +29,19 @@ const footerStyles = `
   .footer .footer-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 2rem;
+    gap: 1rem;
     justify-content: space-between;
   }
 
   .footer .footer-item {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.2rem;
     min-width: 150px;
   }
 
   .footer .footer-bottom {
-    margin-top: 2rem;
+    margin-top: 1rem;
     border-top: 1px solid rgba(255,255,255,0.2);
     padding-top: 1rem;
     text-align: center;
