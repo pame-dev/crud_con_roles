@@ -7,7 +7,7 @@ const footerStyles = `
     background: linear-gradient(90deg, #212529 0%, #dc3545 50%, #212529 100%);
     color: white;
     padding: 1rem 2rem;
-    margin-top: 0rem;
+    margin-top: 2rem;
     
   }
 
@@ -59,7 +59,7 @@ const Footer = () => {
           <span className="footer-title">Contacto</span>
           <div className="d-flex align-items-center">
             <Phone size={16} className="me-2" />
-            <span>+52 123 456 7890</span>
+            <span>+52 314 148 2608</span>
           </div>
           <div className="d-flex align-items-center">
             <MapPin size={16} className="me-2" />

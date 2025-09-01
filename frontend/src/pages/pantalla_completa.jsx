@@ -38,7 +38,7 @@ const PantallaCompleta = () => {
               <ChevronLeft size={32} className="text-light" />
             </div>
             <div className="container-fluid text-center">
-              <h2 className="display-3 fw-bold mb-3">Bienvenido a PitLine</h2>
+              <h2 className="display-3 fw-bold mb-3">PitLine les da la Bienvenida</h2>
               <p className="lead opacity-75">
                 Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
               </p>
