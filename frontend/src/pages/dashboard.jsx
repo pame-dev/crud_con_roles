@@ -15,7 +15,7 @@ const Dashboard = () => {
 
       <div className="hero-section"> {/* Sección Encabezado, Header */}
         <div className="text-center">
-          <h2 className="display-3 fw-bold mb-1">Bienvenido a PitLine</h2>
+          <h2 className="display-3 fw-bold mb-1">PitLine les da la Bienvenida</h2>
           <p className="lead opacity-75">
             Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
           </p>
