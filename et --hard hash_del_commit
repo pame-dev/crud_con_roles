@@ -1,0 +1,44 @@
+[33m0dab101[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpame[m[33m)[m HEAD@{0}: reset: moving to HEAD
+[33m0dab101[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpame[m[33m)[m HEAD@{1}: checkout: moving from develop to pame
+[33m781cefc[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{2}: checkout: moving from develop to develop
+[33m781cefc[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{3}: checkout: moving from pame to develop
+[33m0dab101[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mpame[m[33m)[m HEAD@{4}: commit: WIP: cambios temporales en dashboard
+[33m3bdc8c7[m[33m ([m[1;31morigin/develop[m[33m)[m HEAD@{5}: reset: moving to HEAD
+[33m3bdc8c7[m[33m ([m[1;31morigin/develop[m[33m)[m HEAD@{6}: reset: moving to HEAD
+[33m3bdc8c7[m[33m ([m[1;31morigin/develop[m[33m)[m HEAD@{7}: pull origin develop: Fast-forward
+[33mc618b89[m[33m ([m[1;31morigin/pame[m[33m)[m HEAD@{8}: commit: ajustes de margin y padding para mejor visualizacion
+[33mccf0b12[m HEAD@{9}: pull origin develop: Fast-forward
+[33mf0dec37[m HEAD@{10}: commit: ajustes en el diseño para menor scroll
+[33m85b28d9[m HEAD@{11}: commit: funcionalidad de los fotones de el form para solicitar turno
+[33m38ba94b[m HEAD@{12}: pull origin develop: Fast-forward
+[33m693f6cb[m HEAD@{13}: pull origin develop: Fast-forward
+[33m781cefc[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{14}: checkout: moving from develop to pame
+[33m781cefc[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{15}: merge pame: Fast-forward
+[33m36b4df0[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{16}: checkout: moving from develop to develop
+[33m36b4df0[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{17}: pull origin main: Fast-forward
+[33m1cbddd2[m HEAD@{18}: checkout: moving from pame to develop
+[33m781cefc[m[33m ([m[1;32mdevelop[m[33m)[m HEAD@{19}: commit: vista de -pantalla completa-
+[33m36b4df0[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{20}: merge main: Fast-forward
+[33m295d63c[m HEAD@{21}: checkout: moving from main to pame
+[33m36b4df0[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{22}: checkout: moving from pame to main
+[33m295d63c[m HEAD@{23}: checkout: moving from main to pame
+[33m36b4df0[m[33m ([m[1;31morigin/main[m[33m, [m[1;32mmain[m[33m)[m HEAD@{24}: merge pame: Merge made by the 'ort' strategy.
+[33m3ad0024[m HEAD@{25}: pull origin main: Fast-forward
+[33m8e4bfbc[m HEAD@{26}: checkout: moving from pame to main
+[33m295d63c[m HEAD@{27}: checkout: moving from pame to pame
+[33m295d63c[m HEAD@{28}: pull origin pame --rebase (finish): returning to refs/heads/pame
+[33m295d63c[m HEAD@{29}: pull origin pame --rebase (pick): vistas principales
+[33mad39a04[m HEAD@{30}: pull origin pame --rebase (start): checkout ad39a046ad328ccda63e8d9581b0bc9e003e129c
+[33m3583a21[m HEAD@{31}: commit: vistas principales
+[33m8e4bfbc[m HEAD@{32}: pull origin main: Fast-forward
+[33m60e8c17[m HEAD@{33}: checkout: moving from main to pame
+[33m8e4bfbc[m HEAD@{34}: commit: organizacion de carpetas
+[33m60e8c17[m HEAD@{35}: checkout: moving from pame to main
+[33m60e8c17[m HEAD@{36}: pull origin main: Fast-forward
+[33m1cbddd2[m HEAD@{37}: checkout: moving from main to pame
+[33m60e8c17[m HEAD@{38}: commit: reacomodo de carpetas
+[33m1cbddd2[m HEAD@{39}: checkout: moving from pame to main
+[33m1cbddd2[m HEAD@{40}: checkout: moving from develop to pame
+[33m1cbddd2[m HEAD@{41}: checkout: moving from main to develop
+[33m1cbddd2[m HEAD@{42}: pull origin main --allow-unrelated-histories: Merge made by the 'ort' strategy.
+[33m456a595[m HEAD@{43}: commit (initial): primer commit: crud con laravel
