@@ -11,11 +11,11 @@ const Dashboard = () => {
   const navigate = useNavigate(); // hook declarado correctamente
 
   return (
-    <div className="full-width-container" style={{ padding: 0, margin: 0 }}> {/* Contenedor de ancho completo */}
+    <div className="full-width-container"> {/* Contenedor de ancho completo */}
 
       <div className="hero-section"> {/* Sección Encabezado, Header */}
         <div className="text-center">
-          <h2 className="display-4 fw-bold mb-1">Bienvenido a PitLine</h2>
+          <h2 className="display-3 fw-bold mb-1">Bienvenido a PitLine</h2>
           <p className="lead opacity-75">
             Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
           </p>
@@ -23,7 +23,7 @@ const Dashboard = () => {
       </div>
 
       <div className="container" style={{ marginTop: '-5rem', padding: '0' }}> {/* Contenedor principal de acciones y fila */}
-        <div className="row full-width-row g-4"> {/* Fila principal con espacio entre columnas */}
+        <div className="row full-width-row g-3"> {/* Fila principal con espacio entre columnas */}
           <div className="col-lg-8"> {/* Columna izquierda - Acciones Rápidas */}
             <div className="card shadow-lg full-width-card" > 
               <div className="card-body p-5">
