@@ -31,21 +31,21 @@ const PantallaCompleta = () => {
           <div className="hero-section-pc">
             {/* Flecha para regresar */}
             <div 
-              className="back-arrow text-start mt-3 ms-3"
+              className="back-arrow text-start mt-2 ms-3"
               style={{ cursor: "pointer" }}
               onClick={handleExit}
             >
               <ChevronLeft size={32} className="text-light" />
             </div>
             <div className="container-fluid text-center">
-              <h2 className="display-4 fw-bold mb-4">Bienvenido a PitLine</h2>
+              <h2 className="display-3 fw-bold mb-3">Bienvenido a PitLine</h2>
               <p className="lead opacity-75">
                 Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
               </p>
             </div>
           </div>
 
-          <div className="container-fluid" style={{ marginTop: '-2rem', padding: '0 15px' }}>
+          <div className="container-fluid" style={{ marginTop: '-5rem', padding: '0 15px' }}>
             <div className="row full-width-row g-4">
               {/* Quick Actions */}
               <div className="col-lg-8">
