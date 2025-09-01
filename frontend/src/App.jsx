@@ -27,7 +27,7 @@ const AppLayout = ({ children }) => {
   const noHeaderFooterRoutes = ['/pantalla_completa'];
   
   // Rutas que solo deben mostrar header pero no footer
-  const noFooterRoutes = ['/formulario_turno', '/']; // Agrega aquí otras rutas si es necesario
+  const noFooterRoutes = ['/formulario_turno']; // Agrega aquí otras rutas si es necesario
   
   const hideHeaderFooter = noHeaderFooterRoutes.includes(location.pathname);
   const hideFooterOnly = noFooterRoutes.includes(location.pathname);
