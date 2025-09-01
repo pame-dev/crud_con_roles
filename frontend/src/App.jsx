@@ -18,6 +18,7 @@ import Login from "./pages/login";
 import VistaAdministrador from "./pages/vista_administrador";
 import VistaAdministrador2 from './pages/vista_administrador2';
 import VistaSuperadministrador from "./pages/vista_superadministrador";
+import Historial from './pages/historial';
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -55,6 +56,7 @@ const PitLineApp = () => {
           <Route path="/vista_administrador" element={<VistaAdministrador />} />
           <Route path="/vista_administrador2" element={<VistaAdministrador2 />} />
           <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
+          <Route path="/historial" element={<Historial />} />
         </Routes>
       </AppLayout>
     </Router>
