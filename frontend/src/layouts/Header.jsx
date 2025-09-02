@@ -1,10 +1,20 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { User, TrendingUp, Tv, ClipboardList } from "lucide-react";
+import React, { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { User, TrendingUp, Tv, Pencil } from "lucide-react";
 import logo from "../assets/logo-rojo.png";
 
 const Header = () => {
   const location = useLocation();
+  const navigate = useNavigate(); 
+  const [showModal, setShowModal] = useState(false);
+
+  const soloUsuario = [
+    "/vista_administrador",
+    "/vista_administrador2",
+    "/vista_superadministrador",
+  ];
+
+  const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
 
   return (
     <>
@@ -64,54 +74,100 @@ const Header = () => {
             </div>
           </Link>
 
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
           <div className="collapse navbar-collapse" id="navbarNav">
-            <ul className="navbar-nav mx-auto">
-              <li className="nav-item">
-                <Link
-                  to="/"
-                  className={`nav-link d-flex align-items-center ${
-                    location.pathname === "/" ? "active" : ""
-                  }`}
-                >
-                  <TrendingUp size={20} className="me-2" />
-                  Dashboard
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  to="/pantalla_completa"
-                  className={`nav-link d-flex align-items-center ${
-                    location.pathname === "/pantalla_completa" ? "active" : ""
-                  }`}
-                >
-                  <Tv size={20} className="me-2" />
-                  Pantalla Completa
-                </Link>
-              </li>
-              <li className="nav-item">
-                
-              </li>
-            </ul>
+            {!mostrarSoloUsuario && (
+              <ul className="navbar-nav mx-auto">
+                <li className="nav-item">
+                  <Link
+                    to="/"
+                    className={`nav-link d-flex align-items-center ${
+                      location.pathname === "/" ? "active" : ""
+                    }`}
+                  >
+                    <TrendingUp size={20} className="me-2" />
+                    Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="/pantalla_completa"
+                    className={`nav-link d-flex align-items-center ${
+                      location.pathname === "/pantalla_completa" ? "active" : ""
+                    }`}
+                  >
+                    <Tv size={20} className="me-2" />
+                    Pantalla Completa
+                  </Link>
+                </li>
+              </ul>
+            )}
 
-            <Link
-              to="/login"
-              className="btn btn-danger d-flex align-items-center btn-login"
-            >
-              <User size={16} className="me-2" />
-              Iniciar Sesión
-            </Link>
+            {/* Botón usuario que abre modal */}
+            <div className="ms-auto">
+              <button
+                className="btn btn-danger d-flex align-items-center btn-login"
+                onClick={() => {
+                  if (location.pathname === "/") {
+                    navigate("/login"); // Si estamos en dashboard, vamos a login
+                  } else {
+                    setShowModal(true); // En cualquier otra vista, abrimos el modal
+                  }
+                }}
+              >
+                <User size={16} className="me-2" />
+                {!mostrarSoloUsuario && "Iniciar Sesión"}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
+
+      {/* Modal */}
+      {showModal && (
+        <div
+          className="modal fade show d-block"
+          tabIndex="-1"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Perfil de Usuario</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <div className="mb-3 d-flex justify-content-between align-items-center">
+                  <span><strong>Nombre:</strong> Juan Pérez</span>
+                  <button className="btn btn-sm btn-outline-primary">
+                    <Pencil size={16} />
+                  </button>
+                </div>
+                <div className="mb-3 d-flex justify-content-between align-items-center">
+                  <span><strong>Contraseña:</strong> ********</span>
+                  <button className="btn btn-sm btn-outline-primary">
+                    <Pencil size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => {
+                    setShowModal(false);
+                    navigate("/");
+                  }}
+                >
+                  Cerrar Sesión
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
