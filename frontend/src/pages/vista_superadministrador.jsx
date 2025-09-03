@@ -75,7 +75,7 @@ const finalizarDia = () => {
 
       <div className="hero-section">  {/* Sección Encabezado, Header */}
         <div className="container text-center">
-          <h2 className="display-4 fw-bold mb-1">Bienvenido a {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
+          <h2 className="display-4 fw-bold mb-1">Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
           <p className="lead opacity-75">
             Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
           </p>
