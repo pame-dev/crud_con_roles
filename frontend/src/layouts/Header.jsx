@@ -107,10 +107,11 @@ const Header = () => {
               <button
                 className="btn btn-danger d-flex align-items-center btn-login"
                 onClick={() => {
-                  if (location.pathname === "/") {
-                    navigate("/login"); // Si estamos en dashboard, vamos a login
+                  if (location.pathname === "/" || location.pathname === "/login") {
+                      // Si estamos en dashboard o login, no abrir modal
+                      navigate("/login"); // Esto solo redirige si estamos en "/"
                   } else {
-                    setShowModal(true); // En cualquier otra vista, abrimos el modal
+                      setShowModal(true); // En cualquier otra vista, abrir modal
                   }
                 }}
               >
@@ -172,4 +173,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Header; 
