@@ -1,7 +1,8 @@
 // src/pages/login.jsx
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import "./pages-styles/login.css";import { motion, AnimatePresence } from "framer-motion";
+import "./pages-styles/login.css";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -84,7 +85,7 @@ const Login = () => {
                 value={form.user}
                 onChange={handleChange}
                 required
-                minLength={3}
+                minLength={6}
                 autoComplete="username"
               />
             </label>
@@ -99,7 +100,7 @@ const Login = () => {
                 value={form.pass}
                 onChange={handleChange}
                 required
-                minLength={6}
+                minLength={8}
                 autoComplete="current-password"
               />
               <button
