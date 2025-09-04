@@ -9,7 +9,6 @@
   --card:#ffffff;
   --text:#1f2937;
   --muted:#6b7280;
-  --radius:12px;
   --shadow:0 20px 45px rgba(0,0,0,.15);
 }
 
@@ -20,7 +19,12 @@
 }
 
 /* CARD */
-.login-main{display:grid; place-items:center; padding:120px 16px}
+.login-main{
+    display:grid; 
+    place-items:center; 
+    padding:120px 16px
+}
+
 .login-card{
   width:min(520px,94vw);
   background:var(--card);
@@ -28,60 +32,114 @@
   padding:28px 24px;
   box-shadow:var(--shadow);
 }
+
 .avatar{
-  width:84px; height:84px; border-radius:999px;
+  width:84px; 
+  height:84px; 
+  border-radius:999px;
   margin:0 auto 10px;
-  display:grid; place-items:center;
+  display:grid; 
+  place-items:center;
   border:3px solid var(--grad-end);
   color:var(--grad-start);
   font-size:40px;
 }
-.title{text-align:center; margin:0 0 14px}
+.title{
+    text-align:center; 
+    margin:0 0 14px
+}
 
 /* FORM */
-.login-form{ display:grid; gap:14px; }
-.input-group{ position:relative; display:block; }
+.login-form{ 
+    display:grid; 
+    gap:14px; 
+}
+.input-group{ 
+    position:relative; 
+    display:block; 
+}
 .input-group input{
-  width:100%; height:46px;
+  width:100%; 
+  height:46px;
   padding:0 46px 0 46px;
-  border:none; border-radius:10px;
+  border:none; 
+  border-radius:12px;
   background:var(--field);
-  color:#fff; font-size:15px;
+  color:#fff; 
+  font-size:15px;
   outline:2px solid transparent;
 }
-.input-group input::placeholder{ color:#ffe7e7; }
+.input-group input::placeholder{ 
+    color:#ffe7e7; }
 .input-group input:focus{
   outline:2px solid var(--primary-dark);
   background:var(--field-hover);
 }
 .input-group .icon{
-  position:absolute; left:12px; top:50%; transform:translateY(-50%);
-  color:#fff; opacity:.95; pointer-events:none;
+  position:absolute; 
+  left:12px; 
+  top:50%; 
+  transform:translateY(-50%);
+  color:#fff; 
+  opacity:.95; 
+  pointer-events:none;
 }
 .input-group .eye{
-  position:absolute; right:10px; top:50%; transform:translateY(-50%);
-  background:transparent; border:none; color:#fff; font-size:18px; cursor:pointer;
+  position:absolute; 
+  right:10px; 
+  top:50%; 
+  transform:translateY(-50%);
+  background:transparent; 
+  border:none; 
+  color:#fff; 
+  font-size:18px; 
+  cursor:pointer;
 }
 
 /* checkbox + link */
 .aux-line{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:10px; flex-wrap:wrap;
+  display:flex; 
+  align-items:center; 
+  justify-content:space-between;
+  gap:10px; 
+  flex-wrap:wrap;
 }
-.check{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px; }
-.link{ color:#2563eb; font-size:14px; text-decoration:none; }
-.link:hover{ text-decoration:underline; }
+.check{ 
+    display:flex; 
+    align-items:center; 
+    gap:8px; 
+    color:var(--muted); 
+    font-size:14px; 
+}
+.link{ 
+    color:#2563eb; 
+    font-size:14px; 
+    text-decoration:none; 
+}
+.link:hover{ 
+    text-decoration:underline; 
+}
 
 /* botón */
 .btn-primary{
-  height:46px; width:100%;
-  border:none; border-radius:10px;
+  height:46px; 
+  width:100%;
+  border:none; 
+  border-radius:10px;
   background:var(--primary);
-  color:#fff; font-weight:600; font-size:15px; cursor:pointer;
+  color:#fff; 
+  font-weight:600; 
+  font-size:15px; 
+  cursor:pointer;
   box-shadow:0 8px 20px rgba(211,59,51,.35);
 }
-.btn-primary:hover{ background:var(--primary-dark); }
-.btn-primary:disabled{ opacity:.6; cursor:not-allowed; filter:grayscale(.2); }
+.btn-primary:hover{ 
+    background:var(--primary-dark);
+}
+.btn-primary:disabled{ 
+    opacity:.6; 
+    cursor:not-allowed; 
+    filter:grayscale(.2); }
 
 /* error */
 .error-msg{
@@ -93,25 +151,4 @@
   border:1px solid #f5c6cb;
   border-radius:8px;
   text-align:center;
-}
-
-/* FOOTER */
-.login-footer{
-  max-width:1100px;
-  margin:12px auto 18px;
-  padding:18px 20px;
-  border-radius:12px;
-  color:#fff;
-  background:linear-gradient(90deg,var(--grad-start),var(--grad-end));
-  display:grid; grid-template-columns:1fr 1.2fr 1fr; gap:22px;
-}
-.login-footer h3{margin:0 0 6px}
-.login-footer p, .login-footer li{margin:0}
-.center{text-align:center}
-.right{text-align:right}
-.login-footer ul{list-style:none; padding:0}
-
-@media (max-width:780px){
-  .login-footer{grid-template-columns:1fr; text-align:center}
-  .right{text-align:center}
 }
