@@ -16,7 +16,9 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    // nombre de la abse de datos 
+
+    'default' => env('PITLINE', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
