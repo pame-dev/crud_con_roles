@@ -9,8 +9,8 @@ const Header = () => {
   const [showModal, setShowModal] = useState(false);
 
   const soloUsuario = [
-    "/vista_administrador",
-    "/vista_administrador2",
+    "/vista_gerente",
+    "/vista_empleado",
     "/vista_superadministrador",
   ];
 
