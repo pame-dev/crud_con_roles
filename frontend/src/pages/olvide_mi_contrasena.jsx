@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./pages-styles/login.css";
 import { motion, AnimatePresence } from "framer-motion";
 
-const Login = () => {
+const OlvideMiContrasena = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
     user: "",
@@ -145,7 +145,7 @@ const Login = () => {
                 />
                 <span>Acepto los términos y condiciones</span>
               </label>
-              <a className="link" href="/olvide_mi_contrasena">Olvidé mi contraseña</a>
+              <a className="link" href="#">Olvidé mi contraseña</a>
             </div>
 
             <button
@@ -174,4 +174,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default OlvideMiContrasena;
