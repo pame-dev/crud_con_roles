@@ -3,6 +3,8 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./pages-styles/login.css";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,49 +32,56 @@ const Login = () => {
   }, [form]);
 
   const onSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  e.preventDefault();
+  setError("");
 
-    if (!form.termsAccepted) {
-      setError("Debes aceptar los términos y condiciones para continuar.");
-      return;
+  if (!form.termsAccepted) {
+    setError("Debes aceptar los términos y condiciones para continuar.");
+    return;
+  }
+
+  if (!isValid || submitting) return;
+
+  try {
+    setSubmitting(true);
+
+    console.log("Enviando datos al backend:", { user: form.user, pass: form.pass });
+
+    // 🔹 Petición real al backend
+    const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      user: form.user,
+      pass: form.pass
+    });
+
+    const { ID_ROL, CARGO } = response.data;
+    console.log("Respuesta del backend:", response.data);
+
+    // 🔹 Redirección según ID_ROL
+    switch (ID_ROL) {
+      case 0:
+        navigate("/vista_superadministrador");
+        break;
+      case 1:
+        // Aquí pasas el cargo como filtro a la vista de gerente
+        navigate(`/vista_gerente/${CARGO.toLowerCase()}`);
+        break;
+      case 2:
+        navigate("/vista_empleado");
+        break;
+      default:
+        navigate("/"); 
+        break;
     }
 
-    if (!isValid || submitting) return;
+  } catch (err) {
+      console.error("Error completo al iniciar sesión:", err);  // 🔹 aquí ves todo
 
-    try {
-      setSubmitting(true);
+    setError(err.response?.data?.error || "No se pudo iniciar sesión. Intenta de nuevo.");
+  } finally {
+    setSubmitting(false);
+  }
+};
 
-      // Aquí deberías hacer la petición al backend para validar login
-      // Ejemplo: const response = await axios.post("/api/login", form);
-      // Supongamos que el backend devuelve el ID_EMPLEADO:
-      // const { ID_EMPLEADO } = response.data;
-
-      // 🔹 Simulación de login
-      await new Promise((r) => setTimeout(r, 800));
-      const ID_ROL = 0; // <-- aquí pon el valor real que te devuelva el backend
-
-      // 🔹 Redirección según el ID
-      switch (ID_ROL) {
-        case 0:
-          navigate("/vista_superadministrador");
-          break;
-        case 1:
-          navigate("/vista_gerente");
-          break;
-        case 2:
-          navigate("/vista_empleado");
-          break;
-        default:
-          navigate("/"); // ruta por defecto
-          break;
-      }
-    } catch {
-      setError("No se pudo iniciar sesión. Intenta de nuevo.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
 
 
   return (
