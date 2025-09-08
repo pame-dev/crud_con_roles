@@ -1,5 +1,6 @@
   import React, { useState, useEffect } from "react";
   import axios from "axios";
+  import { useParams } from "react-router-dom";
   import { useNavigate } from "react-router-dom";
   import { Wrench, Flag, Zap, Clock, ArrowLeft } from "../iconos";
   import CurrentTurnCard from '../components/CurrentTurnCard';
@@ -7,8 +8,8 @@
   import StatusBadge from '../components/StatusBadge';
   import './pages-styles/admin.css';
 
-  // Vista Administrador
-  const VistaAdministrador = () => {
+  // Vista Gerente
+  const VistaGerente = () => {
     const navigate = useNavigate();
 
     const [turnos, setTurnos] = useState([
@@ -28,7 +29,9 @@
       priority: "alta"
     });
 
-    const [filtro, setFiltro] = useState("reparacion"); // "reparacion" o "cotizacion"
+    const { cargo } = useParams();  // viene del login
+    const [filtro, setFiltro] = useState(cargo?.toLowerCase() || "reparacion");
+
     const [historial, setHistorial] = useState([]);
 
     useEffect(() => {
@@ -167,4 +170,4 @@
     );
   };
 
-  export default VistaAdministrador;
+  export default VistaGerente;
