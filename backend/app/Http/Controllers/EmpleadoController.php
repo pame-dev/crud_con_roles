@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Empleado;
-use Illuminate\Http\Response;
 
-
+// Controlador que maneja las operaciones CRUD básicas de empleados.
+// Permite obtener todos los empleados, uno por ID o filtrarlos por cargo.
 
 class EmpleadoController extends Controller
 {
