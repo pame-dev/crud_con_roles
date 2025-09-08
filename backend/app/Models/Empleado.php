@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+// Modelo Eloquent que representa la tabla 'EMPLEADO'.
+// Define la clave primaria, los campos rellenables y desactiva timestamps.
 
 class Empleado extends Model
 {
