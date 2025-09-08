@@ -62,7 +62,7 @@
           <div className="container text-center">
             <h2 className="display-4 fw-bold mb-1">Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
             <p className="lead opacity-75">
-              Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
+              Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
             </p>
           </div>
         </div>
