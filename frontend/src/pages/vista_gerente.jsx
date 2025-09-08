@@ -1,4 +1,5 @@
-  import React, { useState } from "react";
+  import React, { useState, useEffect } from "react";
+  import axios from "axios";
   import { useNavigate } from "react-router-dom";
   import { Wrench, Flag, Zap, Clock, ArrowLeft } from "../iconos";
   import CurrentTurnCard from '../components/CurrentTurnCard';
@@ -27,8 +28,24 @@
       priority: "alta"
     });
 
-    const [filtro, setFiltro] = useState("reparacion");
+    const [filtro, setFiltro] = useState("reparacion"); // "reparacion" o "cotizacion"
     const [historial, setHistorial] = useState([]);
+
+    useEffect(() => {
+    // Traer empleados según el cargo. AQUÍ SE TRAEN LOS DATOS DEL EMPLEADOS
+    axios.get(`http://127.0.0.1:8000/api/empleados/cargo/${filtro}`)
+      .then(res => {
+        // Mapear datos de Laravel a la estructura que usa tu componente
+        const turnosAPI = res.data.map(emp => ({
+          id: emp.ID_EMPLEADO, // id empleado
+          name: emp.NOMBRE, // Nombre del empleado
+          reason: emp.CARGO.toLowerCase(), // "reparacion" o "cotizacion"
+        }));
+        setTurnos(turnosAPI);
+      })
+      .catch(err => console.error(err));
+  }, [filtro]);
+
 
     const siguienteTurno = () => {
     const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro && t.priority === "alta");
@@ -62,7 +79,7 @@
           <div className="container text-center">
             <h2 className="display-4 fw-bold mb-1">Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
             <p className="lead opacity-75">
-              Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
+              Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
             </p>
           </div>
         </div>
