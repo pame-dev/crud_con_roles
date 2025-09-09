@@ -69,7 +69,7 @@ const Login = () => {
         break;
       case 1:
         // Aquí pasas el cargo como filtro a la vista de gerente
-        navigate(`/vista_gerente/${CARGO.toLowerCase()}`);
+        navigate("/vista_gerente");
         break;
       case 2:
         navigate("/vista_trabajador");
