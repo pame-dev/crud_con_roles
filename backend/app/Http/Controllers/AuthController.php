@@ -11,7 +11,7 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $user = Empleado::where('NOMBRE', $request->user)->first();
+        $user = Empleado::where('CORREO', $request->user)->first();
 
         if (!$user || $user->CONTRASENA !== $request->pass) {
             return response()->json(['error' => 'Usuario o contraseña incorrectos'], 401);
