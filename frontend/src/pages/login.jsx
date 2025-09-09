@@ -1,12 +1,13 @@
 // src/pages/login.jsx
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import "./pages-styles/login.css";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
-
+import { EmpleadoContext } from "../layouts/EmpleadoContext";
+import "./pages-styles/login.css";
 
 const Login = () => {
+  const { setEmpleado } = useContext(EmpleadoContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     user: "",
@@ -57,7 +58,7 @@ const Login = () => {
 
     // Guardar datos en localStorage para usarlos en otras vistas
     localStorage.setItem("empleado", JSON.stringify(response.data));
-
+    setEmpleado(response.data); // Actualiza el contexto global
     const { ID_ROL, CARGO } = response.data;
     
 
