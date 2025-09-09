@@ -46,7 +46,6 @@ const Login = () => {
   try {
     setSubmitting(true);
 
-    console.log("Enviando datos al backend:", { user: form.user, pass: form.pass });
 
     // 🔹 Petición real al backend
     const response = await axios.post("http://127.0.0.1:8000/api/login", {
@@ -59,8 +58,7 @@ const Login = () => {
     // Guardar datos en localStorage para usarlos en otras vistas
     localStorage.setItem("empleado", JSON.stringify(response.data));
     setEmpleado(response.data); // Actualiza el contexto global
-    const { ID_ROL, CARGO } = response.data;
-    
+    const { ID_ROL } = response.data;
 
     // 🔹 Redirección según ID_ROL
     switch (ID_ROL) {
@@ -113,16 +111,16 @@ const Login = () => {
 
             {/* Usuario */}
             <label className="input-group"> 
-              <span className="icon"><i className="fa-solid fa-user"></i></span>
+              <span className="icon"><i className="fa-solid fa-envelope"></i></span>
               <input
                 type="text"
                 name="user"
-                placeholder="Usuario"
+                placeholder="Correo"
                 value={form.user}
                 onChange={handleChange}
                 required
                 minLength={6}
-                autoComplete="username"
+                autoComplete="email"
               />
             </label>
 
