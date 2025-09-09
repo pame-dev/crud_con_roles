@@ -22,6 +22,7 @@ class AuthController extends Controller
             'ID_EMPLEADO' => $user->ID_EMPLEADO,
             'ID_ROL' => $user->ID_ROL,
             'CARGO' => $user->CARGO,
+            'CORREO' => $user->CORREO,
             'NOMBRE' => $user->NOMBRE
         ]);
     }

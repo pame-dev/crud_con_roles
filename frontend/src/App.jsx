@@ -19,6 +19,7 @@ import VistaGerente from "./pages/vista_gerente";
 import VistaTrabajador from './pages/vista_trabajador';
 import VistaSuperadministrador from "./pages/vista_superadministrador";
 import Historial from './pages/historial';
+import { EmpleadoProvider } from "./layouts/EmpleadoContext";
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -45,21 +46,23 @@ const AppLayout = ({ children }) => {
 
 const PitLineApp = () => {
   return (
-    <Router>
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/pantalla_completa" element={<PantallaCompleta />} />
-          <Route path="/formulario_turno" element={<FormularioTurno />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/vista_gerente" element={<VistaGerente />} />
-          <Route path="/vista_trabajador" element={<VistaTrabajador />} />
-          <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
-          <Route path="/historial" element={<Historial />} />
-        </Routes>
-      </AppLayout>
-    </Router>
+    <EmpleadoProvider>
+      <Router>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pantalla_completa" element={<PantallaCompleta />} />
+            <Route path="/formulario_turno" element={<FormularioTurno />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/vista_gerente" element={<VistaGerente />} />
+            <Route path="/vista_trabajador" element={<VistaTrabajador />} />
+            <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
+            <Route path="/historial" element={<Historial />} />
+          </Routes>
+        </AppLayout>
+      </Router>
+    </EmpleadoProvider>
   );
 };
 export default PitLineApp;
