@@ -2,15 +2,19 @@ import React from 'react';
 import { Wrench, Clock, Zap } from '../iconos';
 import './CurrentTurnCard.css';
 
-const CurrentTurnCard = ({ turno }) => {
+const CurrentTurnCard = ({ turno, variant }) => {
   if (!turno) return <p>No hay turno en atención.</p>;
+
+    const isSuperadmin = variant === "superadmin";
 
   return (
     <div className="current-turn-card h-100 position-relative flex-fill">
       <div className="current-turn-badge d-flex align-items-center">
         <Zap size={16} className="me-1" fill="currentColor" />
         <span style={{ fontSize: '12px' }}>
-          {turno.priority === 'alta' ? 'Alta Prioridad' : 'Baja Prioridad'}
+          {isSuperadmin 
+            ? "En atención" 
+            : (turno.priority === "alta" ? "Alta Prioridad" : "Baja Prioridad")}
         </span>
       </div>
       <div className="text-center">
