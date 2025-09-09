@@ -8,7 +8,7 @@ import { useEffect } from "react";
 
 
 // Vista Administrador
-const VistaEmpleado = () => {
+const VistaTrabajador = () => {
   const navigate = useNavigate();
 
     const [turnos, setTurnos] = useState([]);
@@ -17,18 +17,18 @@ const VistaEmpleado = () => {
     const [historial, setHistorial] = useState([]);
     const [nombreEmpleado, setNombreEmpleado] = useState("");
 
+    // Obtener empleado del localStorage al cargar el componente
     useEffect(() => {
-      // Traer empleados según el cargo. AQUÍ SE TRAEN LOS DATOS DEL EMPLEADOS
-      axios
-        .get(`http://127.0.0.1:8000/api/empleado-actual`)
-        .then(res => {
-        setNombreEmpleado(res.data.NOMBRE);
-        setFiltro(res.data.CARGO.toLowerCase());
-      })
-      .catch(err => console.error("Error al obtener empleado:", err));
+      const empleado = JSON.parse(localStorage.getItem("empleado"));
+      if (empleado) {
+        setNombreEmpleado(empleado.NOMBRE);
+        setFiltro(empleado.CARGO.toLowerCase());
+      } else {
+        // Si no hay empleado en storage, regresar al login
+        navigate("/login");
+      }
     }, []);
 
-    // 2️⃣ Cuando ya tenemos el filtro, obtener turnos
     useEffect(() => {
       if (!filtro) return; // Evitar consulta si no hay filtro todavía
 
@@ -47,6 +47,8 @@ const VistaEmpleado = () => {
         })
         .catch((err) => console.error("Error al obtener turnos:", err));
     }, [filtro]);
+
+
 
     const siguienteTurno = () => {
     const siguiente = turnos.find(
@@ -100,5 +102,5 @@ const VistaEmpleado = () => {
     );
   };
 
-export default VistaEmpleado;
+export default VistaTrabajador;
 
