@@ -53,8 +53,13 @@ const Login = () => {
       pass: form.pass
     });
 
-    const { ID_ROL, CARGO } = response.data;
     console.log("Respuesta del backend:", response.data);
+
+    // Guardar datos en localStorage para usarlos en otras vistas
+    localStorage.setItem("empleado", JSON.stringify(response.data));
+
+    const { ID_ROL, CARGO } = response.data;
+    
 
     // 🔹 Redirección según ID_ROL
     switch (ID_ROL) {
@@ -66,7 +71,7 @@ const Login = () => {
         navigate(`/vista_gerente/${CARGO.toLowerCase()}`);
         break;
       case 2:
-        navigate("/vista_empleado");
+        navigate("/vista_trabajador");
         break;
       default:
         navigate("/"); 
