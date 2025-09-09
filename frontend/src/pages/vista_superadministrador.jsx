@@ -42,7 +42,7 @@ const siguienteTurno = () => {
 
     // mover el turno anterior al historial si ya estaba en progreso
     setTurnosEnProgreso(prev => {
-    const nuevos = [...prev.slice(-1), siguiente]; // mantener solo 1 anterior + el nuevo
+    const nuevos = [...prev.slice(-2), siguiente]; // mantener solo 1 anterior + el nuevo
     // los que se salgan de la ventana de 2 turnos pasan a historial
     const aHistorial = prev.slice(0, -1).map(t => ({ ...t, status: "completed" }));
     setHistorial(hist => [...hist, ...aHistorial]);
@@ -75,10 +75,8 @@ const finalizarDia = () => {
 
       <div className="hero-section">  {/* Sección Encabezado, Header */}
         <div className="container text-center">
-          <h2 className="display-4 fw-bold mb-1">Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
-          <p className="lead opacity-75">
-            Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
-          </p>
+          <h2 className="display-4 fw-bold mb-1">Administración</h2>
+          <h3 className="display-13 fw-bold mb-1">Área general</h3>
         </div>
       </div>
 
@@ -87,63 +85,54 @@ const finalizarDia = () => {
       <div className="container" style={{ marginTop: '-3rem' }}> {/* Contenedor principal de acciones y fila */}
         <div className="row full-width-row g-4"> {/* Fila principal con espacio entre columnas */}
 
-          <div className="col-md-8 mb-4"> {/* Columna izquierda - Turno en Atención */}
+          <div className="col-md-12 mb-4"> {/* Columna izquierda - Turno en Atención */}
             <div className="card shadow">
               <div className="card-body">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
                   <Zap size={20} className="text-danger me-2" /> Turno en Atención
                 </h4>
 
-                {turnosEnProgreso.length > 0 ? (
-                turnosEnProgreso.map(t => (
-                    <CurrentTurnCard key={t.turn_number} turno={t} />
-                ))
-                ) : (
-                <p>No hay turnos en atención.</p>
-                )}
+                <div className="turnos-grid">
+                  {turnosEnProgreso.length > 0 ? (
+                    turnosEnProgreso.map(t => (
+                      <div key={t.turn_number} className="turno-card">
+                        <CurrentTurnCard 
+                          turno={t} 
+                          variant="superadmin" 
+                          onPasarTurno={siguienteTurno} 
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <p>No hay turnos en atención.</p>
+                  )}
+                </div>
+
 
               </div>
 
               <div className="text-center mt-3 mb-5">
-                <button className="btn btn-dark me-2" onClick={finalizarDia}>
+                
+                {/* Aquí cambiar la funcion de administrar cuando haya */}
+                <button className="btn btn-custom" onClick={siguienteTurno}>
+                  Administrar 
+                </button>
+
+                <button className="btn btn-custom" onClick={finalizarDia}>
                   Finalizar Día
                 </button>
-                <button className="btn btn-primary" onClick={siguienteTurno}>
-                  Siguiente Turno
-                </button>
-              </div>
-              
-            </div>
-          </div>
 
-          
-          <div className="col-md-4 mb-4"> {/* Columna derecha - Cola Actual */}
-            <div className="card shadow">
-
-              <div className="card-body"> {/* Contenido de la tarjeta */}
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
-                </h4>
-                {colaFiltrada.length > 0 ? (
-                  <>
-                    {colaFiltrada.slice(0,4).map(t => <QueueItem key={t.turn_number} turn={t} />)}
-                    {colaFiltrada.length > 4 && (
-                      <p className="mt-2 text-muted">...{colaFiltrada.length - 4} más</p>
-                    )}
-                  </>
-                ) : (
-                  <p>No hay turnos en la cola.</p>
-                )}
-              </div>
-
-              <div className="mt-3"> {/* Boton de historial */}
-                <button className="btn btn-secondary" onClick={() => navigate("/historial")}>
+                <button className="btn btn-custom" onClick={() => navigate("/historial")}>
                   Historial
                 </button>
               </div>
 
+              
             </div>
           </div>
+
+                      
+
 
         </div>
       </div>

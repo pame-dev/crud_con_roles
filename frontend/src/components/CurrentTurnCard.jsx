@@ -2,15 +2,20 @@ import React from 'react';
 import { Wrench, Clock, Zap } from '../iconos';
 import './CurrentTurnCard.css';
 
-const CurrentTurnCard = ({ turno }) => {
+const CurrentTurnCard = ({ turno, variant, onPasarTurno }) => {
   if (!turno) return <p>No hay turno en atención.</p>;
+
+  // Variante para superadministrador
+    const isSuperadmin = variant === "superadmin";
 
   return (
     <div className="current-turn-card h-100 position-relative flex-fill">
       <div className="current-turn-badge d-flex align-items-center">
         <Zap size={16} className="me-1" fill="currentColor" />
         <span style={{ fontSize: '12px' }}>
-          {turno.priority === 'alta' ? 'Alta Prioridad' : 'Baja Prioridad'}
+          {isSuperadmin //Aquí se usa la variante para el superadiministrador
+            ? "En atención" 
+            : (turno.priority === "alta" ? "Alta Prioridad" : "Baja Prioridad")}
         </span>
       </div>
       <div className="text-center">
@@ -37,6 +42,15 @@ const CurrentTurnCard = ({ turno }) => {
           <Clock size={18} className="detail-icon" />
           <span style={{ fontSize: '12px' }}>Iniciado: 10:45 AM</span>
         </div>
+      </div>
+
+      {/* botón solo de superadministrador */}
+      <div className="text-center mt-3">
+        {isSuperadmin && (
+          <button className="btn btn-pasarturno" onClick={onPasarTurno}>
+            <i class="fa-solid fa-circle-right"></i>  Pasar turno
+          </button>
+        )}
       </div>
     </div>
   );
