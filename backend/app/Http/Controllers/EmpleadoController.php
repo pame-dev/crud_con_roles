@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\Empleado;
+use Illuminate\Http\Request; // ← Esto importa correctamente Request
 
 // Controlador que maneja las operaciones CRUD básicas de empleados.
 // Permite obtener todos los empleados, uno por ID o filtrarlos por cargo.
@@ -33,5 +34,22 @@ class EmpleadoController extends Controller
 
     return response()->json($empleados);
     }
+// Nuevo método para crear un empleado
+    public function store(Request $request)
+{
+    $empleado = Empleado::create([
+        'NOMBRE'     => $request->nombre,
+        'CORREO'     => $request->correo,
+        'CARGO'      => $request->cargo,
+        'CONTRASENA' => $request->contrasena,
+        'ID_ROL'     => $request->id_rol,
+    ]);
+
+    return response()->json([
+        'message' => 'Empleado registrado correctamente',
+        'empleado' => $empleado
+    ], 201);
+}
+
 
 }
