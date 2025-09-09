@@ -20,22 +20,23 @@ const Header = () => {
 
   // Obtener empleado del localStorage al cargar el componente
   useEffect(() => {
-    const empleadoStorage = JSON.parse(localStorage.getItem("empleado"));
-      if (empleado) {
-        setEmpleado(empleadoStorage);
-      } 
-  }, []);
+  // Cierra el menú al cambiar de página
+    const navbar = document.getElementById("navbarNav");
+    if (navbar && navbar.classList.contains("show")) {
+      // Usa la API de Bootstrap para cerrar
+      const collapse = new window.bootstrap.Collapse(navbar, { toggle: false });
+      collapse.hide();
+    }
+  }, [location]);
 
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top full-width-container">
         <div className="container-fluid">
+
+          {/* Logo */}
           <Link to="/" className="navbar-brand d-flex align-items-center">
-            <img
-              src={logo}
-              alt="PitLine Logo"
-              className="logo-image"
-            />
+            <img src={logo} alt="PitLine Logo" className="logo-image" />
             <div>
               <h4 className="mb-0 fw-bold">PitLine</h4>
               <small className="text-light opacity-75">
@@ -44,6 +45,20 @@ const Header = () => {
             </div>
           </Link>
 
+          {/* Botón hamburguesa */}
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          {/* Menú colapsable */}
           <div className="collapse navbar-collapse" id="navbarNav">
             {!mostrarSoloUsuario && (
               <ul className="navbar-nav mx-auto">
@@ -72,16 +87,15 @@ const Header = () => {
               </ul>
             )}
 
-            {/* Botón usuario que abre modal */}
+            {/* Botón usuario */}
             <div className="ms-auto">
               <button
                 className="btn btn-danger d-flex align-items-center btn-login"
                 onClick={() => {
                   if (location.pathname === "/" || location.pathname === "/login") {
-                      // Si estamos en dashboard o login, no abrir modal
-                      navigate("/login"); // Esto solo redirige si estamos en "/"
+                    navigate("/login");
                   } else {
-                      setShowModal(true); // En cualquier otra vista, abrir modal
+                    setShowModal(true);
                   }
                 }}
               >
@@ -134,6 +148,16 @@ const Header = () => {
                 </button>
               </div>
 
+              <span className="profile-label">Contraseña</span>
+              <div className="content-profile-row">
+                <div className="profile-row">
+                  <span className="profile-data">{empleado.CONTRASENA}</span>
+                </div>
+                <button className="edit-btn">
+                  <Pencil size={16} />
+                </button>
+              </div>
+
               <span className="profile-label">Area</span>
               <div className="content-profile-row">
                 <div className="profile-row">
@@ -144,15 +168,7 @@ const Header = () => {
                 </button>
               </div>
 
-              <span className="profile-label">Rol</span>
-              <div className="content-profile-row">
-                <div className="profile-row">
-                  <span className="profile-data">{empleado.ID_ROL}</span>
-                </div>
-                <button className="edit-btn">
-                  <Pencil size={16} />
-                </button>
-              </div>
+              
             </div>
 
             {/* Footer */}
