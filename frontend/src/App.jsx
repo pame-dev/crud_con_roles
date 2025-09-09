@@ -20,6 +20,7 @@ import VistaTrabajador from './pages/vista_trabajador';
 import VistaSuperadministrador from "./pages/vista_superadministrador";
 import Historial from './pages/historial';
 import { EmpleadoProvider } from "./layouts/EmpleadoContext";
+import RegisterGerentes from './pages/register_gerentes_y_trabajadores';
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -59,6 +60,7 @@ const PitLineApp = () => {
             <Route path="/vista_trabajador" element={<VistaTrabajador />} />
             <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
             <Route path="/historial" element={<Historial />} />
+            <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
           </Routes>
         </AppLayout>
       </Router>
