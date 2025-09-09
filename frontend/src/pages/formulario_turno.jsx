@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './pages-styles/formulario_turno.css';
+import { jsPDF } from "jspdf";
 
 <link 
   rel="stylesheet" 
@@ -57,21 +58,32 @@ const FormularioTurno = () => {
       const data = await response.json();
 
       if (response.ok) {
+        // Generar PDF con jsPDF
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text("Comprobante de Turno", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Turno: ${data.turno}`, 20, 40);
+        doc.text(`Nombre: ${formData.nombre} ${formData.apellidos}`, 20, 50);
+        doc.text(`Teléfono: ${formData.telefono}`, 20, 60);
+        doc.text(`Área: ${formData.area === "rep" ? "Reparación" : "Cotización"}`, 20, 70);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 80);
+        doc.text(`Hora: ${new Date().toLocaleTimeString()}`, 20, 90);
+        doc.save(`Turno_${data.turno}.pdf`);
+
         alert(`Turno solicitado con éxito. Tu turno es: ${data.turno}`);
         navigate("/dashboard");
       } else {
         alert("Error al solicitar turno: " + (data.message || "Intenta de nuevo."));
       }
+
     } catch (error) {
       console.error("Error:", error);
       alert("Hubo un error de conexión con el servidor.");
     }
   };
 
-
-  const handleCancel = () => {
-    navigate("/");
-  };
+  const handleCancel = () => navigate("/");
 
   return (
     <div className="formulario-compact-container">
