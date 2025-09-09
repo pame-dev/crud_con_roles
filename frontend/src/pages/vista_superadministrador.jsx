@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Flag, Zap, Clock, ArrowLeft } from "../iconos";
 import CurrentTurnCard from '../components/CurrentTurnCard';
@@ -11,62 +11,75 @@ import './pages-styles/superadmin.css';
 const VistaSuperadministrador = () => {
   const navigate = useNavigate();
 
-    const [turnos, setTurnos] = useState([
-      { turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting", priority: "alta" },
-      { turn_number: 123, name: "María García", reason: "reparacion", status: "waiting", priority: "alta" },
-      { turn_number: 124, name: "Carlos López", reason: "reparacion", status: "waiting", priority: "baja" },
-      { turn_number: 125, name: "Ana Torres", reason: "cotizacion", status: "waiting", priority: "baja" },
-      { turn_number: 126, name: "Luis Gómez", reason: "reparacion", status: "waiting",priority: "baja" },
-      { turn_number: 127, name: "Sofía Ramírez", reason: "cotizacion", status: "waiting",priority: "alta" }
-    ]);
-
-const [turnosEnProgreso, setTurnosEnProgreso] = useState([
-  {
-    turn_number: 124,
-    name: "Carlos López",
-    reason: "reparacion",
-    status: "in_progress"
-  }
-]);
-
-
-  const [filtro, setFiltro] = useState("reparacion");
   const [historial, setHistorial] = useState([]);
+  const [filtro, setFiltro] = useState("");
+  const [nombreEmpleado, setNombreEmpleado] = useState("");
 
-const siguienteTurno = () => {
-  const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro);
-  if (siguiente) {
-    setTurnos(turnos.map(t =>
-      t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
-    ));
+  // Obtener empleado del localStorage
+  useEffect(() => {
+    const empleado = JSON.parse(localStorage.getItem("empleado"));
+    if (empleado) {
+      setNombreEmpleado(empleado.NOMBRE);
+      setFiltro(empleado.CARGO.toLowerCase()); // "reparacion" o "cotizacion"
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
-    // mover el turno anterior al historial si ya estaba en progreso
-    setTurnosEnProgreso(prev => {
-    const nuevos = [...prev.slice(-2), siguiente]; // mantener solo 1 anterior + el nuevo
-    // los que se salgan de la ventana de 2 turnos pasan a historial
-    const aHistorial = prev.slice(0, -1).map(t => ({ ...t, status: "completed" }));
-    setHistorial(hist => [...hist, ...aHistorial]);
-    return nuevos;
-    });
+  const [turnos, setTurnos] = useState([
+    { turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting", priority: "alta" },
+    { turn_number: 123, name: "María García", reason: "reparacion", status: "waiting", priority: "alta" },
+    { turn_number: 124, name: "Carlos López", reason: "reparacion", status: "waiting", priority: "baja" },
+    { turn_number: 125, name: "Ana Torres", reason: "cotizacion", status: "waiting", priority: "baja" },
+    { turn_number: 126, name: "Luis Gómez", reason: "reparacion", status: "waiting",priority: "baja" },
+    { turn_number: 127, name: "Sofía Ramírez", reason: "cotizacion", status: "waiting",priority: "alta" }
+  ]);
+
+  const [turnosEnProgreso, setTurnosEnProgreso] = useState([
+    {
+      turn_number: 124,
+      name: "Carlos López",
+      reason: "reparacion",
+      status: "in_progress"
+    }
+  ]);
 
 
-    // agregar el siguiente turno al array de en progreso
-  } else {
-    alert("No hay más turnos pendientes en " + filtro);
-  }
-};
+  
+
+  const siguienteTurno = () => {
+    const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro);
+    if (siguiente) {
+      setTurnos(turnos.map(t =>
+        t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
+      ));
+
+      // mover el turno anterior al historial si ya estaba en progreso
+      setTurnosEnProgreso(prev => {
+      const nuevos = [...prev.slice(-2), siguiente]; // mantener solo 1 anterior + el nuevo
+      // los que se salgan de la ventana de 2 turnos pasan a historial
+      const aHistorial = prev.slice(0, -1).map(t => ({ ...t, status: "completed" }));
+      setHistorial(hist => [...hist, ...aHistorial]);
+      return nuevos;
+      });
 
 
-const finalizarDia = () => {
-  if (turnosEnProgreso.length > 0) {
-    const completados = turnosEnProgreso.map(t => ({ ...t, status: "completed" }));
-    setHistorial([...historial, ...completados]);
-  }
-  setTurnos([]);
-  setTurnosEnProgreso([]);
-  alert("Día finalizado, se limpiaron los turnos.");
-};
-;
+      // agregar el siguiente turno al array de en progreso
+    } else {
+      alert("No hay más turnos pendientes en " + filtro);
+    }
+  };
+
+
+  const finalizarDia = () => {
+    if (turnosEnProgreso.length > 0) {
+      const completados = turnosEnProgreso.map(t => ({ ...t, status: "completed" }));
+      setHistorial([...historial, ...completados]);
+    }
+    setTurnos([]);
+    setTurnosEnProgreso([]);
+    alert("Día finalizado, se limpiaron los turnos.");
+  };
 
   const colaFiltrada = turnos.filter(t => t.reason === filtro && t.status === "waiting");
 
