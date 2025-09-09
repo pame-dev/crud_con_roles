@@ -96,7 +96,11 @@ const finalizarDia = () => {
                   {turnosEnProgreso.length > 0 ? (
                     turnosEnProgreso.map(t => (
                       <div key={t.turn_number} className="turno-card">
-                        <CurrentTurnCard turno={t} variant="superadmin" />
+                        <CurrentTurnCard 
+                          turno={t} 
+                          variant="superadmin" 
+                          onPasarTurno={siguienteTurno} 
+                        />
                       </div>
                     ))
                   ) : (
@@ -108,22 +112,26 @@ const finalizarDia = () => {
               </div>
 
               <div className="text-center mt-3 mb-5">
-                <button className="btn btn-dark me-2" onClick={finalizarDia}>
+                
+                {/* Aquí cambiar la funcion de administrar cuando haya */}
+                <button className="btn btn-custom" onClick={siguienteTurno}>
+                  Administrar 
+                </button>
+
+                <button className="btn btn-custom" onClick={finalizarDia}>
                   Finalizar Día
                 </button>
-                <button className="btn btn-primary" onClick={siguienteTurno}>
-                  Siguiente Turno
+
+                <button className="btn btn-custom" onClick={() => navigate("/historial")}>
+                  Historial
                 </button>
               </div>
+
               
             </div>
           </div>
 
-                      <div className="mt-3"> {/* Boton de historial */}
-                <button className="btn btn-secondary" onClick={() => navigate("/historial")}>
-                  Historial
-                </button>
-              </div>
+                      
 
 
         </div>
