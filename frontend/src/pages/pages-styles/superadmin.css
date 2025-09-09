@@ -34,3 +34,20 @@
     margin: 0;
     overflow-x: hidden;
 }
+.turnos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+  gap: 1rem;
+  direction: rtl; /* orden de derecha a izquierda */
+}
+
+.turnos-grid > * {
+  direction: ltr; /* evita que el texto dentro también se voltee */
+  transform: scale(1); /* hace más pequeñas las tarjetas */
+}
+
+.container {
+    max-width: 100vw; /* Asegura que el contenedor no exceda el ancho de la ventana */
+    padding: 0 15px; /* Espaciado horizontal */
+    margin: 0 auto; /* Centra el contenedor */
+}
