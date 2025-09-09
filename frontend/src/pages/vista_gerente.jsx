@@ -1,173 +1,175 @@
-  import React, { useState, useEffect } from "react";
-  import axios from "axios";
-  import { useParams } from "react-router-dom";
-  import { useNavigate } from "react-router-dom";
-  import { Wrench, Flag, Zap, Clock, ArrowLeft } from "../iconos";
-  import CurrentTurnCard from '../components/CurrentTurnCard';
-  import QueueItem from '../components/QueueItem';
-  import StatusBadge from '../components/StatusBadge';
-  import './pages-styles/admin.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { Wrench, Flag, Zap, ArrowLeft } from "../iconos";
+import CurrentTurnCard from '../components/CurrentTurnCard';
+import QueueItem from '../components/QueueItem';
+import StatusBadge from '../components/StatusBadge';
+import './pages-styles/admin.css';
 
-  // Vista Gerente
-  const VistaGerente = () => {
-    const navigate = useNavigate();
+const VistaGerente = () => {
+  const navigate = useNavigate();
 
-    const [turnos, setTurnos] = useState([
-      { turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting", priority: "alta" },
-      { turn_number: 123, name: "María García", reason: "reparacion", status: "waiting", priority: "alta" },
-      { turn_number: 124, name: "Carlos López", reason: "reparacion", status: "waiting", priority: "baja" },
-      { turn_number: 125, name: "Ana Torres", reason: "cotizacion", status: "waiting", priority: "baja" },
-      { turn_number: 126, name: "Luis Gómez", reason: "reparacion", status: "waiting",priority: "baja" },
-      { turn_number: 127, name: "Sofía Ramírez", reason: "cotizacion", status: "waiting",priority: "alta" }
-    ]);
+  const [turnos, setTurnos] = useState([]);
+  const [turnoActual, setTurnoActual] = useState(null);
+  const [filtro, setFiltro] = useState("");
+  const [historial, setHistorial] = useState([]);
+  const [nombreEmpleado, setNombreEmpleado] = useState("");
 
-    const [turnoActual, setTurnoActual] = useState({
-      turn_number: 124,
-      name: "Carlos López",
-      reason: "reparacion",
-      status: "in_progress",
-      priority: "alta"
-    });
+  // Obtener empleado del localStorage
+  useEffect(() => {
+    const empleado = JSON.parse(localStorage.getItem("empleado"));
+    if (empleado) {
+      setNombreEmpleado(empleado.NOMBRE);
+      setFiltro(empleado.CARGO.toLowerCase()); // "reparacion" o "cotizacion"
+    } else {
+      navigate("/login");
+    }
+  }, []);
 
-    const { cargo } = useParams();  // viene del login
-    const [filtro, setFiltro] = useState(cargo?.toLowerCase() || "reparacion");
+  // Consultar turnos según el cargo
+  useEffect(() => {
+    if (!filtro) return;
 
-    const [historial, setHistorial] = useState([]);
-
-    useEffect(() => {
-    // Traer empleados según el cargo. AQUÍ SE TRAEN LOS DATOS DEL EMPLEADOS
-    axios.get(`http://127.0.0.1:8000/api/empleados/cargo/${filtro}`)
-      .then(res => {
-        // Mapear datos de Laravel a la estructura que usa tu componente
-        const turnosAPI = res.data.map(emp => ({
-          id: emp.ID_EMPLEADO, // id empleado
-          name: emp.NOMBRE, // Nombre del empleado
-          reason: emp.CARGO.toLowerCase(), // "reparacion" o "cotizacion"
+    axios
+      .get(`http://127.0.0.1:8000/api/empleados/cargo/${filtro}`)
+      .then((res) => {
+        const turnosAPI = res.data.map((emp) => ({
+          id: emp.ID_EMPLEADO,
+          name: emp.NOMBRE,
+          reason: emp.CARGO.toLowerCase(),
+          status: "waiting",
+          priority: "alta",
+          turn_number: emp.ID_EMPLEADO, // puedes cambiarlo por el real
         }));
         setTurnos(turnosAPI);
       })
-      .catch(err => console.error(err));
+      .catch((err) => console.error("Error al obtener turnos:", err));
   }, [filtro]);
 
-
-    const siguienteTurno = () => {
-    const siguiente = turnos.find(t => t.status === "waiting" && t.reason === filtro && t.priority === "alta");
+  const siguienteTurno = () => {
+    const siguiente = turnos.find(
+      (t) => t.status === "waiting" && t.reason === filtro && t.priority === "alta"
+    );
     if (siguiente) {
-      setTurnos(turnos.map(t =>
-        t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
-      ));
+      setTurnos(
+        turnos.map((t) =>
+          t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
+        )
+      );
       if (turnoActual) {
         setHistorial([...historial, { ...turnoActual, status: "completed" }]);
       }
       setTurnoActual(siguiente);
     } else {
-      alert("No hay más turnos pendientes de alta prioridad en " + filtro);
+      alert("No hay más turnos pendientes en " + filtro);
     }
   };
 
-
-    const finalizarDia = () => {
-      if (turnoActual) setHistorial([...historial, { ...turnoActual, status: "completed" }]);
-      setTurnos([]);
-      setTurnoActual(null);
-      alert("Día finalizado, se limpiaron los turnos.");
-    };
-
-    const colaFiltrada = turnos.filter(t => t.reason === filtro && t.status === "waiting");
-
-    return (
-      <div className="full-width-container"> {/* Contenedor de ancho completo */}
-
-        <div className="hero-section">  {/* Sección Encabezado, Header */}
-          <div className="container text-center">
-            <h2 className="display-4 fw-bold mb-1">Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
-            <p className="lead opacity-75">
-              Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
-            </p>
-          </div>
-        </div>
-
-        <div className="container" style={{ marginTop: '-3rem' }}> {/* Contenedor principal de acciones y fila */}
-          <div className="row full-width-row g-4"> {/* Fila principal con espacio entre columnas */}
-
-            <div className="col-md-8 mb-4"> {/* Columna izquierda - Turno en Atención */}
-              <div className="card shadow">
-                <div className="card-body">
-                  <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                    <Zap size={20} className="text-danger me-2" /> Turno en Atención
-                  </h4>
-
-                  {turnoActual && turnoActual.priority === "alta" ? (
-                    <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
-                  ) : (
-                    <p>No hay turno en atención.</p>
-                  )}
-                </div>
-
-                <div className="text-center mt-3 mb-5">
-                  <button className="btn btn-dark me-2" onClick={finalizarDia}>
-                    Finalizar Día
-                  </button>
-                  <button className="btn btn-primary" onClick={siguienteTurno}>
-                    Siguiente Turno
-                  </button>
-                </div>
-                
-              </div>
-            </div>
-
-            
-            <div className="col-md-4 mb-4"> {/* Columna derecha - Cola Actual */}
-              <div className="card shadow">
-
-                <div className="card-body"> {/* Contenido de la tarjeta */}
-                  <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                    <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
-                  </h4>
-                  {colaFiltrada.length > 0 ? (
-                    <>
-                      {colaFiltrada.slice(0,4).map(t => <QueueItem key={t.turn_number} turn={t} />)}
-                      {colaFiltrada.length > 4 && (
-                        <p className="mt-2 text-muted">...{colaFiltrada.length - 4} más</p>
-                      )}
-                    </>
-                  ) : (
-                    <p>No hay turnos en la cola.</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        
-      </div>
-    );
+  const finalizarDia = () => {
+    if (turnoActual) setHistorial([...historial, { ...turnoActual, status: "completed" }]);
+    setTurnos([]);
+    setTurnoActual(null);
+    alert("Día finalizado, se limpiaron los turnos.");
   };
 
-  // Historial
-  const HistorialTurnos = () => {
-    const navigate = useNavigate();
-    const [historial] = useState(JSON.parse(localStorage.getItem("historial")) || []);
+  const colaFiltrada = turnos.filter(
+    (t) => t.reason === filtro && t.status === "waiting"
+  );
 
-    return (
-      <div className="container mt-4">
-        <h2 className="mb-4">Historial de Turnos</h2>
-        {historial.length > 0 ? (
-          historial.map(t => (
-            <div key={t.turn_number} className="card mb-2 p-2">
-              #{t.turn_number} - {t.name} ({t.reason}) - <StatusBadge status={t.status} />
-            </div>
-          ))
-        ) : (
-          <p>No hay historial.</p>
-        )}
-        <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
-          <ArrowLeft size={16} className="me-1" /> Regresar
-        </button>
+  return (
+    <div className="full-width-container">
+      {/* Encabezado */}
+      <div className="hero-section">
+        <div className="container text-center">
+          <h2 className="display-4 fw-bold mb-1">
+            {nombreEmpleado} - Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}
+          </h2>
+          <p className="lead opacity-75">
+            Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
+          </p>
+        </div>
       </div>
-    );
-  };
 
-  export default VistaGerente;
+      {/* Contenido */}
+      <div className="container" style={{ marginTop: "-3rem" }}>
+        <div className="row full-width-row g-4">
+          {/* Turno en atención */}
+          <div className="col-md-8 mb-4">
+            <div className="card shadow">
+              <div className="card-body">
+                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
+                  <Zap size={20} className="text-danger me-2" /> Turno en Atención
+                </h4>
+
+                {turnoActual ? (
+                  <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
+                ) : (
+                  <p>No hay turno en atención.</p>
+                )}
+              </div>
+
+              <div className="text-center mt-3 mb-5">
+                <button className="btn btn-dark me-2" onClick={finalizarDia}>
+                  Finalizar Día
+                </button>
+                <button className="btn btn-primary" onClick={siguienteTurno}>
+                  Siguiente Turno
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Cola */}
+          <div className="col-md-4 mb-4">
+            <div className="card shadow">
+              <div className="card-body">
+                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
+                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
+                </h4>
+                {colaFiltrada.length > 0 ? (
+                  <>
+                    {colaFiltrada.slice(0, 4).map((t) => (
+                      <QueueItem key={t.turn_number} turn={t} />
+                    ))}
+                    {colaFiltrada.length > 4 && (
+                      <p className="mt-2 text-muted">...{colaFiltrada.length - 4} más</p>
+                    )}
+                  </>
+                ) : (
+                  <p>No hay turnos en la cola.</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Historial
+export const HistorialTurnos = () => {
+  const navigate = useNavigate();
+  const [historial] = useState(JSON.parse(localStorage.getItem("historial")) || []);
+
+  return (
+    <div className="container mt-4">
+      <h2 className="mb-4">Historial de Turnos</h2>
+      {historial.length > 0 ? (
+        historial.map((t) => (
+          <div key={t.turn_number} className="card mb-2 p-2">
+            #{t.turn_number} - {t.name} ({t.reason}) - <StatusBadge status={t.status} />
+          </div>
+        ))
+      ) : (
+        <p>No hay historial.</p>
+      )}
+      <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
+        <ArrowLeft size={16} className="me-1" /> Regresar
+      </button>
+    </div>
+  );
+};
+
+export default VistaGerente;
