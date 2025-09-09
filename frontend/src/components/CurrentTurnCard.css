@@ -19,6 +19,7 @@
   background: rgba(255, 255, 255, 0.1);
   transform: rotate(45deg);
   z-index: 1;
+    pointer-events: none; 
 }
 
 .current-turn-badge {
@@ -72,4 +73,19 @@
 .detail-icon {
   margin-right: 0.75rem;
   width: 20px;
+}
+
+.btn-pasarturno {
+  background-color: #f52727; 
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease; /* poner aquí también */
+}
+
+
+.btn-pasarturno:hover {
+  background-color: #ef3c3c !important;
+  color: white;
+  transition: background-color 0.3s ease;
+  /* No me funciona el hover :[ algien luego ayudeme */
 }
