@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './pages-styles/formulario_turno.css';
+import { jsPDF } from "jspdf";
 
 <link 
   rel="stylesheet" 
@@ -12,7 +13,7 @@ const FormularioTurno = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
-    apellido: '',
+    apellidos: '',
     telefono: '',
     area: ''
   });
@@ -25,32 +26,64 @@ const FormularioTurno = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validación básica
-    if (!formData.nombre || !formData.apellido || !formData.telefono || !formData.area) {
+
+    if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.area) {
       alert("Por favor completa todos los campos obligatorios.");
       return;
     }
 
-    // Simular descarga del comprobante
-    const link = document.createElement("a");
-    link.href = "/docs/mi_turno.pdf";
-    link.download = "mi_turno.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    alert("Turno solicitado con éxito. Se descargó tu comprobante.");
-    
-    // Redirigir después de la descarga
-    navigate("/dashboard"); 
+    try {
+      // Mapear "rep" y "cot" a ID_AREA (ajústalo según tu BD)
+      const areaMap = {
+        rep: 1, // Reparación
+        cot: 2  // Cotización
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/api/turnos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          ID_AREA: areaMap[formData.area],
+          NOMBRE: formData.nombre,
+          APELLIDOS: formData.apellidos,
+          TELEFONO: formData.telefono,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Generar PDF con jsPDF
+        const doc = new jsPDF();
+        doc.setFontSize(16);
+        doc.text("Comprobante de Turno", 20, 20);
+        doc.setFontSize(12);
+        doc.text(`Turno: ${data.turno}`, 20, 40);
+        doc.text(`Nombre: ${formData.nombre} ${formData.apellidos}`, 20, 50);
+        doc.text(`Teléfono: ${formData.telefono}`, 20, 60);
+        doc.text(`Área: ${formData.area === "rep" ? "Reparación" : "Cotización"}`, 20, 70);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, 80);
+        doc.text(`Hora: ${new Date().toLocaleTimeString()}`, 20, 90);
+        doc.save(`Turno_${data.turno}.pdf`);
+
+        alert(`Turno solicitado con éxito. Tu turno es: ${data.turno}`);
+        navigate("/dashboard");
+      } else {
+        alert("Error al solicitar turno: " + (data.message || "Intenta de nuevo."));
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Hubo un error de conexión con el servidor.");
+    }
   };
 
-  const handleCancel = () => {
-    navigate("/");
-  };
+  const handleCancel = () => navigate("/");
 
   return (
     <div className="formulario-compact-container">
@@ -83,10 +116,10 @@ const FormularioTurno = () => {
               <input 
                 type="text" 
                 className="form-compact-control" 
-                name="apellido"
-                value={formData.apellido}
+                name="apellidos"
+                value={formData.apellidos}
                 onChange={handleChange}
-                placeholder="Apellido" 
+                placeholder="Apellidos" 
                 required
               />
             </div>
