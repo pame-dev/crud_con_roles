@@ -20,4 +20,5 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/empleados/{id}', [EmpleadoController::class, 'show']);
     Route::get('/empleados/cargo/{cargo}', [EmpleadoController::class, 'porCargo']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/empleados', [EmpleadoController::class, 'store']); // Ruta para crear empleados
 });
