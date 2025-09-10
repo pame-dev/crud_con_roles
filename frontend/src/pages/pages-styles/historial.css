@@ -1,0 +1,55 @@
+/* Encapsulado para no pelearse con otros estilos */
+.historial-page {
+  margin-top: 4.9rem; /* separa del header */
+  max-width: 1400px;  
+  padding: 0 1rem 2rem; /* padding horizontal y abajo */
+}
+
+.historial-page h2 {
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .2px;
+  font-size: 5rem;
+}
+
+.historial-card .badge {
+  text-transform: capitalize;
+}
+
+/* Espacio entre cada tarjeta */
+.historial-card {
+  border-radius: 12px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Efecto hover ligero */
+.historial-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+
+/* Asegura consistencia interna */
+.historial-card .card-body {
+  padding: 1rem 1.25rem;
+}
+
+.historial-pagination {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* centra el texto y los botones */
+  gap: 0.5rem;         /* espacio entre texto y botones */
+}
+
+.historial-pagination small {
+  font-weight: 500;
+  color: #fff;           /* un gris más marcado */
+}
+
+.historial-pagination .btn-group .btn {
+    color: black;
+  border-radius: 999px;  /* botones redonditos */
+  padding: 0.5rem 1.2rem;
+  background: #fff;
+}
+
