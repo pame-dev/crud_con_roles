@@ -38,7 +38,7 @@ const VistaGerente = () => {
           id: emp.ID_EMPLEADO,
           name: emp.NOMBRE,
           reason: emp.CARGO.toLowerCase(),
-          status: "waiting",
+          status: "pendiente",
           priority: "alta",
           turn_number: emp.ID_EMPLEADO, // puedes cambiarlo por el real
         }));
@@ -129,9 +129,18 @@ const VistaGerente = () => {
                 </h4>
                 {colaFiltrada.length > 0 ? (
                   <>
-                    {colaFiltrada.slice(0, 4).map((t) => (
-                      <QueueItem key={t.turn_number} turn={t} />
-                    ))}
+                    {colaFiltrada.slice(0, 4).map((t, i) => (
+                    <>
+                      {loading && <p className="text-muted">Cargando...</p>}
+                      {err && <p className="text-danger">{err}</p>}
+                      {!loading && !err && fila.length === 0 && (
+                        <p className="text-muted">No hay turnos pendientes</p>
+                      )}
+                      {fila.map(turn => (
+                        <QueueItem key={turn.turn_number} turn={turn} />
+                      ))}
+                    </>
+                  ))}
                     {colaFiltrada.length > 4 && (
                       <p className="mt-2 text-muted">...{colaFiltrada.length - 4} más</p>
                     )}
