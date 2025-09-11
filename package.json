@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "date-fns": "^4.1.0",
     "framer-motion": "^12.23.12",
-    "jspdf": "^3.0.2"
+    "jspdf": "^3.0.2",
+    "react-datepicker": "^8.7.0"
   },
   "name": "crud_con_roles",
   "version": "1.0.0",

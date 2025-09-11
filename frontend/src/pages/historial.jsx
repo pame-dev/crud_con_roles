@@ -1,43 +1,61 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, User, Car, Wrench, CheckCircle, AlertTriangle } from "../iconos";
-import { fetchHistorialTurnos } from "./turnosApi.js";
-import "./pages-styles/historial.css";
+import { Calendar, User, Wrench, CheckCircle, AlertTriangle } from "../iconos";
+import { fetchHistorialTurnos } from "../api/turnosApi.js";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const ESTADO_BADGE = {
+  pendiente: "warning",
+  en_atencion: "primary",
   completado: "success",
-  cancelado: "danger",
-  cotizacion: "secondary",
-  en_proceso: "warning",
 };
 
 function EstadoBadge({ estado }) {
   const color = ESTADO_BADGE[estado] || "secondary";
   const text = (estado || "desconocido").replaceAll("_", " ");
-  return <span className={`badge rounded-pill text-bg-${color}`}>{text}</span>;
+  return (
+    <span
+      className={`badge rounded-pill text-bg-${color} fw-semibold`}
+      style={{ fontSize: "0.8rem", padding: "0.35em 0.6em" }}
+    >
+      {text}
+    </span>
+  );
 }
 
 function TurnoCard({ turno }) {
-  // turno.{folio, cliente, servicio, fecha, hora, placa, estado}
   return (
     <div className="col">
-      <div className="card h-100 shadow-sm historial-card">
+      <div
+        className="card shadow-sm historial-card"
+        style={{
+          borderRadius: "15px",
+          transition: "transform 0.2s",
+          cursor: "pointer",
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-5px)")}
+        onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+      >
         <div className="card-body">
-          <div className="d-flex justify-content-between align-items-start mb-2">
-            <h6 className="mb-0 fw-bold">#{turno.folio}</h6>
+          <div className="d-flex justify-content-between align-items-start mb-3">
+            <h6 className="mb-0 fw-bold text-danger">#{turno.folio}</h6>
             <EstadoBadge estado={turno.estado} />
           </div>
 
-          <div className="small text-muted mb-2 d-flex align-items-center gap-2">
-            <User size={16} /> <span className="text-dark fw-semibold">{turno.cliente}</span>
+          <div className="d-flex align-items-center mb-2 gap-2">
+            <User size={16} className="text-dark" />
+            <span className="fw-semibold">{turno.cliente}</span>
           </div>
 
-          <div className="small mb-1 d-flex align-items-center gap-2">
-            <Wrench size={16} /> <span>{turno.servicio || "—"}</span>
+          <div className="d-flex align-items-center mb-2 gap-2">
+            <Wrench size={16} className="text-muted" />
+            <span>{turno.servicio || "—"}</span>
           </div>
 
-          <div className="small text-muted mb-1 d-flex align-items-center gap-2">
-            <Calendar size={16} /> <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
+          <div className="d-flex align-items-center gap-2 text-muted">
+            <Calendar size={16} />
+            <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
           </div>
         </div>
       </div>
@@ -48,7 +66,7 @@ function TurnoCard({ turno }) {
 function PlaceholderCard() {
   return (
     <div className="col">
-      <div className="card h-100 shadow-sm placeholder-glow historial-card">
+      <div className="card shadow-sm placeholder-glow" style={{ borderRadius: "15px" }}>
         <div className="card-body">
           <div className="d-flex justify-content-between align-items-start mb-2">
             <span className="placeholder col-3"></span>
@@ -68,69 +86,86 @@ const Historial = () => {
 
   const [q, setQ] = useState("");
   const [estado, setEstado] = useState("todos");
-  const [desde, setDesde] = useState("");
-  const [hasta, setHasta] = useState("");
   const [page, setPage] = useState(1);
 
   const [data, setData] = useState({ data: [], page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
-  // Construye clave para cache simple (evita refetch innecesario)
-  const key = useMemo(() => JSON.stringify({ q, estado, desde, hasta, page }), [q, estado, desde, hasta, page]);
+  const key = useMemo(() => JSON.stringify({ q, estado, page }), [q, estado, page]);
 
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
     setErr("");
 
-    fetchHistorialTurnos({ q, estado, desde, hasta, page, limit: 12 }, { signal: controller.signal })
+    fetchHistorialTurnos({ q, estado, page, limit: 12 }, { signal: controller.signal })
       .then((res) => setData(res))
-      .catch((e) => setErr(e.message || "Error al cargar historial"))
+      .catch((e) => {
+        if (e.name !== "AbortError") setErr(e.message || "Error al cargar historial");
+      })
       .finally(() => setLoading(false));
 
     return () => controller.abort();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key]);
 
-  return (
-    <div className="container py-4 historial-page">
-      <h2 className="mb-3 text-center">Historial de turnos</h2>
+  const resetFilters = () => {
+    setQ("");
+    setEstado("todos");
+    setPage(1);
+  };
 
+  return (
+    <div
+      className="container py-5"
+      style={{ marginTop: "4rem", paddingBottom: "3rem" }}
+    >
+      <h2
+        className="text-center mb-4"
+        style={{
+          color: "#fff",
+          fontWeight: "700",
+          textShadow: "1px 1px 3px rgba(0,0,0,0.4)",
+          fontSize: "3rem",
+        }}
+      >
+        Historial de turnos
+      </h2>
 
       {/* Filtros */}
-      <div className="card mb-3 shadow-sm">
+      <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
         <div className="card-body">
           <div className="row g-3 align-items-end">
             <div className="col-12 col-md-4">
-              <label className="form-label">Buscar</label>
+              <label className="form-label fw-semibold text-dark">Buscar</label>
               <input
                 className="form-control"
                 placeholder="Folio, cliente…"
                 value={q}
                 onChange={(e) => { setQ(e.target.value); setPage(1); }}
+                style={{ borderRadius: "10px" }}
               />
             </div>
             <div className="col-6 col-md-2">
-              <label className="form-label">Estado</label>
-              <select className="form-select" value={estado} onChange={(e) => { setEstado(e.target.value); setPage(1); }}>
+              <label className="form-label fw-semibold text-dark">Estado</label>
+              <select
+                className="form-select"
+                value={estado}
+                onChange={(e) => { setEstado(e.target.value); setPage(1); }}
+                style={{ borderRadius: "10px" }}
+              >
                 <option value="todos">Todos</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="en_atencion">En atención</option>
                 <option value="completado">Completado</option>
-                <option value="en_proceso">En proceso</option>
-                <option value="cotizacion">Cotización</option>
-                <option value="cancelado">Cancelado</option>
               </select>
             </div>
-            <div className="col-6 col-md-2">
-              <label className="form-label">Desde</label>
-              <input type="date" className="form-control" value={desde} onChange={(e)=>{ setDesde(e.target.value); setPage(1); }} />
-            </div>
-            <div className="col-6 col-md-2">
-              <label className="form-label">Hasta</label>
-              <input type="date" className="form-control" value={hasta} onChange={(e)=>{ setHasta(e.target.value); setPage(1); }} />
-            </div>
             <div className="col-6 col-md-2 d-grid">
-              <button className="btn btn-outline-secondary" onClick={() => { setQ(""); setEstado("todos"); setDesde(""); setHasta(""); setPage(1); }}>
+              <button
+                className="btn btn-danger fw-bold"
+                onClick={resetFilters}
+                style={{ borderRadius: "10px" }}
+              >
                 Limpiar
               </button>
             </div>
@@ -149,41 +184,40 @@ const Historial = () => {
       {!err && (
         <>
           {loading ? (
-            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
               {Array.from({ length: 6 }).map((_, i) => <PlaceholderCard key={i} />)}
             </div>
           ) : data?.data?.length ? (
             <>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
                 {data.data.map((t) => <TurnoCard key={t.id || `${t.folio}-${t.fecha}-${t.cliente}`} turno={t} />)}
               </div>
 
               {/* Paginación */}
-              <div className="historial-pagination">
-                <small>
+              <div className="d-flex justify-content-between align-items-center mt-4">
+                <small style={{ color: "#fff" }}>
                   Página {data.page} de {data.totalPages} · {data.total} resultados
                 </small>
                 <div className="btn-group">
                   <button
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-light fw-bold"
                     disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
+                    onClick={() => setPage(p => p - 1)}
                   >
                     Anterior
                   </button>
                   <button
-                    className="btn btn-outline-secondary"
+                    className="btn btn-outline-light fw-bold"
                     disabled={page >= data.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
+                    onClick={() => setPage(p => p + 1)}
                   >
                     Siguiente
                   </button>
                 </div>
               </div>
-
             </>
           ) : (
-            <div className="card shadow-sm">
+            <div className="card shadow-sm mt-4" style={{ borderRadius: "12px" }}>
               <div className="card-body text-center py-5">
                 <CheckCircle size={32} className="text-muted mb-2" />
                 <h5 className="mb-1">Sin turnos coincidentes</h5>
