@@ -15,6 +15,10 @@ const VistaGerente = () => {
   const [filtro, setFiltro] = useState("");
   const [historial, setHistorial] = useState([]);
   const [nombreEmpleado, setNombreEmpleado] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+
 
   // Obtener empleado del localStorage
   useEffect(() => {
@@ -31,25 +35,24 @@ const VistaGerente = () => {
   useEffect(() => {
     if (!filtro) return;
 
+    setLoading(true);
+    setErr("");
+
     axios
-      .get(`http://127.0.0.1:8000/api/empleados/cargo/${filtro}`)
+      .get(`http://127.0.0.1:8000/api/turnos/fila?cargo=${filtro}`)
       .then((res) => {
-        const turnosAPI = res.data.map((emp) => ({
-          id: emp.ID_EMPLEADO,
-          name: emp.NOMBRE,
-          reason: emp.CARGO.toLowerCase(),
-          status: "pendiente",
-          priority: "alta",
-          turn_number: emp.ID_EMPLEADO, // puedes cambiarlo por el real
-        }));
-        setTurnos(turnosAPI);
+        setTurnos(res.data);
       })
-      .catch((err) => console.error("Error al obtener turnos:", err));
+      .catch((e) => setErr(e.message || "Error al obtener turnos"))
+      .finally(() => setLoading(false));
   }, [filtro]);
 
+  
+
   const siguienteTurno = () => {
+    
     const siguiente = turnos.find(
-      (t) => t.status === "waiting" && t.reason === filtro && t.priority === "alta"
+      (t) => t.status === "pendiente" && t.reason === filtro && t.priority === "alta"
     );
     if (siguiente) {
       setTurnos(
@@ -127,27 +130,15 @@ const VistaGerente = () => {
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
                   <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
                 </h4>
-                {colaFiltrada.length > 0 ? (
-                  <>
-                    {colaFiltrada.slice(0, 4).map((t, i) => (
-                    <>
-                      {loading && <p className="text-muted">Cargando...</p>}
-                      {err && <p className="text-danger">{err}</p>}
-                      {!loading && !err && fila.length === 0 && (
-                        <p className="text-muted">No hay turnos pendientes</p>
-                      )}
-                      {fila.map(turn => (
-                        <QueueItem key={turn.turn_number} turn={turn} />
-                      ))}
-                    </>
-                  ))}
-                    {colaFiltrada.length > 4 && (
-                      <p className="mt-2 text-muted">...{colaFiltrada.length - 4} más</p>
-                    )}
-                  </>
-                ) : (
-                  <p>No hay turnos en la cola.</p>
+                {loading && <p className="text-muted">Cargando...</p>}
+                {err && <p className="text-danger">{err}</p>}
+                {!loading && !err && turnos.length === 0 && (
+                  <p className="text-muted">No hay turnos pendientes</p>
                 )}
+
+                {turnos.map((turn) => (
+                  <QueueItem key={turn.turn_number} turn={turn} />
+                ))}
               </div>
             </div>
           </div>

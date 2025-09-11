@@ -7,24 +7,33 @@ use Illuminate\Support\Facades\DB;
 
 class TurnController extends Controller
 {
-    public function filaActual()
+    public function filaActual(Request $request)
     {
-        // Solo los turnos pendientes
-        $turnos = Turno::select('ID_TURNO','NOMBRE','APELLIDOS','ID_AREA','FECHA','HORA','ESTATUS')
-            ->where('ESTATUS', 'Pendiente')
-            ->orderBy('FECHA', 'asc')
+        // Obtener el cargo desde query string (?cargo=reparacion o ?cargo=cotizacion)
+        $cargo = strtolower($request->query('cargo'));
+
+        $query = Turno::select('ID_TURNO','NOMBRE','APELLIDOS','ID_AREA','FECHA','HORA','ESTATUS')
+            ->where('ESTATUS', 'Pendiente');
+
+        // Filtrar según el cargo (ID_AREA = 1 -> reparación, ID_AREA = 2 -> cotización)
+        if ($cargo === 'reparacion') {
+            $query->where('ID_AREA', 1);
+        } elseif ($cargo === 'cotizacion') {
+            $query->where('ID_AREA', 2);
+        }
+
+        $turnos = $query->orderBy('FECHA', 'asc')
             ->orderBy('HORA', 'asc')
-            ->limit(4) // por ejemplo, mostrar máximo 10 turnos
+            ->limit(4) // LIMITE DE TURNOS A MOSTRAR
             ->get();
 
-        // Formatear para el frontend
         $turnosFormatted = $turnos->map(function($t) {
             return [
                 'turn_number' => $t->ID_TURNO,
                 'name' => $t->NOMBRE . ' ' . $t->APELLIDOS,
                 'reason' => $t->ID_AREA == 1 ? 'reparacion' : 'cotizacion',
-                'status' => strtolower($t->ESTATUS), // pendiente
-                'priority' => 'normal', // puedes ajustar si quieres prioridades
+                'status' => strtolower($t->ESTATUS),
+                'priority' => 'normal',
             ];
         });
 
