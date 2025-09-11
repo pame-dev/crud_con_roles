@@ -1,14 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, Calendar, Clock, PlayCircle, CheckCircle, Flag, Zap, AlertTriangle } from '../iconos';
 import CurrentTurnCard from '../components/CurrentTurnCard';
 import QueueItem from '../components/QueueItem';
-import StatusBadge from '../components/StatusBadge';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
+import { fetchFilaActual } from '../api/turnosApi.js';
+
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const [fila, setFila] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000/api/turnos/fila")
+      .then(res => res.json())
+      .then(data => setFila(data))
+      .catch(e => setErr(e.message || "Error al cargar la fila"))
+      .finally(() => setLoading(false));
+  }, []);
+  
 
   return (
     <AnimatePresence>
@@ -20,8 +33,8 @@ const Dashboard = () => {
         transition={{ duration: 0.5 }}
       >
         <div className="hero-section">
-          <div className="text-center">
-            <h2 className="display-3 fw-bold mb-1">PitLine les da la Bienvenida</h2>
+          <div className="text-center mt-3">
+            <h3 className="display-3 fw-bold mb-1">PitLine les da la Bienvenida</h3>
             <p className="lead opacity-75">
               Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
             </p>
@@ -67,9 +80,14 @@ const Dashboard = () => {
                     Fila Actual
                   </h3>
                   <div className="d-flex flex-column gap-3">
-                    <QueueItem turn={{ turn_number: 122, name: "Juan Pérez", reason: "cotizacion", status: "waiting", priority: "alta"}} />
-                    <QueueItem turn={{ turn_number: 123, name: "María García", reason: "reparacion", status: "waiting" }} />
-                    <QueueItem turn={{ turn_number: 124, name: "Carlos López", reason: "reparacion", status: "in_progress" }} />
+                    {loading && <p className="text-muted">Cargando...</p>}
+                    {err && <p className="text-danger">{err}</p>}
+                    {!loading && !err && fila.length === 0 && (
+                      <p className="text-muted">No hay turnos pendientes</p>
+                    )}
+                    {fila.map(turn => (
+                      <QueueItem key={turn.turn_number} turn={turn} />
+                    ))}
                   </div>
                 </div>
               </div>

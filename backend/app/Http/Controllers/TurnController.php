@@ -7,6 +7,31 @@ use Illuminate\Support\Facades\DB;
 
 class TurnController extends Controller
 {
+    public function filaActual()
+    {
+        // Solo los turnos pendientes
+        $turnos = Turno::select('ID_TURNO','NOMBRE','APELLIDOS','ID_AREA','FECHA','HORA','ESTATUS')
+            ->where('ESTATUS', 'Pendiente')
+            ->orderBy('FECHA', 'asc')
+            ->orderBy('HORA', 'asc')
+            ->limit(4) // por ejemplo, mostrar máximo 10 turnos
+            ->get();
+
+        // Formatear para el frontend
+        $turnosFormatted = $turnos->map(function($t) {
+            return [
+                'turn_number' => $t->ID_TURNO,
+                'name' => $t->NOMBRE . ' ' . $t->APELLIDOS,
+                'reason' => $t->ID_AREA == 1 ? 'reparacion' : 'cotizacion',
+                'status' => strtolower($t->ESTATUS), // pendiente
+                'priority' => 'normal', // puedes ajustar si quieres prioridades
+            ];
+        });
+
+        return response()->json($turnosFormatted);
+    }
+
+
     public function ultimo()
     {
         $turno = DB::table('TURNOS')
