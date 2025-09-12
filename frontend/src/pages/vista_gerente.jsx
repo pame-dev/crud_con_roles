@@ -6,6 +6,8 @@ import CurrentTurnCard from '../components/CurrentTurnCard';
 import QueueItem from '../components/QueueItem';
 import StatusBadge from '../components/StatusBadge';
 import './pages-styles/admin.css';
+import { List, Grid } from "lucide-react";
+import WorkerTurnCard from "../components/WorkerTurnCard";
 
 const VistaGerente = () => {
   const navigate = useNavigate();
@@ -17,7 +19,9 @@ const VistaGerente = () => {
   const [nombreEmpleado, setNombreEmpleado] = useState("");
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-
+  const [busqueda, setBusqueda] = useState("");
+  const [vistaLista, setVistaLista] = useState(false);
+  
 
 
   // Obtener empleado del localStorage
@@ -100,28 +104,43 @@ const VistaGerente = () => {
           {/* Turno en atención */}
           <div className="col-md-8 mb-4">
             <div className="card shadow">
-              <div className="card-body">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Zap size={20} className="text-danger me-2" /> Turno en Atención
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
+                  <Zap size={20} className="text-danger me-2" /> Turnos en Atención
                 </h4>
 
-                {turnoActual ? (
-                  <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
-                ) : (
-                  <p>No hay turno en atención.</p>
-                )}
+                {/* Buscador + toggle vista */}
+                <div className="d-flex align-items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Buscar turno..."
+                    className="form-control form-control-sm"
+                    style={{ maxWidth: "200px" }}
+                    value={busqueda}
+                    onChange={(e) => setBusqueda(e.target.value)}
+                  />
+                  <button
+                    className="btn btn-outline-secondary btn-sm py-1 px-2"
+                    onClick={() => setVistaLista(!vistaLista)}
+                    title={vistaLista ? "Vista mosaico" : "Vista lista"}
+                  >
+                    {vistaLista ? <Grid size={14} /> : <List size={14} />}
+                  </button>
+                </div>
               </div>
 
-              <div className="text-center mt-3 mb-5">
-                <button className="btn btn-dark me-2" onClick={finalizarDia}>
-                  Finalizar Día
-                </button>
-                <button className="btn btn-primary" onClick={siguienteTurno}>
-                  Siguiente Turno
-                </button>
+              {/* Contenedor dinámico */}
+              <div
+                className={vistaLista ? "turnos-list" : "turnos-grid"}
+                style={{ padding: "1rem" }}
+              >
+                <WorkerTurnCard filtroBusqueda={filtro} mostrarCargo={false} />
+
               </div>
             </div>
           </div>
+
+
 
           {/* Cola */}
           <div className="col-md-4 mb-4">
