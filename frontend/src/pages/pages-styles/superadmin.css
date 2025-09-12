@@ -34,16 +34,16 @@
     margin: 0;
     overflow-x: hidden;
 }
-.turnos-grid {
+.turnos-list {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columnas */
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
-  direction: rtl; /* orden de derecha a izquierda */
 }
 
-.turnos-grid > * {
-  direction: ltr; /* evita que el texto dentro también se voltee */
-  transform: scale(1); /* hace más pequeñas las tarjetas */
+.turnos-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 👈 3 columnas fijas */
+  gap: 2rem;
 }
 
 .container {
