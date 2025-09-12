@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Turno extends Model
 {
-    protected $table = 'TURNOS';  //  nombre exacto de tu tabla
+    protected $table = 'TURNOS';
     protected $primaryKey = 'ID_TURNO';
     public $timestamps = false;
     protected $keyType = 'string';
@@ -15,4 +15,9 @@ class Turno extends Model
         'ID_TURNO', 'ID_AREA', 'ID_EMPLEADO', 'FECHA', 'HORA',
         'ESTATUS', 'NOMBRE', 'APELLIDOS', 'TELEFONO'
     ];
+
+    public function empleado()
+    {
+        return $this->belongsTo(Empleado::class, 'ID_EMPLEADO', 'ID_EMPLEADO');
+    }
 }
