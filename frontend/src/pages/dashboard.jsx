@@ -5,7 +5,6 @@ import CurrentTurnCard from '../components/CurrentTurnCard';
 import QueueItem from '../components/QueueItem';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
-import { fetchFilaActual } from '../api/turnosApi.js';
 
 
 const Dashboard = () => {
@@ -14,6 +13,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
 
+  // Cargar la fila desde la API
   useEffect(() => {
     fetch("http://127.0.0.1:8000/api/turnos/fila")
       .then(res => res.json())
@@ -21,15 +21,19 @@ const Dashboard = () => {
       .catch(e => setErr(e.message || "Error al cargar la fila"))
       .finally(() => setLoading(false));
   }, []);
-  
+
+  // Función para agregar un nuevo turno (puede llamarse desde formulario_turno)
+  const addNewTurnToQueue = (newTurn) => {
+    setFila(prevFila => [...prevFila, newTurn]);
+  };
 
   return (
     <AnimatePresence>
       <motion.div
         className="full-width-container"
-        initial={{ opacity: 0, x: 50 }}     // entra desde derecha
+        initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -50 }}       // sale hacia izquierda
+        exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
         <div className="hero-section">
@@ -43,6 +47,8 @@ const Dashboard = () => {
 
         <div className="container" style={{ marginTop: '-5rem', padding: '0' }}>
           <div className="row full-width-row g-3">
+
+            {/* Sección izquierda: acciones y CurrentTurnCard */}
             <div className="col-lg-8">
               <div className="card shadow-lg full-width-card">
                 <div className="card-body p-5">
@@ -64,7 +70,9 @@ const Dashboard = () => {
                         </button>
                       </div>
                     </div>
+
                     <div className="col-md-6">
+                      {/* Aquí puedes pasar un turno actual si lo tienes */}
                       <CurrentTurnCard />
                     </div>
                   </div>
@@ -72,6 +80,7 @@ const Dashboard = () => {
               </div>
             </div>
 
+            {/* Sección derecha: fila de turnos */}
             <div className="col-lg-4">
               <div className="card shadow-lg full-width-card">
                 <div className="card-body p-4">
@@ -85,9 +94,16 @@ const Dashboard = () => {
                     {!loading && !err && fila.length === 0 && (
                       <p className="text-muted">No hay turnos pendientes</p>
                     )}
-                    {fila.map(turn => (
-                      <QueueItem key={turn.turn_number} turn={turn} />
-                    ))}
+                    {/* Mostramos solo los 3 turnos más antiguos */}
+                    {!loading && !err && fila.length > 0 && 
+                      [...fila]  // hacemos una copia para no mutar el estado
+                        .sort((a, b) => a.turn_number - b.turn_number) // ordenar de más antiguo a más reciente
+                        .slice(0, 3)  // tomar solo los 3 más antiguos
+                        .map(turn => (
+                          <QueueItem key={turn.turn_number} turn={turn} />
+                        ))
+                    }
+
                   </div>
                 </div>
               </div>
