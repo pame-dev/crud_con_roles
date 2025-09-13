@@ -13,13 +13,18 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
       const data = await response.json();
 
       if (response.ok && data.turno) {
+        // Asegúrate de usar el campo correcto de tu API
         const mappedTurno = {
           turn_number: data.turno.ID_TURNO,
-          reason: `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
+          reason: data.turno.ID_AREA === 1
+            ? 'Reparación'
+            : `Pase al módulo: ${data.turno.ID_EMPLEADO}`, // solo si no es reparación
           name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
           priority: data.turno.PRIORIDAD || 'baja',
           started_at: data.turno.HORA,
+          isReparacion: data.turno.ID_AREA === 1, // para badge
         };
+
         setTurno(mappedTurno);
       } else {
         setTurno(null);
@@ -48,6 +53,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
         <div className="turn-number-display" style={{ fontSize: '35px' }}>
           #{turno.turn_number}
         </div>
+
         <div className="customer-name" style={{ fontSize: '20px' }}>
           {turno.reason}
         </div>
@@ -55,11 +61,12 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
         <div className="customer-name" style={{ fontSize: '15px' }}>
           {turno.name}
         </div>
+
         <div className="mb-3">
           <span className="badge bg-light text-dark fs-6">
             <Wrench size={14} className="me-1" />
             <span style={{ fontSize: '12px' }}>
-              {turno.reason === 'reparacion' ? 'Reparación' : 'Cotización'}
+              {turno.isReparacion ? 'Reparación' : 'Cotización'}
             </span>
           </span>
         </div>

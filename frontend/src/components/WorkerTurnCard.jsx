@@ -78,7 +78,7 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
                   </div>
                 </>
               ) : (
-                <p style={{ fontSize: '14px', color: '#d4c2c2ff' }}>No está atendiendo</p>
+                <p style={{ fontSize: '14px', color: '#d4c2c2ff' }}>no está atendiendo</p>
               )}
 
               {/* Botón fijo */}
