@@ -23,6 +23,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/turnos', [TurnController::class, 'store']);
     Route::get('/turnos/ultimo', [TurnController::class, 'ultimo']);
     Route::get('/turnos/historial', [TurnController::class, 'historial']);
+    Route::get('/turnos/en_atencion', [TurnController::class, 'enAtencion']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/empleados', [EmpleadoController::class, 'store']); // Ruta para crear empleados
     Route::get('/trabajadores/con-turno', [EmpleadoController::class, 'trabajadoresConTurno']);
