@@ -18,13 +18,19 @@ const VistaSuperadministrador = () => {
 
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
-    if (empleado) {
+    if (!empleado) {
+      navigate("/login", { replace: true });
+    } else {
       setNombreEmpleado(empleado.NOMBRE);
       setFiltro(empleado.CARGO.toLowerCase());
-    } else {
-      navigate("/login");
+      // 👇 Esto borra todo el historial anterior
+      window.history.pushState(null, "", window.location.href);
+      window.onpopstate = () => {
+        window.history.go(1); // Evita retroceder
+      };
     }
-  }, []);
+  }, [navigate]);
+
 
   const finalizarDia = () => {
     alert("Día finalizado, se limpiaron los turnos.");

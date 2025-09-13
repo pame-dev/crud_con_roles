@@ -21,14 +21,20 @@ const VistaGerente = () => {
   const [busqueda, setBusqueda] = useState(""); // 🔍 búsqueda
   const [vistaLista, setVistaLista] = useState(false);
 
-  // Obtener empleado del localStorage
+  //  Protegemos la vista y bloqueamos retroceso
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
-    if (empleado) {
+    if (!empleado) {
+      navigate("/login", { replace: true });
+    } else {
       setNombreEmpleado(empleado.NOMBRE);
       setFiltro(empleado.CARGO.toLowerCase()); // "reparacion" o "cotizacion"
-    } else {
-      navigate("/login");
+
+      //  Bloquear retroceso
+      window.history.pushState(null, "", window.location.href);
+      window.onpopstate = () => {
+        window.history.go(1);
+      };
     }
   }, [navigate]);
 

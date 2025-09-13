@@ -17,17 +17,22 @@ const VistaTrabajador = () => {
     const [historial, setHistorial] = useState([]);
     const [nombreEmpleado, setNombreEmpleado] = useState("");
 
-    // Obtener empleado del localStorage al cargar el componente
+    // Obtener empleado y bloquear botón atrás
     useEffect(() => {
       const empleado = JSON.parse(localStorage.getItem("empleado"));
-      if (empleado) {
+      if (!empleado) {
+        navigate("/login", { replace: true });
+      } else {
         setNombreEmpleado(empleado.NOMBRE);
         setFiltro(empleado.CARGO.toLowerCase());
-      } else {
-        // Si no hay empleado en storage, regresar al login
-        navigate("/login");
+      
+        // Bloquear retroceso
+        window.history.pushState(null, "", window.location.href);
+        window.onpopstate = () => {
+          window.history.go(1);
+        };
       }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
       if (!filtro) return; // Evitar consulta si no hay filtro todavía
