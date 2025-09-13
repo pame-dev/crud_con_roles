@@ -6,36 +6,35 @@ import './CurrentTurnCard.css';
 const CurrentTurnCard = ({ variant, onPasarTurno }) => {
   const [turno, setTurno] = useState(null);
 
-  // Función para traer el último turno desde la API
-  const fetchUltimoTurno = async () => {
+  // Función para traer el turno que está en atención
+  const fetchTurnoEnAtencion = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/turnos/ultimo'); // Ajusta la ruta
+      const response = await fetch('http://127.0.0.1:8000/api/turnos/en_atencion'); // Ajusta la ruta
       const data = await response.json();
 
       if (response.ok && data.turno) {
-        // Mapear campos del backend al formato que espera el componente
         const mappedTurno = {
           turn_number: data.turno.ID_TURNO,
-          reason: data.turno.ID_AREA === 1 ? 'reparacion' : 'cotizacion',
+          reason: `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
           name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
-          priority: data.turno.PRIORIDAD || 'baja', // si no hay campo prioridad, usa 'baja'
-          started_at: data.turno.HORA, // si quieres mostrar la hora real
+          priority: data.turno.PRIORIDAD || 'baja',
+          started_at: data.turno.HORA,
         };
         setTurno(mappedTurno);
       } else {
         setTurno(null);
       }
     } catch (error) {
-      console.error('Error al traer el último turno:', error);
+      console.error('Error al traer el turno en atención:', error);
       setTurno(null);
     }
   };
 
   useEffect(() => {
-    fetchUltimoTurno();
+    fetchTurnoEnAtencion();
 
-    // Opcional: refrescar cada 10 segundos
-    const interval = setInterval(fetchUltimoTurno, 10000);
+    // Refrescar cada 10 segundos
+    const interval = setInterval(fetchTurnoEnAtencion, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -45,24 +44,14 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
 
   return (
     <div className="current-turn-card h-100 position-relative flex-fill">
-      <div className="current-turn-badge d-flex align-items-center">
-        <Zap size={16} className="me-1" fill="currentColor" />
-        <span style={{ fontSize: '12px' }}>
-          {isSuperadmin
-            ? 'En atención'
-            : turno.priority === 'alta'
-            ? 'Alta Prioridad'
-            : 'Baja Prioridad'}
-        </span>
-      </div>
-
       <div className="text-center">
         <div className="turn-number-display" style={{ fontSize: '35px' }}>
           #{turno.turn_number}
         </div>
         <div className="customer-name" style={{ fontSize: '20px' }}>
-          {turno.reason === 'reparacion' ? 'Reparación' : 'Cotización'}
+          {turno.reason}
         </div>
+
         <div className="customer-name" style={{ fontSize: '15px' }}>
           {turno.name}
         </div>
@@ -85,14 +74,13 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
         </div>
       </div>
 
-      {/* botón solo para superadministrador */}
-      <div className="text-center mt-3">
-        {isSuperadmin && (
+      {isSuperadmin && (
+        <div className="text-center mt-3">
           <button className="btn btn-pasarturno" onClick={onPasarTurno}>
             <i className="fa-solid fa-circle-right"></i> Pasar turno
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

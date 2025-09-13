@@ -103,7 +103,17 @@ class TurnController extends Controller
     ]);
     }
 
-    
+    // app/Http/Controllers/TurnoController.php
+    public function enAtencion()
+    {
+        $turno = Turno::where('ESTATUS', 'En_atencion')->first(); // solo uno
+        if ($turno) {
+            return response()->json(['turno' => $turno], 200);
+        } else {
+            return response()->json(['turno' => null], 200);
+        }
+    }
+
     public function store(Request $request)
     {
         // Validar datos básicos
