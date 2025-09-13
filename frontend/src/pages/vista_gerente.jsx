@@ -1,11 +1,11 @@
+// src/pages/admin.jsx
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Wrench, Flag, Zap, ArrowLeft } from "../iconos";
-import CurrentTurnCard from '../components/CurrentTurnCard';
-import QueueItem from '../components/QueueItem';
-import StatusBadge from '../components/StatusBadge';
-import './pages-styles/admin.css';
+import { Flag, Zap, ArrowLeft } from "../iconos";
+import QueueItem from "../components/QueueItem";
+import StatusBadge from "../components/StatusBadge";
+import "./pages-styles/admin.css";
 import { List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 
@@ -13,16 +13,13 @@ const VistaGerente = () => {
   const navigate = useNavigate();
 
   const [turnos, setTurnos] = useState([]);
-  const [turnoActual, setTurnoActual] = useState(null);
   const [filtro, setFiltro] = useState("");
   const [historial, setHistorial] = useState([]);
   const [nombreEmpleado, setNombreEmpleado] = useState("");
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [busqueda, setBusqueda] = useState("");
+  const [busqueda, setBusqueda] = useState(""); // 🔍 búsqueda
   const [vistaLista, setVistaLista] = useState(false);
-  
-
 
   // Obtener empleado del localStorage
   useEffect(() => {
@@ -33,7 +30,7 @@ const VistaGerente = () => {
     } else {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   // Consultar turnos según el cargo
   useEffect(() => {
@@ -51,38 +48,11 @@ const VistaGerente = () => {
       .finally(() => setLoading(false));
   }, [filtro]);
 
-  
-
-  const siguienteTurno = () => {
-    
-    const siguiente = turnos.find(
-      (t) => t.status === "pendiente" && t.reason === filtro && t.priority === "alta"
-    );
-    if (siguiente) {
-      setTurnos(
-        turnos.map((t) =>
-          t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
-        )
-      );
-      if (turnoActual) {
-        setHistorial([...historial, { ...turnoActual, status: "completed" }]);
-      }
-      setTurnoActual(siguiente);
-    } else {
-      alert("No hay más turnos pendientes en " + filtro);
-    }
-  };
-
   const finalizarDia = () => {
-    if (turnoActual) setHistorial([...historial, { ...turnoActual, status: "completed" }]);
     setTurnos([]);
-    setTurnoActual(null);
+    setHistorial([]);
     alert("Día finalizado, se limpiaron los turnos.");
   };
-
-  const colaFiltrada = turnos.filter(
-    (t) => t.reason === filtro && t.status === "waiting"
-  );
 
   return (
     <div className="full-width-container">
@@ -90,10 +60,12 @@ const VistaGerente = () => {
       <div className="hero-section">
         <div className="container text-center">
           <h2 className="display-4 fw-bold mb-1">
-            {nombreEmpleado} - Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}
+            {nombreEmpleado} - Área de{" "}
+            {filtro === "reparacion" ? "Reparación" : "Cotización"}
           </h2>
           <p className="lead opacity-75">
-            Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
+            Área de gestión de turnos para{" "}
+            {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
           </p>
         </div>
       </div>
@@ -101,24 +73,17 @@ const VistaGerente = () => {
       {/* Contenido */}
       <div className="container" style={{ marginTop: "-3rem" }}>
         <div className="row full-width-row g-4">
-          {/* Turno en atención */}
+          {/* Turnos en atención */}
           <div className="col-md-8 mb-4">
             <div className="card shadow">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
-                  <Zap size={20} className="text-danger me-2" /> Turnos en Atención
+                  <Zap size={20} className="text-danger me-2" /> Turnos en
+                  Atención
                 </h4>
 
                 {/* Buscador + toggle vista */}
-                <div className="d-flex align-items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Buscar turno..."
-                    className="form-control form-control-sm"
-                    style={{ maxWidth: "200px" }}
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                  />
+                <div className="d-flex align-items-center gap-2">                  
                   <button
                     className="btn btn-outline-secondary btn-sm py-1 px-2"
                     onClick={() => setVistaLista(!vistaLista)}
@@ -134,20 +99,23 @@ const VistaGerente = () => {
                 className={vistaLista ? "turnos-list" : "turnos-grid"}
                 style={{ padding: "1rem" }}
               >
-                <WorkerTurnCard filtroBusqueda={filtro} mostrarCargo={false} />
-
+                {/* 🔍 Pasamos la búsqueda a WorkerTurnCard */}
+                <WorkerTurnCard
+                  filtroBusqueda={filtro}
+                  mostrarCargo={false}
+                  busqueda={busqueda}
+                />
               </div>
             </div>
           </div>
 
-
-
-          {/* Cola */}
+          {/* Cola de turnos */}
           <div className="col-md-4 mb-4">
             <div className="card shadow">
               <div className="card-body">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
+                  <Flag size={20} className="text-danger me-2" /> Fila Actual (
+                  {filtro})
                 </h4>
                 {loading && <p className="text-muted">Cargando...</p>}
                 {err && <p className="text-danger">{err}</p>}
@@ -155,6 +123,7 @@ const VistaGerente = () => {
                   <p className="text-muted">No hay turnos pendientes</p>
                 )}
 
+                {/* ✅ Aquí ya NO aplicamos el filtro de búsqueda */}
                 {turnos.map((turn) => (
                   <QueueItem key={turn.turn_number} turn={turn} />
                 ))}
@@ -170,7 +139,9 @@ const VistaGerente = () => {
 // Historial
 export const HistorialTurnos = () => {
   const navigate = useNavigate();
-  const [historial] = useState(JSON.parse(localStorage.getItem("historial")) || []);
+  const [historial] = useState(
+    JSON.parse(localStorage.getItem("historial")) || []
+  );
 
   return (
     <div className="container mt-4">
@@ -178,7 +149,8 @@ export const HistorialTurnos = () => {
       {historial.length > 0 ? (
         historial.map((t) => (
           <div key={t.turn_number} className="card mb-2 p-2">
-            #{t.turn_number} - {t.name} ({t.reason}) - <StatusBadge status={t.status} />
+            #{t.turn_number} - {t.name} ({t.reason}) -{" "}
+            <StatusBadge status={t.status} />
           </div>
         ))
       ) : (
