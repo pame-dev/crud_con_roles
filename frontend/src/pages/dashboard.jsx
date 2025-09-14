@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Wrench, Calendar, Clock, PlayCircle, CheckCircle, Flag, Zap, AlertTriangle } from '../iconos';
 import CurrentTurnCard from '../components/CurrentTurnCard';
 import QueueItem from '../components/QueueItem';
+import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,6 +13,8 @@ const Dashboard = () => {
   const [fila, setFila] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+
+  const [diaFinalizado] = useDiaFinalizado();
 
   // Cargar la fila desde la API
   useEffect(() => {
@@ -65,6 +68,7 @@ const Dashboard = () => {
                         <button
                           className="btn btn-primary w-100"
                           onClick={() => navigate('/formulario_turno')}
+                          disabled={diaFinalizado}
                         >
                           Agendar Ahora
                         </button>
