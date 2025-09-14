@@ -5,6 +5,7 @@ import { Zap, ArrowLeft } from "../iconos";
 import { List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard"; 
 import StatusBadge from "../components/StatusBadge";
+import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
 import "./pages-styles/superadmin.css";
 
 const VistaSuperadministrador = () => {
@@ -15,6 +16,8 @@ const VistaSuperadministrador = () => {
   const [nombreEmpleado, setNombreEmpleado] = useState("");
   const [vistaLista, setVistaLista] = useState(false);
   const [busqueda, setBusqueda] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
 
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
@@ -32,9 +35,23 @@ const VistaSuperadministrador = () => {
   }, [navigate]);
 
 
-  const finalizarDia = () => {
-    alert("Día finalizado, se limpiaron los turnos.");
-    setHistorial([]);
+  const toggleDia = () => {
+    if (diaFinalizado) {
+      // Iniciar nuevo día usando el mismo botón
+      setDiaFinalizado(false);
+      alert("Se inició un nuevo día. Ahora se pueden agendar turnos.");
+    } else {
+      // Finalizar día
+      setShowModal(true);
+    }
+  };
+
+  //función para finalizar el día
+  const confirmarFinalizar = () => {
+    setDiaFinalizado(true);
+    //setHistorial([]);
+    setShowModal(false);
+    alert("Día finalizado");
   };
 
   return (
@@ -84,11 +101,16 @@ const VistaSuperadministrador = () => {
 
               </div>
 
+              {/* Botón para finalizar el día */}
               <div className="text-center mt-3 mb-5">
-                <button className="btn btn-custom" onClick={finalizarDia}>
-                  Finalizar Día
+                <button
+                  className={`btn ${diaFinalizado ? "btn-success" : "btn-danger"}`}
+                  onClick={toggleDia}
+                >
+                  {diaFinalizado ? "Iniciar Nuevo Día" : "Finalizar Día"}
                 </button>
-                <button className="btn btn-custom" onClick={() => navigate("/historial")}>
+
+                <button className="btn btn-custom ms-2" onClick={() => navigate("/historial")}>
                   Historial
                 </button>
               </div>
@@ -96,6 +118,31 @@ const VistaSuperadministrador = () => {
           </div>
         </div>
       </div>
+
+      {/* Modal de confirmación */}
+      {showModal && !diaFinalizado && (
+        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Confirmar acción</h5>
+                <button type="button" className="btn-close" onClick={() => setShowModal(false)} />
+              </div>
+              <div className="modal-body">
+                <p>¿Seguro que deseas finalizar el día? </p>
+              </div>
+              <div className="modal-footer">
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                  Cancelar
+                </button>
+                <button className="btn btn-danger" onClick={confirmarFinalizar}>
+                  Confirmar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
