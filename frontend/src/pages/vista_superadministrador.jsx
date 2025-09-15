@@ -92,15 +92,6 @@ const VistaSuperadministrador = () => {
                 </div>
               </div>
 
-              {/* Contenedor dinámico */}
-              <div
-                className={vistaLista ? "turnos-list" : "turnos-grid"}
-                style={{ padding: "1rem" }}
-              >
-                <WorkerTurnCard filtroBusqueda={busqueda} mostrarCargo={true} />
-
-              </div>
-
               {/* Botón para finalizar el día */}
               <div className="text-center mt-3 mb-5">
                 <button
@@ -110,10 +101,31 @@ const VistaSuperadministrador = () => {
                   {diaFinalizado ? "Iniciar Nuevo Día" : "Finalizar Día"}
                 </button>
 
-                <button className="btn btn-custom ms-2" onClick={() => navigate("/historial")}>
+                <button
+                  className="btn btn-custom ms-2"
+                  onClick={() => navigate("/historial")}
+                >
                   Historial
                 </button>
+
+                {/* Nuevo botón Administrar */}
+                <button
+                  className="btn btn-custom ms-2"
+                  onClick={() => navigate("/administrar_empleados")}
+                >
+                  Administrar 
+                </button>
               </div>
+
+              {/* Contenedor dinámico */}
+              <div
+                className={vistaLista ? "turnos-list" : "turnos-grid"}
+                style={{ padding: "1rem" }}
+              >
+                <WorkerTurnCard filtroBusqueda={busqueda} mostrarCargo={true} />
+
+              </div>
+
             </div>
           </div>
         </div>
