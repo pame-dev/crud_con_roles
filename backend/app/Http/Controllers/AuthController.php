@@ -2,6 +2,9 @@
 namespace App\Http\Controllers;
 use App\Models\Empleado;
 use Illuminate\Http\Request; // ← Esto importa correctamente Request
+use Illuminate\Support\Facades\Mail;
+use App\Mail\RecuperarContrasenaMail;
+
 
 // Controlador encargado de la autenticación de empleados.
 // Valida el usuario y contraseña recibidos desde el frontend
@@ -26,5 +29,28 @@ class AuthController extends Controller
             'CONTRASENA' => $user->CONTRASENA,
             'NOMBRE' => $user->NOMBRE
         ]);
+    }
+    // NUEVO MÉTODO: Maneja la solicitud de restablecimiento de contraseña
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email'
+        ]);
+
+        $code = rand(100000, 999999);
+
+        try {
+            Mail::to($request->email)->send(new RecuperarContrasenaMail($request->email, $code));
+
+            return response()->json([
+                'message' => 'Código enviado al correo ' . $request->email,
+                // ⚠️ Solo en desarrollo, en producción NO devuelvas el código
+                'code' => $code
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
