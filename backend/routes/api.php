@@ -31,5 +31,4 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     Route::post('/verify-code', [AuthController::class, 'verifyCode']);
 
-
 });
