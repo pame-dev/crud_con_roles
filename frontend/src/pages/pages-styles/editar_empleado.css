@@ -1,0 +1,49 @@
+.editar-empleado {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.editar-empleado-title {
+  font-weight: 700;
+  color: #b30000;
+}
+
+.editar-empleado-form {
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+.editar-empleado .form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.editar-empleado .form-control {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.editar-empleado .form-control:focus {
+  border-color: #b30000;
+  box-shadow: 0 0 4px rgba(179, 0, 0, 0.4);
+}
+
+.editar-empleado .btn-success {
+  background-color: #28a745;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  transition: 0.2s;
+}
+
+.editar-empleado .btn-success:hover {
+  background-color: #218838;
+}
+
+.editar-empleado-loading,
+.editar-empleado-error {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 2rem;
+}

@@ -20,6 +20,8 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::get('/empleados/{id}', [EmpleadoController::class, 'show']);
     Route::get('/empleados/cargo/{cargo}', [EmpleadoController::class, 'porCargo']);
+    Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy']);
+    Route::put('/empleados/{id}', [EmpleadoController::class, 'update']);
     Route::post('/turnos', [TurnController::class, 'store']);
     Route::get('/turnos/ultimo', [TurnController::class, 'ultimo']);
     Route::get('/turnos/historial', [TurnController::class, 'historial']);
@@ -32,4 +34,5 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/verify-code', [AuthController::class, 'verifyCode']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/turnos/pasar', [TurnController::class, 'pasarTurno']);
+    Route::delete('/turnos/{id}', [TurnController::class, 'destroy']); // ruta para eliminar turnos
 });
