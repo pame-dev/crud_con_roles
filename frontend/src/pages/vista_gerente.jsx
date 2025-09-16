@@ -116,23 +116,25 @@ const VistaGerente = () => {
           </div>
 
           {/* Cola de turnos */}
-          <div className="col-md-4 mb-4">
-            <div className="card shadow">
-              <div className="card-body">
+          <div className="col-lg-4">
+            <div className="card shadow-lg full-width-card">
+              <div className="card-body p-4">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
                   <Flag size={20} className="text-danger me-2" /> Fila Actual (
                   {filtro})
                 </h4>
-                {loading && <p className="text-muted">Cargando...</p>}
-                {err && <p className="text-danger">{err}</p>}
-                {!loading && !err && turnos.length === 0 && (
-                  <p className="text-muted">No hay turnos pendientes</p>
-                )}
+                <div className="d-flex flex-column gap-3">
+                  {loading && <p className="text-muted">Cargando...</p>}
+                  {err && <p className="text-danger">{err}</p>}
+                  {!loading && !err && turnos.length === 0 && (
+                    <p className="text-muted">No hay turnos pendientes</p>
+                  )}
 
-                {/* ✅ Aquí ya NO aplicamos el filtro de búsqueda */}
-                {turnos.map((turn) => (
-                  <QueueItem key={turn.turn_number} turn={turn} />
-                ))}
+                  {/* ✅ Aquí ya NO aplicamos el filtro de búsqueda */}
+                  {turnos.map((turn) => (
+                    <QueueItem key={turn.turn_number} turn={turn} />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
