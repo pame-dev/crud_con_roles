@@ -16,3 +16,17 @@ export async function fetchFilaActual(options = {}) {
   return res.json();
 }
 
+
+export async function pasarTurno(empleadoId, cargo, options = {}) {
+  const res = await fetch("http://127.0.0.1:8000/api/turnos/pasar", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ empleado_id: empleadoId, cargo }),
+    ...options,
+  });
+
+  if (!res.ok) throw new Error("Error al pasar turno");
+  return res.json();
+}
+
+

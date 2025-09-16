@@ -29,6 +29,6 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/trabajadores/con-turno', [EmpleadoController::class, 'trabajadoresConTurno']);
     Route::get('/turnos/fila', [TurnController::class, 'filaActual']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-
+    Route::post('/turnos/pasar', [TurnController::class, 'pasarTurno']);
 
 });

@@ -2,9 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Wrench, Clock } from '../iconos';
 import { ArrowRightCircle } from "lucide-react"; 
 import './CurrentTurnCard.css';
+import { pasarTurno } from "../api/turnosApi"; // Importa la función pasarTurno
+
 
 const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
   const [trabajadores, setTrabajadores] = useState([]);
+  const [turnoEnProceso, setTurnoEnProceso] = useState(null); // ID del trabajador cuyo turno se está pasando
 
   // Función para traer trabajadores
   const fetchTrabajadores = async () => {
@@ -32,6 +35,24 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
   );
 
   if (!trabajadoresFiltrados.length) return <p>No hay trabajadores que coincidan.</p>;
+
+
+  
+  // Función para pasar turno
+  const handlePasarTurno = async (idEmpleado, cargo) => {
+    setTurnoEnProceso(idEmpleado); // activar mensaje
+    try {
+      await pasarTurno(idEmpleado, cargo);
+      await fetchTrabajadores(); // refrescar lista si quieres
+    } catch (err) {
+      console.error("Error al pasar turno:", err);
+    } finally {
+      setTurnoEnProceso(null); // quitar mensaje
+    }
+  };
+
+
+
 
   return (
     <>
@@ -78,13 +99,17 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
                   </div>
                 </>
               ) : (
-                <p style={{ fontSize: '14px', color: '#d4c2c2ff' }}>no está atendiendo</p>
+                <p style={{ fontSize: '14px', color: '#d4c2c2ff' }}>
+                  {turnoEnProceso === t.ID_EMPLEADO ? "Pasando de turno..." : "no está atendiendo"}
+                </p>
               )}
 
               {/* Botón fijo */}
               <div className="worker-footer mt-3">
-                <button className="btn-pass-turn">
-                  <ArrowRightCircle size={18} className="me-2" />
+                <button
+                  className="btn-pass-turn"
+                  onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
+                >
                   Pasar turno
                 </button>
               </div>
