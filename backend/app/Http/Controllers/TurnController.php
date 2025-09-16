@@ -161,4 +161,47 @@ class TurnController extends Controller
             'turno' => $nuevoTurno,
         ]);
     }
+
+    public function pasarTurno(Request $request)
+    {
+        $empleadoId = $request->input('empleado_id');
+        $cargo = strtolower($request->input('cargo')); // opcional, para filtrar cola
+
+        // 1. Marcar como atendido el turno actual de ese empleado
+        $turnoActual = Turno::where('ID_EMPLEADO', $empleadoId)
+            ->where('ESTATUS', 'En_atencion')
+            ->first();
+
+        if ($turnoActual) {
+            $turnoActual->ESTATUS = 'Atendido';
+            $turnoActual->save();
+        }
+
+        // 2. Buscar siguiente en la cola
+        $query = Turno::where('ESTATUS', 'Pendiente');
+
+        if ($cargo === 'reparacion') {
+            $query->where('ID_AREA', 1);
+        } elseif ($cargo === 'cotizacion') {
+            $query->where('ID_AREA', 2);
+        }
+
+        $siguiente = $query->orderBy('FECHA', 'asc')
+            ->orderBy('HORA', 'asc')
+            ->first();
+
+        // 3. Asignarlo al empleado
+        if ($siguiente) {
+            $siguiente->ID_EMPLEADO = $empleadoId;
+            $siguiente->ESTATUS = 'En_atencion';
+            $siguiente->save();
+        }
+
+        return response()->json([
+            'success' => true,
+            'turno_atendido' => $turnoActual,
+            'nuevo_turno' => $siguiente,
+        ]);
+    }
+
 }
