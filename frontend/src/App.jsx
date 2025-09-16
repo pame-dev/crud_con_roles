@@ -24,6 +24,7 @@ import RegisterGerentes from './pages/register_gerentes_y_trabajadores';
 import RegisterTrabajadores from './pages/register_trabajadores';
 import AdministrarEmpleados from "./pages/administrar_empleados";
 import RequireRoleLocal from "./pages/RequireRoleLocal";
+import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -67,6 +68,7 @@ const PitLineApp = () => {
             <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
             <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
             <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
+            <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
           </Routes>
         </AppLayout>
       </Router>
