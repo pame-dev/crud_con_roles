@@ -1,16 +1,11 @@
 <?php
 namespace App\Http\Controllers;
+
 use App\Models\Empleado;
-use Illuminate\Http\Request; // ← Esto importa correctamente Request
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RecuperarContrasenaMail;
 use Illuminate\Support\Facades\DB;
-
-
-
-// Controlador encargado de la autenticación de empleados.
-// Valida el usuario y contraseña recibidos desde el frontend
-// y devuelve los datos del empleado en formato JSON si son correctos.
 
 class AuthController extends Controller
 {
@@ -22,7 +17,6 @@ class AuthController extends Controller
             return response()->json(['error' => 'Usuario o contraseña incorrectos'], 401);
         }
 
-        
         return response()->json([
             'ID_EMPLEADO' => $user->ID_EMPLEADO,
             'ID_ROL' => $user->ID_ROL,
@@ -32,7 +26,8 @@ class AuthController extends Controller
             'NOMBRE' => $user->NOMBRE
         ]);
     }
-    // NUEVO MÉTODO: Maneja la solicitud de restablecimiento de contraseña
+
+    // 1️⃣ Solicitar código
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -41,33 +36,24 @@ class AuthController extends Controller
 
         $code = rand(100000, 999999);
 
-        try {
-            // ✅ Guardar o actualizar el código en la tabla password_resets
-            DB::table('password_resets')->updateOrInsert(
-                ['email' => $request->email],
-                ['token' => $code, 'created_at' => now()]
-            );
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $code, 'created_at' => now()]
+        );
 
-            // Enviar correo con el código
-            Mail::to($request->email)->send(new RecuperarContrasenaMail($request->email, $code));
+        Mail::to($request->email)->send(new RecuperarContrasenaMail($request->email, $code));
 
-            return response()->json([
-                'message' => 'Código enviado al correo ' . $request->email
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'message' => 'Código enviado al correo ' . $request->email
+        ]);
     }
 
-
+    // 2️⃣ Verificar código (solo validación)
     public function verifyCode(Request $request)
     {
         $request->validate([
             'email' => 'required|email',
             'code'  => 'required|digits:6',
-            'new_password' => 'required|min:6'
         ]);
 
         $record = DB::table('password_resets')->where('email', $request->email)->first();
@@ -79,19 +65,45 @@ class AuthController extends Controller
         if ($record->token != $request->code) {
             return response()->json(['error' => 'Código incorrecto'], 401);
         }
+
         if (now()->diffInMinutes($record->created_at) > 15) {
             return response()->json(['error' => 'Código expirado'], 401);
         }
 
-        // Actualizar la contraseña del empleado
-        Empleado::where('CORREO', $request->email)->update([
-            'CONTRASENA' => $request->new_password
+        return response()->json(['message' => 'Código válido']);
+    }
+
+    // 3️⃣ Restablecer contraseña
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email'        => 'required|email',
+            'code'         => 'required|digits:6',
+            'new_password' => 'required|min:8'
         ]);
 
-        // Opcional: borrar el registro del código
+        $record = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('token', $request->code)
+            ->first();
+
+        if (!$record) {
+            return response()->json(['error' => 'Código inválido'], 400);
+        }
+
+        $user = Empleado::where('CORREO', $request->email)->first();
+        if (!$user) {
+            return response()->json(['error' => 'Usuario no encontrado'], 404);
+        }
+
+        // ⚠️ Si quieres encriptar: usa bcrypt
+        Empleado::where('CORREO', $request->email)->update([
+        'CONTRASENA' => $request->new_password
+    ]);
+
+        // Borrar el token usado
         DB::table('password_resets')->where('email', $request->email)->delete();
 
         return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
-
 }
