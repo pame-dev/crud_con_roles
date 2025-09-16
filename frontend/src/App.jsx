@@ -26,6 +26,7 @@ import AdministrarEmpleados from "./pages/administrar_empleados";
 import RequireRoleLocal from "./pages/RequireRoleLocal";
 import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
+import EditarEmpleado from './pages/editar_empleado';
 
 
 // Layout condicional
@@ -72,6 +73,8 @@ const PitLineApp = () => {
             <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
             <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
             <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
+            <Route path='/editar_empleado' element={<EditarEmpleado />} />
+            <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
           </Routes>
         </AppLayout>
       </Router>
