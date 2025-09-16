@@ -59,4 +59,38 @@ class EmpleadoController extends Controller
         
         return response()->json($trabajadores);
     }
+
+    // NUEVO MÉTODO: eliminar empleado
+    public function destroy($id)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+        // Eliminar turnos asociados antes de eliminar el empleado
+        $empleado->turnos()->delete();
+
+        $empleado->delete();
+        return response()->json(['message' => 'Empleado eliminado correctamente']);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
+        $empleado->update([
+            'NOMBRE'     => $request->nombre,
+            'CORREO'     => $request->correo,
+            'CARGO'      => $request->cargo,
+            'ID_ROL'     => $request->id_rol,
+        ]);
+
+        return response()->json([
+            'message' => 'Empleado actualizado correctamente',
+            'empleado' => $empleado
+        ]);
+    }
 }
