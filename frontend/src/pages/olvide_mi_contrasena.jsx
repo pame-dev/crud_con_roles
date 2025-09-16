@@ -3,6 +3,8 @@ import React, { useState, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import "./pages-styles/login.css";
+import ReestablecerContrasena from "./reestablecer_contrasena";
+
 
 const OlvideMiContrasena = () => {
   const [form, setForm] = useState({
@@ -11,6 +13,7 @@ const OlvideMiContrasena = () => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [step, setStep] = useState("email");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -37,6 +40,7 @@ const OlvideMiContrasena = () => {
       });
 
       setSuccess(response.data.message || "Se envió un código a tu correo.");
+      setStep("code");
     } catch (err) {
       setError(err.response?.data?.error || "No se pudo enviar el correo.");
     } finally {
@@ -61,46 +65,54 @@ const OlvideMiContrasena = () => {
               </div>
               <h1 className="title">Recuperar contraseña</h1>
 
-              <form onSubmit={onSubmit} className="login-form" noValidate>
-                <label className="input-group">
-                  <span className="icon">
-                    <i className="fa-solid fa-envelope"></i>
-                  </span>
-                  <input
-                    type="email"
-                    name="user"
-                    placeholder="Correo"
-                    value={form.user}
-                    onChange={handleChange}
-                    required
-                    autoComplete="email"
-                  />
-                </label>
+              
+              {step === "email" && (
+  <form onSubmit={onSubmit} className="login-form" noValidate>
+    <label className="input-group">
+      <span className="icon">
+        <i className="fa-solid fa-envelope"></i>
+      </span>
+      <input
+        type="email"
+        name="user"
+        placeholder="Correo"
+        value={form.user}
+        onChange={handleChange}
+        required
+        autoComplete="email"
+      />
+    </label>
 
-                <button
-                  className="btn-primary"
-                  type="submit"
-                  disabled={!isValid || submitting}
-                >
-                  {submitting ? (
-                    <>
-                      <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
-                    </>
-                  ) : (
-                    <>
-                      <i className="fa-solid fa-paper-plane"></i> Enviar código
-                    </>
-                  )}
-                </button>
+    <button
+      className="btn-primary"
+      type="submit"
+      disabled={!isValid || submitting}
+    >
+      {submitting ? (
+        <>
+          <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
+        </>
+      ) : (
+        <>
+          <i className="fa-solid fa-paper-plane"></i> Enviar código
+        </>
+      )}
+    </button>
 
-                {error && <p className="error-msg">{error}</p>}
-                {success && <p className="success-msg">{success}</p>}
-              </form>
-            </section>
-          </main>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+    {error && <p className="error-msg">{error}</p>}
+    {success && <p className="success-msg">{success}</p>}
+  </form>
+)}
+
+{step === "code" && (
+  <ReestablecerContrasena email={form.user} />
+)}
+
+        </section>
+      </main>
+    </div>
+  </motion.div>
+</AnimatePresence>
   );
 };
 
