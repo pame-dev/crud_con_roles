@@ -1,0 +1,164 @@
+.navbar-nav .nav-link {
+    border-radius: 0.5rem;
+    margin: 0 0.25rem;
+    transition: all 0.2s ease;
+    color: rgba(255, 255, 255, 0.8) !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+}
+          
+.navbar-nav .nav-link.active {
+    background-color: #dc3545;
+    color: white !important;
+}
+          
+.navbar-nav .nav-link:hover {
+    background-color: rgba(220, 53, 69, 0.3);
+    color: white !important;
+}
+          
+.navbar-brand {
+    text-decoration: none !important;
+}
+          
+.btn-login {
+    white-space: nowrap;
+}
+          
+.logo-image {
+    width: 100px;
+    height: 70px;
+    object-fit: contain;
+    margin-right: 0.75rem;
+}
+
+/* Estilos personalizados para el modal */
+.custom-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1050;
+}
+
+.custom-modal {
+    position: absolute;
+    top: 60px; /* Ajusta según el tamaño del botón de perfil */
+    right: 20px; /* Ajusta margen derecho */
+    background: #fff;
+    border-radius: 16px;
+    width: 350px;
+    overflow: hidden;
+    box-shadow:  0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
+    animation: modalFade 0.3s ease-in-out;
+}
+
+/* Encabezado con fondo rojo-naranja */
+.modal-header-profile {
+    background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+}
+
+.profile-name {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.profile-email {
+    font-size: 0.9rem;
+    opacity: 0.85;
+    margin: 0;
+}
+
+/* Opciones */
+.modal-options {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-label {
+    display: block;
+    font-size: 0.7rem; /* más pequeño */
+    color: #888;       /* gris suave */
+    font-weight: 500;
+    line-height: 1.1;
+    margin-bottom: 2px;
+}
+
+.content-profile-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.profile-row {
+    background: #fff5f0; /* Fondo suave */
+    padding: 8px 12px;
+    border-radius: 8px;
+    width: 90%;
+}
+
+.profile-data {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.edit-btn {
+    margin-left: 8px; /* separación del recuadro */
+    background: #ff4e4e;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.edit-btn:hover {
+    background: #e63d3d;
+}
+
+
+/* Footer del modal*/
+.modal-footer-profile {
+    padding: 15px;
+    border-top: 1px solid #eee;
+    text-align: center;
+}
+
+.logout-btn {
+    background: #ff4e4e;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.logout-btn:hover {
+    background: #e63d3d;
+}
+
+/* Animación */
+@keyframes modalFade {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
