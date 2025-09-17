@@ -2,17 +2,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import './pages-styles/formulario_turno.css';
-
-<link 
-  rel="stylesheet" 
-  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-></link>
+import { jsPDF } from "jspdf";
+import logoImg from "../assets/logo-fondo-negro.png";
 
 const FormularioTurno = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     nombre: '',
-    apellido: '',
+    apellidos: '',
     telefono: '',
     area: ''
   });
@@ -25,32 +22,117 @@ const FormularioTurno = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validación básica
-    if (!formData.nombre || !formData.apellido || !formData.telefono || !formData.area) {
+
+    if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.area) {
       alert("Por favor completa todos los campos obligatorios.");
       return;
     }
 
-    // Simular descarga del comprobante
-    const link = document.createElement("a");
-    link.href = "/docs/mi_turno.pdf";
-    link.download = "mi_turno.pdf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    alert("Turno solicitado con éxito. Se descargó tu comprobante.");
-    
-    // Redirigir después de la descarga
-    navigate("/dashboard"); 
+    try {
+      // Mapear área a ID
+      const areaMap = { rep: 1, cot: 2 };
+
+      // Obtener fecha y hora actuales ajustadas a Ciudad de México
+      const ahora = new Date();
+      const opciones = { timeZone: 'America/Mexico_City' };
+      
+      // Formatear fecha como YYYY-MM-DD
+      const fecha = ahora.toLocaleDateString('en-CA', opciones); // Formato ISO (YYYY-MM-DD)
+      
+      // Formatear hora como HH:MM:SS
+      const hora = ahora.toLocaleTimeString('es-MX', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'America/Mexico_City'
+      });
+
+      console.log("Fecha:", fecha, "Hora:", hora);
+
+      const response = await fetch("http://127.0.0.1:8000/api/turnos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({
+          ID_AREA: areaMap[formData.area],
+          NOMBRE: formData.nombre,
+          APELLIDOS: formData.apellidos,
+          TELEFONO: formData.telefono,
+          FECHA: fecha,
+          HORA: hora
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Crear PDF tipo boleto
+        const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: [250, 400] });
+
+        // Borde tipo boleto
+        doc.setDrawColor(0);
+        doc.setLineWidth(1.5);
+        doc.roundedRect(10, 10, 230, 380, 10, 10, 'S');
+
+        // Encabezado oscuro con borde redondeado
+        doc.setFillColor(30, 30, 30);
+        doc.roundedRect(10, 10, 230, 60, 10, 10, 'F'); 
+
+        // Logo
+        const img = new Image();
+        img.src = logoImg;
+        img.onload = function() {
+          doc.addImage(img, 'PNG', 20, 15, 40, 40);
+
+          // Texto encabezado separado del logo
+          doc.setFontSize(14);
+          doc.setTextColor(255, 255, 255);
+          doc.setFont("helvetica", "bold");
+          doc.text("Comprobante de Turno", 140, 55, { align: "center" });
+
+          // Datos del turno más abajo
+          doc.setFontSize(12);
+          doc.setTextColor(0);
+          doc.setFont("helvetica", "normal");
+          const startY = 120;
+          const lineHeight = 20;
+          doc.text(`Turno: ${data.turno}`, 20, startY);
+          doc.text(`Nombre: ${formData.nombre} ${formData.apellidos}`, 20, startY + lineHeight);
+          doc.text(`Teléfono: ${formData.telefono}`, 20, startY + 2*lineHeight);
+          doc.text(`Área: ${formData.area === "rep" ? "Reparación" : "Cotización"}`, 20, startY + 3*lineHeight);
+          doc.text(`Fecha: ${fecha}`, 20, startY + 4*lineHeight);
+          doc.text(`Hora: ${hora}`, 20, startY + 5*lineHeight);
+
+          // Línea punteada tipo perforación
+          doc.setLineWidth(0.5);
+          doc.setDrawColor(150);
+          doc.setLineDash([2, 2], 0);
+          doc.line(20, startY + 6*lineHeight, 230, startY + 6*lineHeight);
+
+          // Pie de página
+          doc.setLineDash([], 0);
+          doc.setFontSize(10);
+          doc.text("Gracias por confiar en nosotros", 125, 360, { align: "center" });
+
+          // Guardar PDF
+          doc.save(`Turno_${data.turno}.pdf`);
+        };
+
+        alert(`Turno solicitado con éxito. Tu turno es: ${data.turno}`);
+        navigate("/");
+      } else {
+        alert("Error al solicitar turno: " + (data.message || "Intenta de nuevo."));
+      }
+
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Hubo un error de conexión con el servidor.");
+    }
   };
 
-  const handleCancel = () => {
-    navigate("/");
-  };
+  const handleCancel = () => navigate("/");
 
   return (
     <div className="formulario-compact-container">
@@ -83,10 +165,10 @@ const FormularioTurno = () => {
               <input 
                 type="text" 
                 className="form-compact-control" 
-                name="apellido"
-                value={formData.apellido}
+                name="apellidos"
+                value={formData.apellidos}
                 onChange={handleChange}
-                placeholder="Apellido" 
+                placeholder="Apellidos" 
                 required
               />
             </div>

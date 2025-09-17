@@ -1,0 +1,70 @@
+/* Contenedor principal */
+.administrar-page {
+  margin-top: 4rem;
+  padding-bottom: 3rem;
+}
+
+/* Título */
+.administrar-title {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+/* Card de empleado */
+.empleado-card {
+  border-radius: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: #f9f9f9dc;
+}
+
+.empleado-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Botones de acción (editar / eliminar) */
+.icon-btn {
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.icon-btn:hover {
+  background: #f0f0f0;
+}
+
+/* Botón agregar */
+.add-btn {
+  border-radius: 8px;
+  padding: 0.6rem 1.5rem;
+}
+
+/* Contenedor: botón izquierda + título centrado + spacer derecha */
+.header-with-back{
+  display: flex;
+  align-items: center;
+  justify-content: center;     /* centra el conjunto */
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.375rem 0.75rem;  /* igual a Bootstrap btn */
+  font-size: 1rem;
+  border-radius: 0.375rem;   /* mismo radio que Iniciar sesión */
+}
+
+.back-btn-spacer {
+  width: 200px;   /* mismo ancho aprox que el botón de iniciar sesión */
+  height: 1px;
+}
+

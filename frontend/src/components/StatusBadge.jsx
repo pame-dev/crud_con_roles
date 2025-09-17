@@ -5,9 +5,9 @@ import { Clock, PlayCircle, CheckCircle, AlertTriangle } from '../iconos';
 
 const StatusBadge = ({ status, priority }) => {
   const statusConfig = {
-    waiting: { color: 'warning', text: 'En Espera', icon: <Clock size={12} /> },
-    in_progress: { color: 'primary', text: 'En Proceso', icon: <PlayCircle size={12} /> },
-    completed: { color: 'success', text: 'Completado', icon: <CheckCircle size={12} /> }
+    pendiente: { color: 'warning', text: 'En Espera', icon: <Clock size={12} /> },
+    en_atencion: { color: 'primary', text: 'En Proceso', icon: <PlayCircle size={12} /> },
+    completado: { color: 'success', text: 'Completado', icon: <CheckCircle size={12} /> }
   };
   
   const config = statusConfig[status];
