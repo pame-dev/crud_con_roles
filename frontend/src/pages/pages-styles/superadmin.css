@@ -63,3 +63,65 @@
   background-color: #e93838;
   color: white;
 }
+
+/* contenedor centrado y del tamaño justo del grupo */
+.acciones-centradas{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;              /* separación entre botones */
+  width: fit-content;     /* no ocupa todo el ancho */
+}
+
+/* tamaño compacto consistente (como tu maqueta) */
+.btn-compacto{
+  display: inline-block;
+  min-width: 140px;       /* prueba 130–160 según veas */
+  padding: 8px 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+/* Contenedor: botón izquierda + título centrado + spacer derecha */
+.header-with-back{
+  display: flex;
+  align-items: center;
+  justify-content: center;     /* centra el conjunto */
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+/* El spacer equilibra el ancho del botón para mantener el título centrado */
+.back-btn-spacer{
+  width: 38px;                 /* parecido al ancho del botón */
+  height: 1px;                 /* no visible */
+}
+
+/* Botón redondo sutil */
+.back-btn{
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+/* Título grande centrado (opcional unifica estilos) */
+.titulo-seccion{
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.35);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  margin: 0;
+}
+
+
+/* responsivo en pantallas chicas */
+@media (max-width: 576px){
+  .btn-compacto{
+    min-width: 120px;
+    padding: 7px 14px;
+    font-size: 0.9rem;
+  }
+}
+

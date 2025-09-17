@@ -1,7 +1,7 @@
 // src/pages/administrar_empleados.jsx
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Edit, Trash2 } from "../iconos";
+import { Edit, Trash2, ArrowLeft } from "../iconos";
 import { getCurrentUserRole } from "../hooks/auth";
 import "./pages-styles/administrar_empleados.css";
 
@@ -13,6 +13,17 @@ export default function AdministrarEmpleados() {
     ? "/register_gerentes_y_trabajadores"
     : "/register_trabajadores";
   const [empleados, setEmpleados] = useState([]);
+
+  const empleado = JSON.parse(localStorage.getItem("empleado") || "null");
+  const fallback = (empleado?.ROL || "").toLowerCase() === "superadmin"
+    ? "/vista_superadministrador"
+    : "/vista_gerente";
+
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate(fallback, { replace: true });
+  };
+
   
   // Función para eliminar empleado
   const handleDelete = (id) => {
@@ -59,7 +70,21 @@ export default function AdministrarEmpleados() {
 
   return (
     <div className="container py-5 administrar-page">
-      <h2 className="text-center administrar-title">Administración de empleados</h2>
+      <div className="header-with-back">
+        <button
+          className="btn btn-danger fw-bold back-btn"
+          onClick={() => navigate(-1)}
+          title="Regresar"
+          aria-label="Regresar"
+        >
+          <ArrowLeft size={20} />
+        </button>
+
+        <h2 className="titulo-seccion">ADMINISTRACIÓN DE EMPLEADOS</h2>
+
+        {/* Spacer para mantener centrado */}
+        <div className="back-btn-spacer"></div>
+      </div>
 
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
         {visible.map((emp) => (
