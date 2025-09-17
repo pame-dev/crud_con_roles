@@ -34,3 +34,95 @@
     margin: 0;
     overflow-x: hidden;
 }
+
+.hero-section {
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-top: 56px; /* Altura de la navbar */
+    margin-bottom: auto;
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    left: 0;
+    right: 0;
+}
+  
+.hero-section .text-center {
+    max-width: 1200px;         /* opcional: limita contenido centrado */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    clip-path: ellipse(70% 100% at 50% 0%);
+}
+
+.full-width-container {
+    width: 100vw;
+    padding: 0;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+/* grupo de botones arriba, centrado */
+.acciones-header {
+  flex-wrap: wrap;
+}
+
+/* tamaño compacto consistente */
+.btn-compacto {
+  display: inline-block !important;
+  min-width: 120px;   /* ancho fijo más corto */
+  max-width: 150px;   /* evita que se estiren de más */
+  padding: 6px 12px;  /* altura y ancho equilibrados */
+  font-size: 0.9rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-align: center;
+}
+
+/* Contenedor: botón izquierda + título centrado + spacer derecha */
+.header-with-back{
+  display: flex;
+  align-items: center;
+  justify-content: center;     /* centra el conjunto */
+  gap: 12px;
+  margin-bottom: 1rem;
+}
+
+/* El spacer equilibra el ancho del botón para mantener el título centrado */
+.back-btn-spacer{
+  width: 38px;                 /* parecido al ancho del botón */
+  height: 1px;                 /* no visible */
+}
+
+/* Botón redondo sutil */
+.back-btn{
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,.08);
+}
+
+/* Título grande centrado (opcional unifica estilos) */
+.titulo-seccion{
+  color: #fff;
+  font-weight: 800;
+  text-align: center;
+  text-shadow: 1px 1px 3px rgba(0,0,0,.35);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  margin: 0;
+}
+
+
+/* opcional: en pantallas chicas, que no se apachurren */
+@media (max-width: 576px) {
+  .btn-compacto { min-width: 120px; font-size: 0.9rem; }
+}
