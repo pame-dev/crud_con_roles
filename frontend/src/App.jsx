@@ -15,7 +15,23 @@ import Dashboard from "./pages/dashboard";
 import PantallaCompleta from "./pages/pantalla_completa";
 import FormularioTurno from "./pages/formulario_turno";
 import Login from "./pages/login";
+<<<<<<< HEAD
 import VistaAdministrador from "./pages/vista_administrador";
+=======
+import VistaGerente from "./pages/vista_gerente";
+import VistaTrabajador from './pages/vista_trabajador';
+import VistaSuperadministrador from "./pages/vista_superadministrador";
+import Historial from './pages/historial';
+import { EmpleadoProvider } from "./layouts/EmpleadoContext";
+import RegisterGerentes from './pages/register_gerentes_y_trabajadores';
+import RegisterTrabajadores from './pages/register_trabajadores';
+import AdministrarEmpleados from "./pages/administrar_empleados";
+import RequireRoleLocal from "./pages/RequireRoleLocal";
+import OlvideMiContrasena from './pages/olvide_mi_contrasena';
+import ReestablecerContrasena from './pages/reestablecer_contrasena';
+import EditarEmpleado from './pages/editar_empleado';
+
+>>>>>>> origin/develop
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -25,7 +41,7 @@ const AppLayout = ({ children }) => {
   const noHeaderFooterRoutes = ['/pantalla_completa'];
   
   // Rutas que solo deben mostrar header pero no footer
-  const noFooterRoutes = ['/formulario_turno', '/']; // Agrega aquí otras rutas si es necesario
+  const noFooterRoutes = ['/formulario_turno']; // Agrega aquí otras rutas si es necesario
   
   const hideHeaderFooter = noHeaderFooterRoutes.includes(location.pathname);
   const hideFooterOnly = noFooterRoutes.includes(location.pathname);
@@ -42,6 +58,7 @@ const AppLayout = ({ children }) => {
 
 const PitLineApp = () => {
   return (
+<<<<<<< HEAD
     <Router>
       <AppLayout>
         <Routes>
@@ -54,6 +71,33 @@ const PitLineApp = () => {
         </Routes>
       </AppLayout>
     </Router>
+=======
+    <EmpleadoProvider>
+      <Router>
+        <AppLayout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/pantalla_completa" element={<PantallaCompleta />} />
+            <Route path="/formulario_turno" element={<FormularioTurno />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/vista_gerente" element={<VistaGerente />} />
+            <Route path="/vista_trabajador" element={<VistaTrabajador />} />
+            <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
+            <Route path="/historial" element={<Historial />} />
+            <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
+            <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
+            <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
+            <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
+            <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
+            <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
+            <Route path='/editar_empleado' element={<EditarEmpleado />} />
+            <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
+          </Routes>
+        </AppLayout>
+      </Router>
+    </EmpleadoProvider>
+>>>>>>> origin/develop
   );
 };
 export default PitLineApp;

@@ -9,6 +9,7 @@
   height: 100%;
 }
 
+
 .current-turn-card::before {
   content: '';
   position: absolute;
@@ -19,8 +20,24 @@
   background: rgba(255, 255, 255, 0.1);
   transform: rotate(45deg);
   z-index: 1;
+    pointer-events: none; 
+}
+.btn-pass-turn {
+  background: #ee1c1c; /* rojo */
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: background 0.2s ease;
 }
 
+.btn-pass-turn:hover {
+  background: #e22323;
+}
 .current-turn-badge {
   position: absolute;
   top: 1rem;
@@ -72,4 +89,18 @@
 .detail-icon {
   margin-right: 0.75rem;
   width: 20px;
+}
+
+.btn-pasarturno {
+  background-color: #f52727; 
+  border: none;
+  color: white;
+  transition: background-color 0.3s ease; /* poner aquí también */
+}
+
+
+.btn-pasarturno:hover {
+  background-color: #ef3c3c !important;
+  color: white;
+  transition: background-color 0.3s ease;
 }
