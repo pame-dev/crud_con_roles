@@ -93,7 +93,7 @@ export default function AdministrarEmpleados() {
               <div className="card-body d-flex justify-content-between align-items-center">
                 <div>
                   <div className="fw-bold">{emp.nombre}</div>
-                  <div className="text-muted small">{emp.tipo} de {emp.cargo}</div>
+                  <div className="text-muted small">{emp.tipo === "Empleado" && emp.cargo === "General" ? "Empleado General" : `${emp.tipo} de ${emp.cargo}`}</div>
                 </div>
                 <div className="d-flex gap-2">
                   <button className="btn btn-light btn-sm icon-btn" title="Editar" onClick={() => navigate(`/editar_empleado/${emp.id}`)}>
