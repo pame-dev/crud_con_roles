@@ -93,4 +93,15 @@ class EmpleadoController extends Controller
             'empleado' => $empleado
         ]);
     }
+
+    // Verificar si el correo ya existe (excluyendo el empleado actual)
+    public function correoExiste(Request $request)
+    {
+        $correo = $request->correo;
+        $id = $request->id;
+        $existe = Empleado::where('CORREO', $correo)
+            ->where('ID_EMPLEADO', '!=', $id)
+            ->exists();
+        return response()->json(['existe' => $existe]);
+    }
 }
