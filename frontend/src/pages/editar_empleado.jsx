@@ -90,13 +90,17 @@ export default function EditarEmpleado() {
 
         <div className="form-group mb-3">
           <label className="form-label">Cargo</label>
-          <input
-            type="text"
-            name="CARGO"
-            value={empleado.CARGO || ""}
-            onChange={handleChange}
-            className="form-control"
-          />
+          <select
+                        name="CARGO"
+                        value={empleado.CARGO || ""}
+                        onChange={handleChange}
+                        className="form-control"
+                        >
+                        <option disabled value="">Selecciona un cargo</option>
+                        <option value="General">General</option>
+                        <option value="Reparacion">Reparación</option>
+                        <option value="Cotizacion">Cotizacion</option>
+                </select>
         </div>
 
         <div className="form-group mb-3">
