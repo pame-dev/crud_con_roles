@@ -18,6 +18,7 @@ Route::get('/user', function (Request $request) {
 // API con CORS
 Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/empleados', [EmpleadoController::class, 'index']);
+    Route::post('/empleados/correo-existe', [EmpleadoController::class, 'correoExiste']);
     Route::get('/empleados/{id}', [EmpleadoController::class, 'show']);
     Route::get('/empleados/cargo/{cargo}', [EmpleadoController::class, 'porCargo']);
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy']);

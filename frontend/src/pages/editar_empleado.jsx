@@ -7,6 +7,7 @@ export default function EditarEmpleado() {
   const navigate = useNavigate();
   const [empleado, setEmpleado] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [correoError, setCorreoError] = useState("");
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/empleados/${id}`)
@@ -28,26 +29,43 @@ export default function EditarEmpleado() {
 
   const handleSubmit = (e) => {
   e.preventDefault();
+  setCorreoError("");
 
-  // Preparar los datos con los nombres que espera Laravel
-  const datos = {
-    nombre: empleado.NOMBRE,
-    correo: empleado.CORREO,
-    cargo: empleado.CARGO,
-    id_rol: Number(empleado.ID_ROL)
-  };
-
-  fetch(`http://127.0.0.1:8000/api/empleados/${id}`, {
-    method: "PUT",
+  // Validar si el correo ya existe antes de enviar
+  fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+    method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(datos),
+    body: JSON.stringify({ correo: empleado.CORREO, id }),
   })
     .then((res) => res.json())
     .then((data) => {
-      console.log("Actualización exitosa:", data); // para debug
-      navigate("/administrar_empleados"); // redirige solo si todo salió bien
+      if (data.existe) {
+        setCorreoError("El correo ya está registrado por otro empleado.");
+        return;
+      }
+      // Preparar los datos con los nombres que espera Laravel
+      const datos = {
+        nombre: empleado.NOMBRE,
+        correo: empleado.CORREO,
+        cargo: empleado.CARGO,
+        id_rol: Number(empleado.ID_ROL)
+      };
+      fetch(`http://127.0.0.1:8000/api/empleados/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          console.log("Actualización exitosa:", data); // para debug
+          navigate("/administrar_empleados"); // redirige solo si todo salió bien
+        })
+        .catch((err) => console.error("Error al actualizar:", err));
     })
-    .catch((err) => console.error("Error al actualizar:", err));
+    .catch((err) => {
+      setCorreoError("Error al validar el correo.");
+      console.error("Error al validar correo:", err);
+    });
 };
 
 
@@ -57,7 +75,7 @@ export default function EditarEmpleado() {
   if (!empleado) return <p className="editar-empleado-error">Empleado no encontrado</p>;
 
   return (
-    <div className="editar-empleado container py-5">
+  <div className="editar-empleado container py-5">
       <h2 className="editar-empleado-title text-center mb-4">
         Editar Empleado
       </h2>
@@ -86,6 +104,9 @@ export default function EditarEmpleado() {
             onChange={handleChange}
             className="form-control"
           />
+          {correoError && (
+            <div className="text-danger mt-2">{correoError}</div>
+          )}
         </div>
 
         <div className="form-group mb-3">
