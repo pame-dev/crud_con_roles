@@ -100,6 +100,22 @@ const VistaGerente = () => {
                 </div>
               </div>
 
+              {/*Solo estos dos botones, centrados y compactos */}
+              <div className="d-flex justify-content-center gap-3 mb-4">
+                <button
+                  className="btn btn-danger btn-compacto"
+                  onClick={() => navigate("/historial")}
+                >
+                  Historial
+                </button>
+                <button
+                  className="btn btn-danger btn-compacto"
+                  onClick={() => navigate("/administrar_empleados")}
+                >
+                  Administrar
+                </button>
+              </div>
+
               {/* Contenedor dinámico */}
               <div
                 className={vistaLista ? "turnos-list" : "turnos-grid"}

@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Calendar, User, Wrench, CheckCircle, AlertTriangle } from "../iconos";
+import { ArrowLeft, Calendar, User, Wrench, CheckCircle, AlertTriangle } from "../iconos";
 import { fetchHistorialTurnos } from "../api/turnosApi.js";
 import "react-datepicker/dist/react-datepicker.css";
+import "./pages-styles/historial.css";
 
 const ESTADO_BADGE = {
   pendiente: "warning",
@@ -93,6 +94,17 @@ const Historial = () => {
 
   const key = useMemo(() => JSON.stringify({ q, estado, page }), [q, estado, page]);
 
+  const empleado = JSON.parse(localStorage.getItem("empleado") || "null");
+  const fallback = (empleado?.ROL || "").toLowerCase() === "superadmin"
+    ? "/vista_superadministrador"
+    : "/vista_gerente";
+
+  const goBack = () => {
+    if (window.history.length > 1) navigate(-1);
+    else navigate(fallback, { replace: true });
+  };
+
+
   useEffect(() => {
     const controller = new AbortController();
     setLoading(true);
@@ -119,17 +131,22 @@ const Historial = () => {
       className="container py-5"
       style={{ marginTop: "4rem", paddingBottom: "3rem" }}
     >
-      <h2
-        className="text-center mb-4"
-        style={{
-          color: "#fff",
-          fontWeight: "700",
-          textShadow: "1px 1px 3px rgba(0,0,0,0.4)",
-          fontSize: "3rem",
-        }}
-      >
-        Historial de turnos
-      </h2>
+      <div className="header-with-back">
+        <button
+          className="btn btn-danger back-btn"
+          onClick={goBack}
+          title="Regresar"
+          aria-label="Regresar"
+        >
+          <ArrowLeft size={18} />
+        </button>
+
+        <h2 className="titulo-seccion">Historial de turnos</h2>
+
+        {/* Spacer para mantener el título centrado */}
+        <div className="back-btn-spacer" />
+      </div>
+
 
       {/* Filtros */}
       <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>

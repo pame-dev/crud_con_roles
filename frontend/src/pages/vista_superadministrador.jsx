@@ -92,30 +92,30 @@ const VistaSuperadministrador = () => {
                 </div>
               </div>
 
-              {/* Botón para finalizar el día */}
-              <div className="text-center mt-3 mb-5">
+              {/* Botones centrados */}
+              <div className="acciones-centradas mx-auto mb-5">
                 <button
-                  className={`btn ${diaFinalizado ? "btn-success" : "btn-danger"}`}
+                  className={`btn ${diaFinalizado ? "btn-success" : "btn-danger"} btn-compacto`}
                   onClick={toggleDia}
                 >
-                  {diaFinalizado ? "Iniciar Nuevo Día" : "Finalizar Día"}
+                  {diaFinalizado ? "Iniciar Nuevo Día" : "Finalizar día"}
                 </button>
 
                 <button
-                  className="btn btn-custom ms-2"
+                  className="btn btn-danger btn-compacto"
                   onClick={() => navigate("/historial")}
                 >
                   Historial
                 </button>
 
-                {/* Nuevo botón Administrar */}
                 <button
-                  className="btn btn-custom ms-2"
+                  className="btn btn-danger btn-compacto"
                   onClick={() => navigate("/administrar_empleados")}
                 >
-                  Administrar 
+                  Administrar
                 </button>
               </div>
+
 
               {/* Contenedor dinámico */}
               <div
