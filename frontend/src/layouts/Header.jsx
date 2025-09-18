@@ -15,6 +15,8 @@ const Header = () => {
     "/vista_gerente",
     "/vista_trabajador",
     "/vista_superadministrador",
+    "/historial",
+    "/administrar_empleados"
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
 
