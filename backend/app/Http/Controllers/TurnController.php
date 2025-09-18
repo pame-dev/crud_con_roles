@@ -53,54 +53,79 @@ class TurnController extends Controller
 
     public function historial(Request $request)
     {
-        $query = Turno::select('ID_TURNO','NOMBRE','APELLIDOS','ID_AREA','FECHA','HORA','ESTATUS');
+        $query = DB::table('TURNOS')
+            ->leftJoin('EMPLEADO', 'TURNOS.ID_EMPLEADO', '=', 'EMPLEADO.ID_EMPLEADO')
+            ->select(
+                'TURNOS.ID_TURNO',
+                'TURNOS.NOMBRE as cliente_nombre',
+                'TURNOS.APELLIDOS as cliente_apellidos',
+                'TURNOS.ID_AREA',
+                'TURNOS.FECHA',
+                'TURNOS.HORA',
+                'TURNOS.ESTATUS as estado',
+                'TURNOS.TELEFONO as cliente_telefono',
+                'EMPLEADO.NOMBRE as NOMBRE_EMPLEADO',
+                'EMPLEADO.ID_EMPLEADO as ID_EMPLEADO_EMPLEADO',
+                'EMPLEADO.CORREO as CORREO_EMPLEADO'
+            );
 
-    
         if ($request->q) {
             $query->where(function ($sub) use ($request) {
-                $sub->where('ID_TURNO', 'like', "%{$request->q}%")
-                    ->orWhere('NOMBRE', 'like', "%{$request->q}%")
-                    ->orWhere('APELLIDOS', 'like', "%{$request->q}%")
-                    ->orWhere('TELEFONO', 'like', "%{$request->q}%");
+                $sub->where('TURNOS.ID_TURNO', 'like', "%{$request->q}%")
+                    ->orWhere('TURNOS.NOMBRE', 'like', "%{$request->q}%")
+                    ->orWhere('TURNOS.APELLIDOS', 'like', "%{$request->q}%")
+                    ->orWhere('TURNOS.TELEFONO', 'like', "%{$request->q}%");
             });
         }
-    
+
         if ($request->estado && $request->estado !== 'todos') {
-            $query->whereRaw('LOWER(ESTATUS) = ?', [strtolower($request->estado)]);
+            $query->whereRaw('LOWER(TURNOS.ESTATUS) = ?', [strtolower($request->estado)]);
         }
-    
+
         if ($request->desde) {
-            $query->whereDate('FECHA', '>=', $request->desde);
+            $query->whereDate('TURNOS.FECHA', '>=', $request->desde);
         }
-    
+
         if ($request->hasta) {
-            $query->whereDate('FECHA', '<=', $request->hasta);
+            $query->whereDate('TURNOS.FECHA', '<=', $request->hasta);
         }
-    
+
         $perPage = $request->limit ?? 12;
-    
-        $turnos = $query->orderBy('FECHA', 'desc')
-                ->orderBy('HORA', 'desc')
-                ->paginate($perPage);
+
+        $turnos = $query->orderBy('TURNOS.FECHA', 'desc')
+            ->orderBy('TURNOS.HORA', 'desc')
+            ->paginate($perPage);
 
         $turnosFormatted = $turnos->getCollection()->map(function($t) {
-        return [
-            'folio' => $t->ID_TURNO,
-            'cliente' => $t->NOMBRE . ' ' . $t->APELLIDOS,
-            'servicio' => $t->ID_AREA == 1 ? 'Reparación' : 'Cotización',
-            'fecha' => $t->FECHA,
-            'hora' => $t->HORA,
-            'estado' => strtolower($t->ESTATUS),
-        ];
-    });
+            return [
+                'folio' => $t->ID_TURNO,
+                'cliente' => $t->cliente_nombre . ' ' . $t->cliente_apellidos,
+                'servicio' => $t->ID_AREA == 1 ? 'Reparación' : 'Cotización',
+                'fecha' => $t->FECHA,
+                'hora' => $t->HORA,
+                'estado' => strtolower($t->estado),
+                'NOMBRE_EMPLEADO' => $t->NOMBRE_EMPLEADO ?? null, // el nombre del empleado
+                'ID_EMPLEADO' => $t->ID_EMPLEADO_EMPLEADO ?? null, // id del empleado que atendió
+                'CORREO_EMPLEADO' => $t->CORREO_EMPLEADO ?? null,
+            ];
+        });
 
-    // Mantén la paginación
-    return response()->json([
-        'data' => $turnosFormatted->toArray(),
-        'page' => $turnos->currentPage(),
-        'totalPages' => $turnos->lastPage(),
-        'total' => $turnos->total(),
-    ]);
+        return response()->json([
+            'data' => $turnosFormatted->toArray(),
+            'page' => $turnos->currentPage(),
+            'totalPages' => $turnos->lastPage(),
+            'total' => $turnos->total(),
+        ]);
+    
+
+
+        // Mantén la paginación
+        return response()->json([
+            'data' => $turnosFormatted->toArray(),
+            'page' => $turnos->currentPage(),
+            'totalPages' => $turnos->lastPage(),
+            'total' => $turnos->total(),
+        ]);
     }
 
     // app/Http/Controllers/TurnoController.php

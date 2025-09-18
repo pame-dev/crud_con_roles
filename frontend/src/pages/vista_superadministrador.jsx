@@ -26,7 +26,7 @@ const VistaSuperadministrador = () => {
     } else {
       setNombreEmpleado(empleado.NOMBRE);
       setFiltro(empleado.CARGO.toLowerCase());
-      // 👇 Esto borra todo el historial anterior
+      //  Esto borra todo el historial anterior
       window.history.pushState(null, "", window.location.href);
       window.onpopstate = () => {
         window.history.go(1); // Evita retroceder
@@ -122,7 +122,11 @@ const VistaSuperadministrador = () => {
                 className={vistaLista ? "turnos-list" : "turnos-grid"}
                 style={{ padding: "1rem" }}
               >
-                <WorkerTurnCard filtroBusqueda={busqueda} mostrarCargo={true} />
+                <WorkerTurnCard 
+                  filtroBusqueda={busqueda}
+                  mostrarCargo={true}
+                  modoLista={true}   // 👈 esta prop
+                />
 
               </div>
 
@@ -159,28 +163,5 @@ const VistaSuperadministrador = () => {
   );
 };
 
-// Historial
-const HistorialTurnos = () => {
-  const navigate = useNavigate();
-  const [historial] = useState(JSON.parse(localStorage.getItem("historial")) || []);
-
-  return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Historial de Turnos</h2>
-      {historial.length > 0 ? (
-        historial.map((t, idx) => (
-          <div key={idx} className="card mb-2 p-2">
-            #{t.turn_number} - {t.name} ({t.reason}) - <StatusBadge status={t.status} />
-          </div>
-        ))
-      ) : (
-        <p>No hay historial.</p>
-      )}
-      <button className="btn btn-secondary mt-3" onClick={() => navigate(-1)}>
-        <ArrowLeft size={16} className="me-1" /> Regresar
-      </button>
-    </div>
-  );
-};
 
 export default VistaSuperadministrador;
