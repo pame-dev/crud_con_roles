@@ -210,7 +210,7 @@ class TurnController extends Controller
             ->first();
 
         if ($turnoActual) {
-            $turnoActual->ESTATUS = 'Atendido';
+            $turnoActual->ESTATUS = 'Completado';
             $turnoActual->save();
         }
 
