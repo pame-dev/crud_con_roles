@@ -41,9 +41,10 @@
 }
 
 .turnos-grid {
+  grid-auto-rows: min-content !important;
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 👈 3 columnas fijas */
-  gap: 2rem;
+  grid-template-columns: repeat(1, 1fr); /* columnas fijas */
+  gap: 1rem;
 }
 
 .container {
