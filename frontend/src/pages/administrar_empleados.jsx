@@ -70,20 +70,11 @@ export default function AdministrarEmpleados() {
 
   return (
     <div className="container py-5 administrar-page">
-      <div className="header-with-back">
-        <button
-          className="btn btn-danger fw-bold back-btn"
-          onClick={() => navigate(-1)}
-          title="Regresar"
-          aria-label="Regresar"
-        >
+      <div className="header">
+        <button className="btn_volver" onClick={goBack} title="Regresar" aria-label="Regresar">
           <ArrowLeft size={20} />
         </button>
-
-        <h2 className="titulo-seccion">ADMINISTRACIÓN DE EMPLEADOS</h2>
-
-        {/* Spacer para mantener centrado */}
-        <div className="back-btn-spacer"></div>
+        <h2 className="titulo">ADMINISTRACION DE EMPLEADOS</h2>
       </div>
 
       <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
