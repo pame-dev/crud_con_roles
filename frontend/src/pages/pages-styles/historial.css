@@ -31,3 +31,30 @@
   visibility: visible;
   transform: translateY(0);
 }
+
+.header {
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.titulo {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+  flex-grow: 1;
+  text-align: center;
+}
+
+.btn_volver {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  width: 2.5rem;
+}

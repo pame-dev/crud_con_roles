@@ -152,12 +152,11 @@ const Historial = () => {
 
   return (
     <div className="container py-5" style={{ marginTop: "4rem", paddingBottom: "3rem" }}>
-      <div className="header-with-back">
-        <button className="btn btn-danger back-btn" onClick={goBack} title="Regresar" aria-label="Regresar">
-          <ArrowLeft size={18} />
+      <div className="header">
+        <button className="btn_volver" onClick={goBack} title="Regresar" aria-label="Regresar">
+          <ArrowLeft size={20} />
         </button>
-        <h2 className="titulo-seccion">Historial de turnos</h2>
-        <div className="back-btn-spacer" />
+        <h2 className="titulo">Historial de turnos</h2>
       </div>
 
       <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
