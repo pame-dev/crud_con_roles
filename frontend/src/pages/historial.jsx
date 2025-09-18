@@ -28,12 +28,8 @@ function TurnoCard({ turno }) {
   return (
     <div className="col">
       <div
-        className="card shadow-sm historial-card"
-        style={{
-          borderRadius: "15px",
-          transition: "transform 0.2s",
-          cursor: "pointer",
-        }}
+        className="card shadow-sm historial-card position-relative"
+        style={{ borderRadius: "15px", transition: "transform 0.2s", cursor: "pointer" }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-5px)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
       >
@@ -58,6 +54,15 @@ function TurnoCard({ turno }) {
             <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
           </div>
         </div>
+
+        {/* Tooltip para turnos completados */}
+        {turno.estado?.toLowerCase() === "completado" && turno.NOMBRE_EMPLEADO && (
+          <div className="tooltip-empleado">
+            <strong>Atendido por:</strong> {turno.NOMBRE_EMPLEADO} <br />
+            <strong>ID:</strong> {turno.ID_EMPLEADO} <br />
+            <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -87,7 +92,6 @@ const Historial = () => {
   const [q, setQ] = useState("");
   const [estado, setEstado] = useState("todos");
   const [page, setPage] = useState(1);
-
   const [data, setData] = useState({ data: [], page: 1, totalPages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -103,7 +107,6 @@ const Historial = () => {
     if (window.history.length > 1) navigate(-1);
     else navigate(fallback, { replace: true });
   };
-
 
   useEffect(() => {
     const controller = new AbortController();
@@ -126,29 +129,37 @@ const Historial = () => {
     setPage(1);
   };
 
+  const turnosFiltrados = useMemo(() => {
+    if (!data?.data) return [];
+
+    return data.data.filter((t) => {
+      if (empleado?.ID_ROL === 1 && empleado?.CARGO) {
+        const cargo = empleado.CARGO.toLowerCase().trim();
+        if (cargo === "reparacion" && t.folio.startsWith("C")) return false;
+        if (cargo === "cotizacion" && t.folio.startsWith("R")) return false;
+      }
+
+      if (estado !== "todos" && t.estado.toLowerCase() !== estado.toLowerCase()) return false;
+
+      if (q && !t.folio.toString().includes(q) && !t.cliente.toLowerCase().includes(q.toLowerCase())) return false;
+
+      return true;
+    });
+  }, [data, empleado, estado, q]);
+
+  const totalPages = Math.ceil(turnosFiltrados.length / 6);
+  const turnosPaginados = turnosFiltrados.slice((page - 1) * 6, page * 6);
+
   return (
-    <div
-      className="container py-5"
-      style={{ marginTop: "4rem", paddingBottom: "3rem" }}
-    >
+    <div className="container py-5" style={{ marginTop: "4rem", paddingBottom: "3rem" }}>
       <div className="header-with-back">
-        <button
-          className="btn btn-danger back-btn"
-          onClick={goBack}
-          title="Regresar"
-          aria-label="Regresar"
-        >
+        <button className="btn btn-danger back-btn" onClick={goBack} title="Regresar" aria-label="Regresar">
           <ArrowLeft size={18} />
         </button>
-
         <h2 className="titulo-seccion">Historial de turnos</h2>
-
-        {/* Spacer para mantener el título centrado */}
         <div className="back-btn-spacer" />
       </div>
 
-
-      {/* Filtros */}
       <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
         <div className="card-body">
           <div className="row g-3 align-items-end">
@@ -177,11 +188,7 @@ const Historial = () => {
               </select>
             </div>
             <div className="col-6 col-md-2 d-grid">
-              <button
-                className="btn btn-danger fw-bold"
-                onClick={resetFilters}
-                style={{ borderRadius: "10px" }}
-              >
+              <button className="btn btn-danger fw-bold" onClick={resetFilters} style={{ borderRadius: "10px" }}>
                 Limpiar
               </button>
             </div>
@@ -189,7 +196,6 @@ const Historial = () => {
         </div>
       </div>
 
-      {/* Lista */}
       {err && (
         <div className="alert alert-danger d-flex align-items-center" role="alert">
           <AlertTriangle size={18} className="me-2" />
@@ -203,30 +209,23 @@ const Historial = () => {
             <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
               {Array.from({ length: 6 }).map((_, i) => <PlaceholderCard key={i} />)}
             </div>
-          ) : data?.data?.length ? (
+          ) : turnosPaginados.length ? (
             <>
               <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {data.data.map((t) => <TurnoCard key={t.id || `${t.folio}-${t.fecha}-${t.cliente}`} turno={t} />)}
+                {turnosPaginados.map((t) => (
+                  <TurnoCard key={t.id || `${t.folio}-${t.fecha}-${t.cliente}`} turno={t} />
+                ))}
               </div>
 
-              {/* Paginación */}
               <div className="d-flex justify-content-between align-items-center mt-4">
                 <small style={{ color: "#fff" }}>
-                  Página {data.page} de {data.totalPages} · {data.total} resultados
+                  Página {page} de {totalPages} · {turnosFiltrados.length} resultados
                 </small>
                 <div className="btn-group">
-                  <button
-                    className="btn btn-outline-light fw-bold"
-                    disabled={page <= 1}
-                    onClick={() => setPage(p => p - 1)}
-                  >
+                  <button className="btn btn-outline-light fw-bold" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
                     Anterior
                   </button>
-                  <button
-                    className="btn btn-outline-light fw-bold"
-                    disabled={page >= data.totalPages}
-                    onClick={() => setPage(p => p + 1)}
-                  >
+                  <button className="btn btn-outline-light fw-bold" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
                     Siguiente
                   </button>
                 </div>
