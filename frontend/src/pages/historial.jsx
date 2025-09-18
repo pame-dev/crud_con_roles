@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Calendar, User, Wrench, CheckCircle, AlertTriangle } from "../iconos";
+import { ArrowLeft, Calendar, User, Wrench, CheckCircle, AlertTriangle } from "../iconos.js";
 import { fetchHistorialTurnos } from "../api/turnosApi.js";
 import "react-datepicker/dist/react-datepicker.css";
 import "./pages-styles/historial.css";
@@ -113,7 +113,8 @@ const Historial = () => {
     setLoading(true);
     setErr("");
 
-    fetchHistorialTurnos({ q, estado, page, limit: 6 }, { signal: controller.signal })
+    fetchHistorialTurnos({ q, estado, page: 1, limit: 999 }, { signal: controller.signal })
+
       .then((res) => setData(res))
       .catch((e) => {
         if (e.name !== "AbortError") setErr(e.message || "Error al cargar historial");
