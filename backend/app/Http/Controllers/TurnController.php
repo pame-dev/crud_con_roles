@@ -128,27 +128,43 @@ class TurnController extends Controller
         ]);
     }
 
-    // app/Http/Controllers/TurnoController.php
     public function enAtencion()
     {
         $turno = Turno::where('ESTATUS', 'En_atencion')
             ->orderBy('ATENCION_EN', 'desc') // el más reciente primero
             ->first();
-
+    
         if ($turno) {
-            return response()->json(['turno' => [
-                'ID_TURNO' => $turno->ID_TURNO,
-                'cliente' => $turno->NOMBRE . ' ' . $turno->APELLIDOS,
-                'ID_EMPLEADO' => $turno->ID_EMPLEADO,
-                'estado' => $turno->ESTATUS,
-                'fecha_atencion' => $turno->fecha,
-                'hora_atencion' => $turno->hora_atencion,
-                'ATENCION_EN' => $turno->ATENCION_EN,
-            ]], 200);
+            // obtener nombre del empleado sin romper estructura
+            $empleadoNombre = null;
+            if ($turno->ID_EMPLEADO) {
+                $empleado = DB::table('EMPLEADO')
+                    ->where('ID_EMPLEADO', $turno->ID_EMPLEADO)
+                    ->select('NOMBRE',)
+                    ->first();
+                if ($empleado) {
+                    $empleadoNombre = $empleado->NOMBRE;
+                }
+            }
+        
+            return response()->json([
+                'turno' => [
+                    'ID_TURNO' => $turno->ID_TURNO,
+                    'cliente' => $turno->NOMBRE . ' ' . $turno->APELLIDOS,
+                    'ID_EMPLEADO' => $turno->ID_EMPLEADO,
+                    'estado' => $turno->ESTATUS,
+                    'fecha_atencion' => $turno->FECHA,
+                    'hora_atencion' => $turno->HORA,
+                    'ATENCION_EN' => $turno->ATENCION_EN,
+                    // 👇 extra opcional, no afecta al card si no lo usas
+                    'empleado_nombre' => $empleadoNombre,
+                ]
+            ], 200);
         } else {
             return response()->json(['turno' => null], 200);
         }
     }
+
 
 
     public function store(Request $request)
