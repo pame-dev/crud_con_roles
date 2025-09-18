@@ -42,7 +42,11 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
     }
   };
 
-  const formatHora = (hora) => hora ? hora.slice(0,5) : null;
+  const formatHora = (hora) => {
+    if (!hora) return "—";
+    const date = new Date(hora);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
   return (
     <>
@@ -61,8 +65,7 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
                   {mostrarCargo && <div className="text-muted"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
                   {turno ? (
                     <>
-                      <div><i className="bi bi-gear me-1"></i>{turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}</div>
-                      <div><i className="bi bi-hash me-1"></i>Turno: #{turno.ID_TURNO}</div>
+                      <div><i className="me-1"></i>Turno: #{turno.ID_TURNO}</div>
                     </>
                   ) : (
                     <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
@@ -71,7 +74,7 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
 
                 {/* DERECHA */}
                 <div className="text-end">
-                  <div className="mb-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.HORA) : "—"}</div>
+                  <div className="mb-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
                   <button
                     className="btn btn-danger btn-sm d-flex align-items-center"
                     onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
@@ -90,8 +93,8 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
                 {turno ? (
                   <>
                     <div><i className="bi bi-gear me-1"></i>{turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}</div>
-                    <div><i className="bi bi-hash me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
-                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{formatHora(turno.HORA)}</div>
+                    <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
+                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
                   </>
                 ) : (
                   <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
