@@ -1,6 +1,7 @@
 // src/components/CurrentTurnCard.jsx
 import React, { useEffect, useState } from 'react';
 import { Wrench, Clock, Zap } from '../iconos';
+import { fetchTurnoEnAtencion } from '../api/turnosApi';
 import './CurrentTurnCard.css';
 
 const CurrentTurnCard = ({ variant, onPasarTurno }) => {
@@ -21,7 +22,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
             : `Pase al módulo: ${data.turno.ID_EMPLEADO}`, // solo si no es reparación
           name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
           priority: data.turno.PRIORIDAD || 'baja',
-          started_at: data.turno.HORA,
+          started_at: new Date(data.turno.ATENCION_EN).toLocaleString(),
           isReparacion: data.turno.ID_AREA === 1, // para badge
         };
 
@@ -43,7 +44,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!turno) return <p>No hay turno en atención.</p>;
+  if (!turno) return <div className="current-turn-card h-100 position-relative flex-fill text-center"><p>No hay turno en atención.</p></div>;
 
   const isSuperadmin = variant === 'superadmin';
 
