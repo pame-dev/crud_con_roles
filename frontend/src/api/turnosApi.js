@@ -29,4 +29,10 @@ export async function pasarTurno(empleadoId, cargo, options = {}) {
   return res.json();
 }
 
+export async function fetchTurnoEnAtencion(options = {}) {
+  const res = await fetch("http://127.0.0.1:8000/api/turnos/en_atencion", options);
+  if (!res.ok) throw new Error("Error al obtener turno en atención");
+  return res.json();
+}
+
 

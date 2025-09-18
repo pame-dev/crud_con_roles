@@ -131,13 +131,25 @@ class TurnController extends Controller
     // app/Http/Controllers/TurnoController.php
     public function enAtencion()
     {
-        $turno = Turno::where('ESTATUS', 'En_atencion')->first(); // solo uno
+        $turno = Turno::where('ESTATUS', 'En_atencion')
+            ->orderBy('ATENCION_EN', 'desc') // el más reciente primero
+            ->first();
+
         if ($turno) {
-            return response()->json(['turno' => $turno], 200);
+            return response()->json(['turno' => [
+                'ID_TURNO' => $turno->ID_TURNO,
+                'cliente' => $turno->NOMBRE . ' ' . $turno->APELLIDOS,
+                'ID_EMPLEADO' => $turno->ID_EMPLEADO,
+                'estado' => $turno->ESTATUS,
+                'fecha_atencion' => $turno->fecha,
+                'hora_atencion' => $turno->hora_atencion,
+                'ATENCION_EN' => $turno->ATENCION_EN,
+            ]], 200);
         } else {
             return response()->json(['turno' => null], 200);
         }
     }
+
 
     public function store(Request $request)
     {
@@ -219,6 +231,7 @@ class TurnController extends Controller
         if ($siguiente) {
             $siguiente->ID_EMPLEADO = $empleadoId;
             $siguiente->ESTATUS = 'En_atencion';
+            $siguiente->ATENCION_EN = now();
             $siguiente->save();
         }
 
