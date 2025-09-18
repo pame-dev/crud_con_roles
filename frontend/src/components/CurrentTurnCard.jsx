@@ -17,14 +17,15 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
         // Asegúrate de usar el campo correcto de tu API
         const mappedTurno = {
           turn_number: data.turno.ID_TURNO,
-          reason: data.turno.ID_AREA === 1
-            ? 'Reparación'
-            : `Pase al módulo: ${data.turno.ID_EMPLEADO}`, // solo si no es reparación
-          name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
-          priority: data.turno.PRIORIDAD || 'baja',
+          reason: data.turno.ID_AREA === 1 ? "Reparación" : `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
+          name: data.turno.cliente, // cliente
+          empleado_nombre: data.turno.empleado_nombre, // ⚡ usa exactamente este nombre
+          priority: data.turno.PRIORIDAD || "baja",
           started_at: new Date(data.turno.ATENCION_EN).toLocaleString(),
-          isReparacion: data.turno.ID_AREA === 1, // para badge
+          isReparacion: data.turno.ID_AREA === 1,
         };
+
+
 
         setTurno(mappedTurno);
       } else {
@@ -59,9 +60,11 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
           {turno.reason}
         </div>
 
-        <div className="customer-name" style={{ fontSize: '15px' }}>
-          {turno.name}
+        <div className="customer-name" style={{ fontSize: '14px' }}>
+          {turno.empleado_nombre ? `Atendido por: ${turno.empleado_nombre}` : null}
         </div>
+
+
 
         <div className="mb-3">
           <span className="badge bg-light text-dark fs-6">

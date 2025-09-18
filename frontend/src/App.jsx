@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Header from './layouts/Header';
 import Footer from './layouts/Footer';
 import './styles/custom.css';
+import './i18n/i18n';
 
 import { useLocation } from 'react-router-dom';
 
