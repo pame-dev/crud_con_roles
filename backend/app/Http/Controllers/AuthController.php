@@ -117,4 +117,24 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
+
+    public function correoExiste(Request $request)
+{
+    $request->validate([
+        'correo' => 'required|email',
+        'id' => 'nullable|integer',
+    ]);
+
+    $query = Empleado::where('CORREO', $request->correo);
+
+    // Si está editando, excluir su propio ID
+    if ($request->id) {
+        $query->where('ID_EMPLEADO', '!=', $request->id);
+    }
+
+    $existe = $query->exists();
+
+    return response()->json(['existe' => $existe]);
+}
+
 }
