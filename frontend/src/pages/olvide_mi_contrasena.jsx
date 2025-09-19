@@ -42,7 +42,21 @@ const OlvideMiContrasena = () => {
       setSuccess(response.data.message || "Se envió un código a tu correo.");
       setStep("code");
     } catch (err) {
-      setError(err.response?.data?.error || "No se pudo enviar el correo.");
+      // Verifica status y mensajes
+      if (err.response?.status === 422) {
+        // Validación de Laravel: podría venir aquí si el email no es válido o falta
+        // Laravel puede devolver errores en err.response.data.errors.email
+        const emailErrors = err.response?.data?.errors?.email;
+        if (emailErrors && Array.isArray(emailErrors)) {
+          setError(emailErrors[0]);
+        } else {
+          setError(err.response?.data?.message || "Error de validación.");
+        }
+      } else if (err.response?.status === 404) {
+        setError("El correo no está registrado en el sistema.");
+      } else {
+        setError(err.response?.data?.error || "No se pudo enviar el correo.");
+      }
     } finally {
       setSubmitting(false);
     }
