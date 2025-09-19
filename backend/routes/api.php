@@ -36,4 +36,6 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/turnos/pasar', [TurnController::class, 'pasarTurno']);
     Route::delete('/turnos/{id}', [TurnController::class, 'destroy']); // ruta para eliminar turnos
+    Route::post('/empleados/correo-existe', [EmpleadoController::class, 'correoExiste']);
+
 });
