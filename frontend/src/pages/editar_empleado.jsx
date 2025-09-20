@@ -118,7 +118,6 @@ export default function EditarEmpleado() {
                         className="form-control"
                         >
                         <option disabled value="">Selecciona un cargo</option>
-                        <option value="General">General</option>
                         <option value="Reparacion">Reparación</option>
                         <option value="Cotizacion">Cotizacion</option>
                 </select>
