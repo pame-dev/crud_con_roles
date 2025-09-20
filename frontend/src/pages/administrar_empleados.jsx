@@ -1,14 +1,54 @@
-// src/pages/administrar_empleados.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Edit, Trash2, ArrowLeft } from "../iconos";
 import { getCurrentUserRole } from "../hooks/auth";
+import { useEmpleados } from "../layouts/EmpleadoContext";
 import "./pages-styles/administrar_empleados.css";
 import { motion, AnimatePresence } from "framer-motion";
+
+// Componente memoizado para cada empleado
+const EmpleadoCard = memo(({ emp, editar, eliminar, toggleAusente }) => (
+  <article className="card empleado-card" key={emp.id}>
+    <div className="card-body d-flex justify-content-between align-items-center">
+      <div>
+        <div className="fw-bold">{emp.nombre}</div>
+        <div className="text-muted small">
+          {emp.cargo ? `Empleado de ${emp.cargo.charAt(0).toUpperCase() + emp.cargo.slice(1)}` : ""}
+        </div>
+      </div>
+      <div className="d-flex gap-2">
+        <button
+          className={`btn btn-sm me-2 ${emp.estado === 0 ? "btn-secondary" : "btn-warning"}`}
+          title={emp.estado === 0 ? "Marcar como presente" : "Marcar como ausente"}
+          onClick={() => toggleAusente(emp)}
+        >
+          {emp.estado === 0 ? "Presente" : "Ausente"}
+        </button>
+        <button
+          className="btn btn-light btn-sm icon-btn icon-edit"
+          title="Editar"
+          onClick={() => editar(emp.id)}
+        >
+          <Edit size={18} />
+        </button>
+        <button
+          className="btn btn-light btn-sm icon-btn icon-delete"
+          title="Eliminar"
+          onClick={() => eliminar(emp.id)}
+        >
+          <Trash2 size={18} />
+        </button>
+      </div>
+    </div>
+  </article>
+));
 
 export default function AdministrarEmpleados() {
   const navigate = useNavigate();
   const [empleados, setEmpleados] = useState([]);
+
+  // Contexto de empleados
+  const { marcarAusente, quitarAusente, cargarAusentes } = useEmpleados();
 
   // ---- Guardas / sesión ----
   useEffect(() => {
@@ -53,14 +93,20 @@ export default function AdministrarEmpleados() {
           id: e.ID_EMPLEADO,
           ID_EMPLEADO: e.ID_EMPLEADO,
           nombre: e.NOMBRE,
-          cargo: (e.CARGO || "").toLowerCase(), // cotizacion | reparacion | general ...
+          cargo: (e.CARGO || "").toLowerCase(),
           tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
           ID_ROL: e.ID_ROL,
+          estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1 // por defecto presente
         }));
         setEmpleados(empleadosNormalizados);
       })
       .catch(console.error);
   }, []);
+
+  // ---- Cargar ausentes al montar ----
+  useEffect(() => {
+    cargarAusentes();
+  }, [cargarAusentes]);
 
   // ---- Helpers ----
   const editar = (id) => navigate(`/editar_empleado/${id}`);
@@ -75,29 +121,31 @@ export default function AdministrarEmpleados() {
   };
   const capital = (s = "") => s.charAt(0).toUpperCase() + s.slice(1);
 
+  // ---- Optimistic update para ausentes/presentes ----
+  const toggleAusente = (emp) => {
+    // Actualización inmediata en UI
+    setEmpleados((prev) =>
+      prev.map((e) => (e.id === emp.id ? { ...e, estado: e.estado === 0 ? 1 : 0 } : e))
+    );
+    // Llamada a backend
+    if (emp.estado === 0) quitarAusente(emp.id).catch(console.error);
+    else marcarAusente(emp.id).catch(console.error);
+  };
+
   // ---- Visibilidad por rol ----
   let visibles = [];
   if (isSuper) {
     visibles = empleados.filter((e) => e.tipo !== "Administrador");
   } else if (role === "gerente") {
-    // Un gerente solo ve empleados de su área
-    visibles = empleados.filter((e) => e.ID_ROL === 2 && e.cargo === (storedEmpleado?.CARGO || "").toLowerCase());
+    visibles = empleados.filter(
+      (e) => e.ID_ROL === 2 && e.cargo === (storedEmpleado?.CARGO || "").toLowerCase()
+    );
   }
 
   // ---- Grupos para el layout por columnas ----
   const gerentes = isSuper ? visibles.filter((e) => e.tipo === "Gerente") : [];
   const cotizacion = visibles.filter((e) => e.tipo !== "Gerente" && e.cargo === "cotizacion");
   const reparacion = visibles.filter((e) => e.tipo !== "Gerente" && e.cargo === "reparacion");
-
-  const gruposUI = isSuper
-    ? [
-        { key: "gerentes", title: "Gerentes", items: gerentes },
-        { key: "cotizacion", title: "Cotización", items: cotizacion },
-        { key: "reparacion", title: "Reparación", items: reparacion },
-      ]
-    : [
-        { key: "area", title: `Área de ${capital(storedEmpleado?.CARGO || "")}`, items: visibles },
-      ];
 
   return (
     <AnimatePresence>
@@ -121,45 +169,38 @@ export default function AdministrarEmpleados() {
             </button>
             <div className="hero-copy text-center">
               <h3 className="display-3 fw-bold mb-1">Administración de Empleados</h3>
-                <p className="lead opacity-75">
-                  Gestiona gerentes y trabajadores de manera rápida y sencilla.
-                </p>
-              </div>
-
-          {/* Spacer derecho para mantener el centrado simétrico */}
-          <div aria-hidden="true" className="hero-right-spacer" />
+              <p className="lead opacity-75">
+                Gestiona gerentes y trabajadores de manera rápida y sencilla.
+              </p>
+            </div>
+            <div aria-hidden="true" className="hero-right-spacer" />
+          </div>
         </div>
-      </div>
-
-
 
         {/* CONTENIDO */}
         <div className="container" style={{ marginTop: "0", paddingBottom: "1rem" }}>
           <div className="header d-flex align-items-center mb-4">
             {!isSuper && storedEmpleado?.CARGO && (
-              <p className="text-muted ms-3 mb-0">(Gerente de {capital(storedEmpleado.CARGO)})</p>
+              <p className="text-muted ms-3 mb-0">
+                (Gerente de {capital(storedEmpleado.CARGO)})
+              </p>
             )}
           </div>
 
-          {/* === LAYOUT: GERENTES + PANEL TRABAJADORES (con 2 subcolumnas) === */}
+          {/* === LAYOUT: GERENTES + PANEL TRABAJADORES === */}
           <div className="grilla-grupos">
-
-            {/* Columna: Gerentes */}
+            {/* Gerentes */}
             <section className="grupo-col">
               <h3 className="grupo-title">Gerentes</h3>
-
               <div className="grupo-cards">
                 {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
                 {gerentes.map((emp) => (
                   <article className="card empleado-card" key={emp.id}>
                     <div className="card-body d-flex justify-content-between align-items-center">
                       <div>
                         <div className="fw-bold">{emp.nombre}</div>
-                        {/* Mostrar el ÁREA del gerente */}
                         <div className="text-muted small">{capital(emp.cargo)}</div>
                       </div>
-
                       <div className="d-flex gap-2">
                         <button
                           className="btn btn-light btn-sm icon-btn icon-edit"
@@ -182,87 +223,46 @@ export default function AdministrarEmpleados() {
               </div>
             </section>
 
-            {/* Panel: Trabajadores (ocupa 2 columnas en desktop) */}
+            {/* Trabajadores */}
             <section className="grupo-col trabajadores-col">
               <h3 className="grupo-title">Trabajadores</h3>
-
               <div className="subgrilla">
-                {/* Subcol: Cotización */}
+                {/* Cotización */}
                 <div className="subcol">
                   <h4 className="sub-title">Cotización</h4>
                   <div className="grupo-cards">
                     {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
                     {cotizacion.map((emp) => (
-                      <article className="card empleado-card" key={emp.id}>
-                        <div className="card-body d-flex justify-content-between align-items-center">
-                          <div>
-                            <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de Cotización</div>
-                          </div>
-
-                          <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-edit"
-                              title="Editar"
-                              onClick={() => editar(emp.id)}
-                            >
-                              <Edit size={18} />
-                            </button>
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-delete"
-                              title="Eliminar"
-                              onClick={() => eliminar(emp.id)}
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      </article>
+                      <EmpleadoCard
+                        key={emp.id}
+                        emp={emp}
+                        editar={editar}
+                        eliminar={eliminar}
+                        toggleAusente={toggleAusente}
+                      />
                     ))}
                   </div>
                 </div>
 
-                {/* Subcol: Reparación */}
+                {/* Reparación */}
                 <div className="subcol">
                   <h4 className="sub-title">Reparación</h4>
                   <div className="grupo-cards">
                     {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
                     {reparacion.map((emp) => (
-                      <article className="card empleado-card" key={emp.id}>
-                        <div className="card-body d-flex justify-content-between align-items-center">
-                          <div>
-                            <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de Reparación</div>
-                          </div>
-
-                          <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-edit"
-                              title="Editar"
-                              onClick={() => editar(emp.id)}
-                            >
-                              <Edit size={18} />
-                            </button>
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-delete"
-                              title="Eliminar"
-                              onClick={() => eliminar(emp.id)}
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      </article>
+                      <EmpleadoCard
+                        key={emp.id}
+                        emp={emp}
+                        editar={editar}
+                        eliminar={eliminar}
+                        toggleAusente={toggleAusente}
+                      />
                     ))}
                   </div>
                 </div>
               </div>
             </section>
-
           </div>
-
 
           <div className="text-center mt-4">
             <Link to={registerPath} className="btn btn-danger fw-bold px-4 add-btn">
