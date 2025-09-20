@@ -4,6 +4,7 @@ import { ArrowLeft, Calendar, User, Wrench, CheckCircle, AlertTriangle } from ".
 import { fetchHistorialTurnos } from "../api/turnosApi.js";
 import "react-datepicker/dist/react-datepicker.css";
 import "./pages-styles/historial.css";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ESTADO_BADGE = {
   pendiente: "warning",
@@ -55,7 +56,6 @@ function TurnoCard({ turno }) {
           </div>
         </div>
 
-        {/* Tooltip para turnos completados */}
         {turno.estado?.toLowerCase() === "completado" && turno.NOMBRE_EMPLEADO && (
           <div className="tooltip-empleado">
             <strong>Atendido por:</strong> {turno.NOMBRE_EMPLEADO} <br />
@@ -98,15 +98,46 @@ const Historial = () => {
 
   const key = useMemo(() => JSON.stringify({ q, estado, page }), [q, estado, page]);
 
+  // Obtener empleado del localStorage
   const empleado = JSON.parse(localStorage.getItem("empleado") || "null");
-  const fallback = (empleado?.ROL || "").toLowerCase() === "superadmin"
-    ? "/vista_superadministrador"
-    : "/vista_gerente";
 
+  // Determinar fallback según ID_ROL
+  const fallback =
+    empleado?.ID_ROL === 0
+      ? "/vista_superadministrador"
+      : empleado?.ID_ROL === 1
+      ? "/vista_gerente"
+      : "/login";
+
+  // Función de regresar
+  // Botón de regresar dentro de la página
   const goBack = () => {
-    if (window.history.length > 1) navigate(-1);
-    else navigate(fallback, { replace: true });
+    const storedEmpleado = JSON.parse(localStorage.getItem("empleado") || "null");
+    if (!storedEmpleado) return navigate("/login", { replace: true });
+    
+    const fallback =
+      storedEmpleado.ID_ROL === 0
+        ? "/vista_superadministrador"
+        : "/vista_gerente";
+    
+    navigate(fallback, { replace: true });
   };
+
+  // BLOQUEAR EL BOTÓN DE ATRÁS DEL NAVEGADOR
+  useEffect(() => {
+    // Solo permitir avanzar usando goBack, bloquear popstate
+    const handlePopState = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    // Empujar un estado inicial para bloquear retroceso
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -114,7 +145,6 @@ const Historial = () => {
     setErr("");
 
     fetchHistorialTurnos({ q, estado, page: 1, limit: 999 }, { signal: controller.signal })
-
       .then((res) => setData(res))
       .catch((e) => {
         if (e.name !== "AbortError") setErr(e.message || "Error al cargar historial");
@@ -152,97 +182,119 @@ const Historial = () => {
   const turnosPaginados = turnosFiltrados.slice((page - 1) * 6, page * 6);
 
   return (
-    <div className="container py-5" style={{ marginTop: "4rem", paddingBottom: "3rem" }}>
-      <div className="header">
-        <button className="btn_volver" onClick={goBack} title="Regresar" aria-label="Regresar">
-          <ArrowLeft size={20} />
-        </button>
-        <h2 className="titulo">Historial de turnos</h2>
-      </div>
-
-      <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
-        <div className="card-body">
-          <div className="row g-3 align-items-end">
-            <div className="col-12 col-md-4">
-              <label className="form-label fw-semibold text-dark">Buscar</label>
-              <input
-                className="form-control"
-                placeholder="Folio, cliente…"
-                value={q}
-                onChange={(e) => { setQ(e.target.value); setPage(1); }}
-                style={{ borderRadius: "10px" }}
-              />
-            </div>
-            <div className="col-6 col-md-2">
-              <label className="form-label fw-semibold text-dark">Estado</label>
-              <select
-                className="form-select"
-                value={estado}
-                onChange={(e) => { setEstado(e.target.value); setPage(1); }}
-                style={{ borderRadius: "10px" }}
-              >
-                <option value="todos">Todos</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="en_atencion">En atención</option>
-                <option value="completado">Completado</option>
-              </select>
-            </div>
-            <div className="col-6 col-md-2 d-grid">
-              <button className="btn btn-danger fw-bold" onClick={resetFilters} style={{ borderRadius: "10px" }}>
-                Limpiar
-              </button>
+    <AnimatePresence>
+      <motion.div
+        className="full-width-container"
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -50 }}
+        transition={{ duration: 0.5 }}
+      >
+        {/* HERO SECTION */}
+        <div className="hero-section">
+          <div className="d-flex align-items-center mt-2">
+            <button
+              className="btn_volver me-2"
+              onClick={goBack}
+              title="Regresar"
+              aria-label="Regresar"
+            >
+              <ArrowLeft size={20} />
+            </button>
+            <div className="text-center w-100">
+              <h3 className="display-3 fw-bold mb-1">Historial de Turnos</h3>
+              <p className="lead opacity-75">Consulta y filtra los turnos atendidos o pendientes.</p>
             </div>
           </div>
         </div>
-      </div>
 
-      {err && (
-        <div className="alert alert-danger d-flex align-items-center" role="alert">
-          <AlertTriangle size={18} className="me-2" />
-          {err}
-        </div>
-      )}
-
-      {!err && (
-        <>
-          {loading ? (
-            <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-              {Array.from({ length: 6 }).map((_, i) => <PlaceholderCard key={i} />)}
-            </div>
-          ) : turnosPaginados.length ? (
-            <>
-              <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                {turnosPaginados.map((t) => (
-                  <TurnoCard key={t.id || `${t.folio}-${t.fecha}-${t.cliente}`} turno={t} />
-                ))}
-              </div>
-
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <small style={{ color: "#fff" }}>
-                  Página {page} de {totalPages} · {turnosFiltrados.length} resultados
-                </small>
-                <div className="btn-group">
-                  <button className="btn btn-outline-light fw-bold" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
-                    Anterior
-                  </button>
-                  <button className="btn btn-outline-light fw-bold" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
-                    Siguiente
+        {/* CONTENIDO PRINCIPAL */}
+        <div className="container px-3 px-md-5" style={{ marginTop: "-2rem", paddingBottom: "3rem" }}>
+          <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
+            <div className="card-body">
+              <div className="row g-3 align-items-end">
+                <div className="col-12 col-md-4">
+                  <label className="form-label fw-semibold text-dark">Buscar</label>
+                  <input
+                    className="form-control"
+                    placeholder="Folio, cliente…"
+                    value={q}
+                    onChange={(e) => { setQ(e.target.value); setPage(1); }}
+                    style={{ borderRadius: "10px" }}
+                  />
+                </div>
+                <div className="col-6 col-md-2">
+                  <label className="form-label fw-semibold text-dark">Estado</label>
+                  <select
+                    className="form-select"
+                    value={estado}
+                    onChange={(e) => { setEstado(e.target.value); setPage(1); }}
+                    style={{ borderRadius: "10px" }}
+                  >
+                    <option value="todos">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_atencion">En atención</option>
+                    <option value="completado">Completado</option>
+                  </select>
+                </div>
+                <div className="col-6 col-md-2 d-grid">
+                  <button className="btn btn-danger fw-bold" onClick={resetFilters} style={{ borderRadius: "10px" }}>
+                    Limpiar
                   </button>
                 </div>
               </div>
-            </>
-          ) : (
-            <div className="card shadow-sm mt-4" style={{ borderRadius: "12px" }}>
-              <div className="card-body text-center py-5">
-                <CheckCircle size={32} className="text-muted mb-2" />
-                <h5 className="mb-1">Sin turnos coincidentes</h5>
-                <p className="text-muted mb-0">Intenta cambiar los filtros o el texto de búsqueda.</p>
-              </div>
+            </div>
+          </div>
+
+          {err && (
+            <div className="alert alert-danger d-flex align-items-center" role="alert">
+              <AlertTriangle size={18} className="me-2" />
+              {err}
             </div>
           )}
-        </>
-      )}
-    </div>
+
+          {!err && (
+            <>
+              {loading ? (
+                <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                  {Array.from({ length: 6 }).map((_, i) => <PlaceholderCard key={i} />)}
+                </div>
+              ) : turnosPaginados.length ? (
+                <>
+                  <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    {turnosPaginados.map((t) => (
+                      <TurnoCard key={t.id || `${t.folio}-${t.fecha}-${t.cliente}`} turno={t} />
+                    ))}
+                  </div>
+
+                  <div className="d-flex justify-content-between align-items-center mt-4">
+                    <small style={{ color: "#fff" }}>
+                      Página {page} de {totalPages} · {turnosFiltrados.length} resultados
+                    </small>
+                    <div className="btn-group">
+                      <button className="btn btn-outline-light fw-bold" disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+                        Anterior
+                      </button>
+                      <button className="btn btn-outline-light fw-bold" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)}>
+                        Siguiente
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="card shadow-sm mt-4" style={{ borderRadius: "12px" }}>
+                  <div className="card-body text-center py-5">
+                    <CheckCircle size={32} className="text-muted mb-2" />
+                    <h5 className="mb-1">Sin turnos coincidentes</h5>
+                    <p className="text-muted mb-0">Intenta cambiar los filtros o el texto de búsqueda.</p>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
