@@ -57,4 +57,5 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 2.5rem;
+  margin-left: 2rem !important; /* Empuja el botón a la derecha */
 }
