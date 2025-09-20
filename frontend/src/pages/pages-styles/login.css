@@ -120,6 +120,16 @@
     text-decoration:underline; 
 }
 
+.linkk{ 
+    color:#eb2546; 
+    font-size:14px; 
+    text-decoration:none; 
+}
+.linkk:hover{ 
+    color:#f05771;
+    text-decoration:underline; 
+}
+
 /* botón */
 .btn-primary{
   height:46px; 

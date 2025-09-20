@@ -164,7 +164,7 @@ const Login = () => {
                   checked={form.termsAccepted}
                   onChange={handleChange}
                 />
-                <span>Acepto los términos y condiciones</span>
+                <span>Acepto los <a className="linkk" href="/terminos_y_condiciones">Terminos y Condiciones</a></span>
               </label>
               <a className="link" href="/olvide_mi_contrasena">Olvidé mi contraseña</a>
             </div>
