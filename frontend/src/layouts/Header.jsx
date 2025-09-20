@@ -42,7 +42,7 @@ const Header = () => {
         <div className="container-fluid">
 
           {/* Logo */}
-          <Link to="/" className="navbar-brand d-flex align-items-center">
+          <Link to="#" className="navbar-brand d-flex align-items-center">
             <img src={logo} alt="PitLine Logo" className="logo-image" />
             <div>
               <h4 className="mb-0 fw-bold">PitLine</h4>
