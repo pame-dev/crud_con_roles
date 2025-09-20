@@ -7,7 +7,7 @@ const footerStyles = `
     background: linear-gradient(90deg, #212529 0%, #dc3545 50%, #212529 100%);
     color: white;
     padding: 1rem 2rem;
-    margin-top: 2rem;
+    margin-top: 0rem;
     
   }
 

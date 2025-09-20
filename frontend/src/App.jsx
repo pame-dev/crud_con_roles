@@ -28,6 +28,7 @@ import RequireRoleLocal from "./pages/RequireRoleLocal";
 import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
 import EditarEmpleado from './pages/editar_empleado';
+import TerminosYCondiciones from './pages/terminos_y_condiciones';
 
 
 // Layout condicional
@@ -76,6 +77,8 @@ const PitLineApp = () => {
             <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
             <Route path='/editar_empleado' element={<EditarEmpleado />} />
             <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
+            <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
+
           </Routes>
         </AppLayout>
       </Router>
