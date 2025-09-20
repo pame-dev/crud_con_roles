@@ -21,7 +21,7 @@
 }
 
 .btn_volver {
-  background-color: #dc3545;
+  background-color: #cf2435;
   border: none;
   color: white;
   padding: 0.5rem 0.7rem;
@@ -31,6 +31,10 @@
   cursor: pointer;
   transition: background-color 0.3s ease;
   width: 2.5rem;
+}
+
+.btn_volver:hover {
+  background-color: #a31522;
 }
 
 /* Card de empleado */
