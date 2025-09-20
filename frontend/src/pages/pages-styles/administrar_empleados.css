@@ -20,21 +20,48 @@
   text-align: center;
 }
 
-.btn_volver {
-  background-color: #cf2435;
-  border: none;
-  color: white;
-  padding: 0.5rem 0.7rem;
-  display: flex;
+/* El hero sirve de referencia para posicionar la flecha */
+.hero-section { padding: 34px 0 80px; }
+
+/* Fila del hero: [flecha] [título centrado] [spacer] */
+.hero-row{
+  width: min(1100px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 44px 1fr 44px; /* flecha, contenido, espejo */
   align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 2.5rem;
+  gap: 12px;
 }
 
-.btn_volver:hover {
-  background-color: #a31522;
+/* Botón circular estilo blanco,*/
+.btn_volver.hero-back{
+  position: static;
+  width: 44px; 
+  height: 44px;
+  border-radius: 999px;
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  transition: background .2s, transform .1s;
+}
+.btn_volver.hero-back:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
+.btn_volver.hero-back svg { stroke: currentColor; }
+
+/* Spacer del lado derecho del mismo tamaño que el botón */
+.hero-right-spacer{ width: 44px; height: 44px; }
+
+@media (max-width: 420px){
+  .hero-row{ 
+    grid-template-columns: 40px 1fr 40px; 
+  }
+  .btn_volver.hero-back, .hero-right-spacer{ 
+    width: 40px; 
+    height: 40px; 
+  }
 }
 
 /* Card de empleado */
@@ -65,8 +92,8 @@
 
 /* Botón agregar */
 .add-btn {
-  border-radius: 8px;
-  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  padding: 0.65rem 1.5rem;
 }
 
 /* Contenedor: botón izquierda + título centrado + spacer derecha */
@@ -84,11 +111,126 @@
   align-items: center;
   padding: 0.375rem 0.75rem;  /* igual a Bootstrap btn */
   font-size: 1rem;
-  border-radius: 0.375rem;   /* mismo radio que Iniciar sesión */
+  border-radius: 0.375rem;
 }
 
 .back-btn-spacer {
-  width: 200px;   /* mismo ancho aprox que el botón de iniciar sesión */
+  width: 200px;
   height: 1px;
 }
+
+/* ===== Layout por columnas (Gerentes / Cotización / Reparación) ===== */
+.grilla-grupos {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { 
+  .grilla-grupos { 
+    grid-template-columns: repeat(2, 1fr); 
+  } 
+}
+@media (min-width: 1100px) { 
+  .grilla-grupos { 
+    grid-template-columns: repeat(3, 1fr); 
+  } 
+}
+
+/* Panel “Trabajadores” que ocupa 2 columnas en desktop */
+@media (min-width: 1100px) {
+  .trabajadores-col { 
+    grid-column: span 2; 
+  }
+}
+
+/* Subgrid interno para Cotización / Reparación */
+.subgrilla {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) { 
+  .subgrilla { 
+    grid-template-columns: repeat(2, 1fr); 
+  } 
+}
+
+.subcol { 
+  background: transparent; 
+}
+
+/* Titulares */
+.grupo-title {
+  font-weight: 900;
+  text-align: center;
+  color: #fff;
+  font-size: clamp(1.4rem, 1.2rem + 1.2vw, 2.3rem);
+  padding: .65rem 1.2rem;
+  border-radius: 999px;
+  margin: 2px auto 14px;
+  width: min(92%, 520px);
+  background: linear-gradient(90deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
+.sub-title{
+  text-align:center;
+  color:#fff;
+  font-weight:800;
+  font-size: clamp(1.1rem, .95rem + .8vw, 1.6rem);
+  padding: .5rem 1rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  width: min(92%, 420px);
+  margin: 0.2rem auto 0.9rem;
+}
+
+/* Contenedor de tarjetas dentro de cada subcol */
+.grupo-cards { 
+  display:flex; 
+  flex-direction:column; 
+  gap:12px; 
+}
+
+.grupo-col {
+  border-radius: 20px;
+  padding: 16px 16px 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+  border: 1px solid rgba(255,255,255,0.18);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.25),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+  backdrop-filter: blur(6px);
+}
+
+.grupo-empty {
+  color: #ffffffcc;
+  text-align: center;
+  padding: 1rem .5rem;
+  border: 1px dashed rgba(255,255,255,0.25);
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+}
+
+/* Colores de los iconos de acción */
+.icon-btn.icon-edit { 
+  color:#16a34a; 
+}
+
+.icon-btn.icon-delete { 
+  color:#dc2626; 
+}
+
+.icon-btn.icon-edit:hover { 
+  background: rgba(22,163,74,.12); 
+}
+
+.icon-btn.icon-delete:hover { 
+  background: rgba(220,38,38,.12); 
+}
+
+
+
 
