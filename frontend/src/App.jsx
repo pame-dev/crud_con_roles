@@ -15,9 +15,6 @@ import Dashboard from "./pages/dashboard";
 import PantallaCompleta from "./pages/pantalla_completa";
 import FormularioTurno from "./pages/formulario_turno";
 import Login from "./pages/login";
-<<<<<<< HEAD
-import VistaAdministrador from "./pages/vista_administrador";
-=======
 import VistaGerente from "./pages/vista_gerente";
 import VistaTrabajador from './pages/vista_trabajador';
 import VistaSuperadministrador from "./pages/vista_superadministrador";
@@ -31,7 +28,6 @@ import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
 import EditarEmpleado from './pages/editar_empleado';
 
->>>>>>> origin/develop
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -58,20 +54,6 @@ const AppLayout = ({ children }) => {
 
 const PitLineApp = () => {
   return (
-<<<<<<< HEAD
-    <Router>
-      <AppLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/pantalla_completa" element={<PantallaCompleta />} />
-          <Route path="/formulario_turno" element={<FormularioTurno />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/vista_administrador" element={<VistaAdministrador />} />
-        </Routes>
-      </AppLayout>
-    </Router>
-=======
     <EmpleadoProvider>
       <Router>
         <AppLayout>
@@ -97,7 +79,6 @@ const PitLineApp = () => {
         </AppLayout>
       </Router>
     </EmpleadoProvider>
->>>>>>> origin/develop
   );
 };
 export default PitLineApp;
