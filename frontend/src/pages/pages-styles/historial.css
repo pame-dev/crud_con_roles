@@ -1,3 +1,4 @@
+/* ===== Tooltip en tarjetas ===== */
 .tooltip-empleado {
   position: absolute;
   top: 1rem;
@@ -32,6 +33,7 @@
   transform: translateY(0);
 }
 
+/* ===== Encabezados secundarios ===== */
 .header {
   align-items: center;
   margin-bottom: 1.5rem;
@@ -46,16 +48,66 @@
   text-align: center;
 }
 
-.btn_volver {
-  background-color: #dc3545;
-  border: none;
-  color: white;
-  padding: 0.5rem 0.7rem;
-  display: flex;
+/* ===== Hero local (NO global) ===== */
+.seccion-hero { 
+  padding: 34px 0 80px; 
+}
+
+/* Tamaños unificados del botón del hero */
+:root{
+  --hero-btn-d: 44px;   /* diámetro del botón */
+  --hero-icon-d: 22px;  /* tamaño del ícono */
+}
+
+.row-hero{
+  width: min(1100px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: var(--hero-btn-d) 1fr var(--hero-btn-d); /* [flecha][título][espejo] */
   align-items: center;
+  gap: 12px;
+}
+
+/* Botón circular blanco (posición estática dentro del grid) */
+.btn_regresar.hero-back{
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  display: flex; 
+  align-items: center; 
   justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 2.5rem;
-  margin-left: 2rem !important; /* Empuja el botón a la derecha */
+  padding: 0;
+  line-height: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  transition: background .2s ease, transform .1s ease;
+}
+
+.btn_regresar.hero-back:hover{
+  background: rgba(255,255,255,.12);
+  transform: translateY(-1px);
+}
+
+/* Asegura el tamaño del ícono */
+.btn_regresar.hero-back svg{ 
+  width: var(--hero-icon-d) !important;
+  height: var(--hero-icon-d) !important;
+  stroke: currentColor; 
+  flex: 0 0 auto;
+}
+
+/* Spacer derecho del mismo tamaño */
+.hero-right-spacer{
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+}
+
+/* Responsive: un poco más pequeño en móvil */
+@media (max-width: 420px){
+  :root{
+    --hero-btn-d: 40px;
+    --hero-icon-d: 20px;
+  }
 }
