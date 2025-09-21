@@ -110,24 +110,27 @@ export default function AdministrarEmpleados() {
       >
         {/* HERO */}
         <div className="hero-section">
-          <div className="hero-row">
-            <button
-              className="btn_volver hero-back"
-              onClick={goBack}
-              aria-label="Regresar"
-              title="Regresar"
-            >
-              <ArrowLeft size={22} />
-            </button>
-            <div className="hero-copy text-center">
-              <h3 className="display-3 fw-bold mb-1">Administración de Empleados</h3>
-                <p className="lead opacity-75">
-                  Gestiona gerentes y trabajadores de manera rápida y sencilla.
-                </p>
-              </div>
+          <div className="hero-seccion">
+            <div className="hero-row">
+              <button
+                className="btn_volver hero-back"
+                onClick={goBack}
+                aria-label="Regresar"
+                title="Regresar"
+              >
+                <ArrowLeft size={22} />
+              </button>
+              <div className="hero-copy text-center">
+                <h3 className="display-3 fw-bold mb-1">Administración de Empleados</h3>
+                  <p className="lead opacity-75">
+                    Gestiona gerentes y trabajadores de manera rápida y sencilla.
+                  </p>
+                </div>
 
-          {/* Spacer derecho para mantener el centrado simétrico */}
-          <div aria-hidden="true" className="hero-right-spacer" />
+            {/* Spacer derecho para mantener el centrado simétrico */}
+            <div aria-hidden="true" className="hero-right-spacer" />
+            
+          </div>
         </div>
       </div>
 
