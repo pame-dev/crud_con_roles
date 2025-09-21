@@ -184,29 +184,39 @@ const Historial = () => {
   return (
     <AnimatePresence>
       <motion.div
-        className="full-width-container"
+        className="full-width-container historial-page"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-        {/* HERO SECTION */}
+
+        {/* HERO */}
         <div className="hero-section">
-          <div className="d-flex align-items-center mt-2">
-            <button
-              className="btn_volver me-2"
-              onClick={goBack}
-              title="Regresar"
-              aria-label="Regresar"
-            >
-              <ArrowLeft size={20} />
-            </button>
-            <div className="text-center w-100">
-              <h3 className="display-3 fw-bold mb-1">Historial de Turnos</h3>
-              <p className="lead opacity-75">Consulta y filtra los turnos atendidos o pendientes.</p>
-            </div>
+          <div className="seccion-hero">
+            <div className="row-hero">
+              <button
+                className="btn_regresar hero-back"
+                onClick={goBack}
+                aria-label="Regresar"
+                title="Regresar"
+              >
+                <ArrowLeft size={22} />
+              </button>
+              <div className="hero-copy text-center">
+                <h3 className="display-3 fw-bold mb-1">Historial de Turnos</h3>
+                  <p className="lead opacity-75">
+                    Consulta y filtra los turnos atendidos o pendientes.
+                  </p>
+                </div>
+
+            {/* Spacer derecho para mantener el centrado simétrico */}
+            <div aria-hidden="true" className="hero-right-spacer" />
+            
           </div>
         </div>
+      </div>
+
 
         {/* CONTENIDO PRINCIPAL */}
         <div className="container px-3 px-md-5" style={{ marginTop: "-2rem", paddingBottom: "3rem" }}>
