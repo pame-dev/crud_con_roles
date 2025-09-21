@@ -12,6 +12,14 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $user = Empleado::where('CORREO', $request->user)->first();
+                        // Buscar al usuario por correo
+        $user = Empleado::where('CORREO', $request->user)->first();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'El correo no está registrado en el sistema.'
+            ], 404); // 🔹 código 404 para indicar "no encontrado"
+        }
 
         if (!$user || $user->CONTRASENA !== $request->pass) {
             return response()->json(['error' => 'Usuario o contraseña incorrectos'], 401);
@@ -25,28 +33,31 @@ class AuthController extends Controller
             'CONTRASENA' => $user->CONTRASENA,
             'NOMBRE' => $user->NOMBRE
         ]);
+
+
     }
 
     // 1️⃣ Solicitar código
     public function forgotPassword(Request $request)
     {
         $request->validate([
-            'email' => 'required|email'
+            'email' => 'required|email',
         ]);
 
-        $code = rand(100000, 999999);
+        $user = Empleado::where('CORREO', $request->email)->first();
 
-        DB::table('password_resets')->updateOrInsert(
-            ['email' => $request->email],
-            ['token' => $code, 'created_at' => now()]
-        );
+        if (!$user) {
+            return response()->json([
+                'error' => 'El correo no está registrado en el sistema.'
+            ], 404);
+        }
 
-        Mail::to($request->email)->send(new RecuperarContrasenaMail($request->email, $code));
-
+        // generar token, enviar correo...
         return response()->json([
-            'message' => 'Código enviado al correo ' . $request->email
+            'message' => 'Se envió un código a tu correo.'
         ]);
     }
+
 
     // 2️⃣ Verificar código (solo validación)
     public function verifyCode(Request $request)
@@ -106,4 +117,24 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Contraseña actualizada correctamente']);
     }
+
+    public function correoExiste(Request $request)
+{
+    $request->validate([
+        'correo' => 'required|email',
+        'id' => 'nullable|integer',
+    ]);
+
+    $query = Empleado::where('CORREO', $request->correo);
+
+    // Si está editando, excluir su propio ID
+    if ($request->id) {
+        $query->where('ID_EMPLEADO', '!=', $request->id);
+    }
+
+    $existe = $query->exists();
+
+    return response()->json(['existe' => $existe]);
+}
+
 }

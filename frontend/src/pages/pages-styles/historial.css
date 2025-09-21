@@ -1,89 +1,113 @@
-/* Encapsulado para no pelearse con otros estilos */
-.historial-page {
-  margin-top: 4.9rem; /* separa del header */
-  max-width: 1400px;  
-  padding: 0 1rem 2rem; /* padding horizontal y abajo */
-}
-
-.historial-page h2 {
-  font-weight: 800;
+/* ===== Tooltip en tarjetas ===== */
+.tooltip-empleado {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: rgba(0,0,0,0.85);
   color: #fff;
-  letter-spacing: .2px;
-  font-size: 5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  z-index: 9999;
+  white-space: nowrap;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-5px);
+  transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
 }
 
-.historial-card .badge {
-  text-transform: capitalize;
+.tooltip-empleado::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  right: 10px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0,0,0,0.85) transparent transparent transparent;
 }
 
-/* Espacio entre cada tarjeta */
-.historial-card {
-  border-radius: 12px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+.historial-card:hover .tooltip-empleado {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
 }
 
-/* Efecto hover ligero */
-.historial-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-}
-
-/* Asegura consistencia interna */
-.historial-card .card-body {
-  padding: 1rem 1.25rem;
-}
-
-.historial-pagination {
-  margin-top: 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;   /* centra el texto y los botones */
-  gap: 0.5rem;         /* espacio entre texto y botones */
-}
-
-.historial-pagination small {
-  font-weight: 500;
-  color: #fff;           /* un gris más marcado */
-}
-
-.historial-pagination .btn-group .btn {
-  color: black;
-  border-radius: 999px;  /* botones redonditos */
-  padding: 0.5rem 1.2rem;
-  background: #fff;
-}
-
-/* Contenedor: botón izquierda + título centrado + spacer derecha */
-.header-with-back {
-  display: flex;
+/* ===== Encabezados secundarios ===== */
+.header {
   align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
-/* Botón regresar */
-.back-btn {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.375rem 0.75rem;  /* igual a Bootstrap btn */
-  font-size: 1rem;
-  border-radius: 0.375rem;   /* mismo radio que Iniciar sesión */
-}
-
-/* Spacer con ancho del botón para mantener el título centrado */
-.back-btn-spacer {
-  width: 200px;   /* mismo ancho aprox que el botón de iniciar sesión */
-  height: 1px;
-}
-/* Título grande centrado (opcional unifica estilos) */
-.titulo-seccion{
-  color: #fff;
-  font-weight: 800;
+.titulo {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin: 0;
+  flex-grow: 1;
   text-align: center;
-  text-shadow: 1px 1px 3px rgba(0,0,0,.35);
-  font-size: clamp(1.5rem, 4vw, 3rem);
-  margin: 10px 200px 20px;
 }
 
+/* ===== Hero local (NO global) ===== */
+.seccion-hero { 
+  padding: 34px 0 80px; 
+}
+
+/* Tamaños unificados del botón del hero */
+:root{
+  --hero-btn-d: 44px;   /* diámetro del botón */
+  --hero-icon-d: 22px;  /* tamaño del ícono */
+}
+
+.row-hero{
+  width: min(1100px, 92vw);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: var(--hero-btn-d) 1fr var(--hero-btn-d); /* [flecha][título][espejo] */
+  align-items: center;
+  gap: 12px;
+}
+
+/* Botón circular blanco (posición estática dentro del grid) */
+.btn_regresar.hero-back{
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  transition: background .2s ease, transform .1s ease;
+}
+
+.btn_regresar.hero-back:hover{
+  background: rgba(255,255,255,.12);
+  transform: translateY(-1px);
+}
+
+/* Asegura el tamaño del ícono */
+.btn_regresar.hero-back svg{ 
+  width: var(--hero-icon-d) !important;
+  height: var(--hero-icon-d) !important;
+  stroke: currentColor; 
+  flex: 0 0 auto;
+}
+
+/* Spacer derecho del mismo tamaño */
+.hero-right-spacer{
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+}
+
+/* Responsive: un poco más pequeño en móvil */
+@media (max-width: 420px){
+  :root{
+    --hero-btn-d: 40px;
+    --hero-icon-d: 20px;
+  }
+}

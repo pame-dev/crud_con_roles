@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Header from './layouts/Header';
 import Footer from './layouts/Footer';
 import './styles/custom.css';
+import './i18n/i18n';
 
 import { useLocation } from 'react-router-dom';
 
@@ -27,6 +28,7 @@ import RequireRoleLocal from "./pages/RequireRoleLocal";
 import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
 import EditarEmpleado from './pages/editar_empleado';
+import TerminosYCondiciones from './pages/terminos_y_condiciones';
 
 
 // Layout condicional
@@ -75,6 +77,8 @@ const PitLineApp = () => {
             <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
             <Route path='/editar_empleado' element={<EditarEmpleado />} />
             <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
+            <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
+
           </Routes>
         </AppLayout>
       </Router>
