@@ -40,13 +40,15 @@ const PantallaCompleta = () => {
         >
           {/* Hero Section */}
           <div className="hero-section-pc">
-            <div 
-              className="back-arrow text-start mt-2 ms-3"
-              style={{ cursor: "pointer" }}
+            <button
+              className="btn_regresar hero-backk"
               onClick={handleExit}
+              aria-label="Regresar"
+              title="Regresar"
             >
-              <ChevronLeft size={32} className="text-light" />
-            </div>
+              <ChevronLeft size={22} />
+            </button>
+
             <div className="container-fluid text-center">
               <h2 className="display-3 fw-bold mb-3">PitLine les da la Bienvenida</h2>
               <p className="lead opacity-75">
@@ -83,7 +85,7 @@ const PantallaCompleta = () => {
                       <Flag size={20} className="text-danger me-3" />
                       Fila Actual
                     </h3>
-                    <div className="d-flex flex-column gap-3">
+                    <div className="d-flex flex-column gap-1">
                       {loading && <p className="text-muted">Cargando...</p>}
                       {err && <p className="text-danger">{err}</p>}
                       {!loading && !err && fila.length === 0 && (
