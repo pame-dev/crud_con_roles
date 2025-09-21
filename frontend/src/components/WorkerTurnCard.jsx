@@ -57,7 +57,10 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
         const estaAusente = t.ESTADO === 0;
 
         return (
-          <div key={t.ID_EMPLEADO} className="current-turn-card mb-2 p-3 shadow-sm rounded">
+          <div
+            key={t.ID_EMPLEADO}
+            className={`current-turn-card mb-2 p-3 shadow-sm rounded ${turnoEnProceso === t.ID_EMPLEADO ? "turno-procesando" : ""}`}
+          >
             {modoLista ? (
               <div className="d-flex justify-content-between align-items-center">
                 {/* IZQUIERDA */}
@@ -68,14 +71,12 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
                   </div>
                   {mostrarCargo && <div className="text-muted"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
                   {turno ? (
-                    <>
-                      <div><i className="me-1"></i>Turno: #{turno.ID_TURNO}</div>
-                    </>
+                    <div><i className="me-1"></i>Turno: #{turno.ID_TURNO}</div>
                   ) : (
                     <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
                   )}
                 </div>
-
+                
                 {/* DERECHA */}
                 <div className="text-end">
                   <div className="mb-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
@@ -84,8 +85,17 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
                     onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
                     disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente} 
                   >
-                    <i className="bi bi-arrow-right-circle me-1"></i>
-                    {estaAusente ? "Ausente" : (turnoEnProceso === t.ID_EMPLEADO ? "..." : "Pasar")}
+                    {turnoEnProceso === t.ID_EMPLEADO ? (
+                      <>
+                        <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Procesando...
+                      </>
+                    ) : (
+                      <>
+                        <i className="bi bi-arrow-right-circle me-1"></i>
+                        {estaAusente ? "Ausente" : "Pasar"}
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -109,14 +119,24 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
                 <button
                   className="btn btn-danger mt-2 d-flex align-items-center justify-content-center"
                   onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
-                  disabled={estaAusente}
+                  disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente}
                 >
-                  <i className="bi bi-arrow-right-circle me-1"></i>
-                  {estaAusente ? "Ausente" : "Pasar turno"}
+                  {turnoEnProceso === t.ID_EMPLEADO ? (
+                    <>
+                      <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+                      Procesando...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-arrow-right-circle me-1"></i>
+                      {estaAusente ? "Ausente" : "Pasar turno"}
+                    </>
+                  )}
                 </button>
               </div>
             )}
           </div>
+
         );
       })}
     </>

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Zap } from "../iconos";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
+import { List, Grid } from "lucide-react"; // 👈 importamos los iconos
 import "./pages-styles/superadmin.css";
 
 const VistaSuperadministrador = () => {
@@ -12,6 +13,7 @@ const VistaSuperadministrador = () => {
   const [busqueda, setBusqueda] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
+  const [vistaLista, setVistaLista] = useState(false); // 👈 estado para lista/mosaico
 
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
@@ -86,20 +88,33 @@ const VistaSuperadministrador = () => {
         <div className="row g-4">
           <div className="col-12 mb-4">
             <div className="card shadow" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
-              <div className="card-body">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-3">
+              <div className="card-body d-flex justify-content-between align-items-center">
+                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
                   <Zap size={20} className="text-danger me-2" />
                   Turnos en Atención
                 </h4>
 
-                {/* Listado */}
-                <div className="turnos-grid" style={{ padding: "1rem" }}>
-                  <WorkerTurnCard
-                    filtroBusqueda={busqueda}
-                    mostrarCargo={true}
-                    modoLista={true}
-                  />
+                {/* Toggle vista (lista / mosaico) */}
+                <div className="d-flex align-items-center gap-2">
+                  <button
+                    className="btn btn-outline-secondary btn-sm py-1 px-2"
+                    onClick={() => setVistaLista(!vistaLista)}
+                    title={vistaLista ? "Vista mosaico" : "Vista lista"}
+                  >
+                    {vistaLista ? <Grid size={14} /> : <List size={14} />}
+                  </button>
                 </div>
+              </div>
+
+              {/* Listado dinámico */}
+              <div
+                className={vistaLista ? "turnos-list" : "turnos-grid"}
+                style={{ padding: "1rem" }}
+              >
+                <WorkerTurnCard
+                  filtroBusqueda={busqueda}
+                  mostrarCargo={true}
+                />
               </div>
             </div>
           </div>
