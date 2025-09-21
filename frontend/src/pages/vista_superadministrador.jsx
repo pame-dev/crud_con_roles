@@ -1,20 +1,14 @@
 // src/pages/superadmin.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, ArrowLeft } from "../iconos";
-import { List, Grid } from "lucide-react";
-import WorkerTurnCard from "../components/WorkerTurnCard"; 
-import StatusBadge from "../components/StatusBadge";
+import { Zap } from "../iconos";
+import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
 import "./pages-styles/superadmin.css";
 
 const VistaSuperadministrador = () => {
   const navigate = useNavigate();
 
-  const [historial, setHistorial] = useState([]);
-  const [filtro, setFiltro] = useState("");
-  const [nombreEmpleado, setNombreEmpleado] = useState("");
-  const [vistaLista, setVistaLista] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
@@ -23,39 +17,33 @@ const VistaSuperadministrador = () => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
     if (!empleado) {
       navigate("/login", { replace: true });
-    } else {
-      setNombreEmpleado(empleado.NOMBRE);
-      setFiltro(empleado.CARGO.toLowerCase());
-      //  Esto borra todo el historial anterior
-      window.history.pushState(null, "", window.location.href);
-      window.onpopstate = () => {
-        window.history.go(1); // Evita retroceder
-      };
+      return;
     }
+    // bloquear atrás
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = () => window.history.go(1);
   }, [navigate]);
-
 
   const toggleDia = () => {
     if (diaFinalizado) {
-      // Iniciar nuevo día usando el mismo botón
       setDiaFinalizado(false);
       alert("Se inició un nuevo día. Ahora se pueden agendar turnos.");
     } else {
-      // Finalizar día
       setShowModal(true);
     }
   };
 
-  //función para finalizar el día
   const confirmarFinalizar = () => {
     setDiaFinalizado(true);
-    //setHistorial([]);
     setShowModal(false);
     alert("Día finalizado");
   };
 
+  const onFinalizarDia = toggleDia;
+
   return (
-    <div className="full-width-container">
+    <div className="full-width-container superadmin-page">
+      {/* HERO */}
       <div className="hero-section">
         <div className="container text-center">
           <h2 className="display-4 fw-bold mb-1">Administración</h2>
@@ -63,89 +51,79 @@ const VistaSuperadministrador = () => {
         </div>
       </div>
 
-      <div className="container" style={{ marginTop: "-3rem" }}>
-        <div className="row full-width-row g-4">
-          <div className="col-md-12 mb-4">
-            <div className="card shadow">
-              <div className="card-body d-flex justify-content-between align-items-center">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
-                  <Zap size={20} className="text-danger me-2" /> Turnos en Atención
+      {/* CONTENIDO */}
+      <div className="container main-content">
+        {/* Panel de filtros / acciones (estilo Historial) */}
+        <div className="filtros-panel mb-4">
+          <div className="filtros-grid">
+            {/* Buscar empleado */}
+            <div>
+              <label className="filtro-label">Buscar empleado</label>
+              <input
+                className="form-control filtro-input"
+                placeholder="Buscar empleado…"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+            </div>
+
+            {/* Acciones */}
+            <button className="filtro-btn" onClick={onFinalizarDia}>
+              {diaFinalizado ? "Iniciar día" : "Finalizar día"}
+            </button>
+
+            <button className="filtro-btn" onClick={() => navigate("/historial")}>
+              Historial
+            </button>
+
+            <button className="filtro-btn" onClick={() => navigate("/administrar_empleados")}>
+              Administrar
+            </button>
+          </div>
+        </div>
+
+        {/* Card de Turnos */}
+        <div className="row g-4">
+          <div className="col-12 mb-4">
+            <div className="card shadow" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
+              <div className="card-body">
+                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-3">
+                  <Zap size={20} className="text-danger me-2" />
+                  Turnos en Atención
                 </h4>
 
-                {/* Contenedor buscador + botón */}
-                <div className="d-flex align-items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Buscar empleado..."
-                    className="form-control form-control-sm"
-                    style={{ maxWidth: "200px" }}
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
+                {/* Listado */}
+                <div className="turnos-grid" style={{ padding: "1rem" }}>
+                  <WorkerTurnCard
+                    filtroBusqueda={busqueda}
+                    mostrarCargo={true}
+                    modoLista={true}
                   />
-                  <button
-                    className="btn btn-outline-secondary btn-sm py-1 px-2"
-                    onClick={() => setVistaLista(!vistaLista)}
-                    title={vistaLista ? "Vista mosaico" : "Vista lista"}
-                  >
-                    {vistaLista ? <Grid size={14} /> : <List size={14} />}
-                  </button>
                 </div>
               </div>
-
-              {/* Botones centrados */}
-              <div className="acciones-centradas mx-auto mb-5">
-                <button
-                  className={`btn ${diaFinalizado ? "btn-success" : "btn-danger"} btn-compacto`}
-                  onClick={toggleDia}
-                >
-                  {diaFinalizado ? "Iniciar Nuevo Día" : "Finalizar día"}
-                </button>
-
-                <button
-                  className="btn btn-danger btn-compacto"
-                  onClick={() => navigate("/historial")}
-                >
-                  Historial
-                </button>
-
-                <button
-                  className="btn btn-danger btn-compacto"
-                  onClick={() => navigate("/administrar_empleados")}
-                >
-                  Administrar
-                </button>
-              </div>
-
-
-              {/* Contenedor dinámico */}
-              <div
-                className={vistaLista ? "turnos-list" : "turnos-grid"}
-                style={{ padding: "1rem" }}
-              >
-                <WorkerTurnCard 
-                  filtroBusqueda={busqueda}
-                  mostrarCargo={true}
-                  modoLista={true}   // 👈 esta prop
-                />
-
-              </div>
-
             </div>
           </div>
         </div>
-      </div>
+      </div> {/* /container main-content */}
 
-      {/* Modal de confirmación */}
+      {/* MODAL Finalizar día */}
       {showModal && !diaFinalizado && (
-        <div className="modal fade show d-block" style={{ backgroundColor: "rgba(0,0,0,0.5)" }}>
+        <div
+          className="modal fade show d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
               <div className="modal-header">
                 <h5 className="modal-title">Confirmar acción</h5>
-                <button type="button" className="btn-close" onClick={() => setShowModal(false)} />
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowModal(false)}
+                />
               </div>
               <div className="modal-body">
-                <p>¿Seguro que deseas finalizar el día? </p>
+                <p>¿Seguro que deseas finalizar el día?</p>
               </div>
               <div className="modal-footer">
                 <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
@@ -159,9 +137,8 @@ const VistaSuperadministrador = () => {
           </div>
         </div>
       )}
-    </div>
+    </div> /* /full-width-container */
   );
 };
-
 
 export default VistaSuperadministrador;
