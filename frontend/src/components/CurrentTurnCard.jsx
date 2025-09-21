@@ -1,6 +1,7 @@
 // src/components/CurrentTurnCard.jsx
 import React, { useEffect, useState } from 'react';
 import { Wrench, Clock, Zap } from '../iconos';
+import { fetchTurnoEnAtencion } from '../api/turnosApi';
 import './CurrentTurnCard.css';
 
 const CurrentTurnCard = ({ variant, onPasarTurno }) => {
@@ -15,6 +16,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
       if (response.ok && data.turno) {
         const mappedTurno = {
           turn_number: data.turno.ID_TURNO,
+<<<<<<< HEAD
           reason:
             data.turno.ID_AREA === 1
               ? 'Reparación'
@@ -22,8 +24,17 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
           name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
           priority: data.turno.PRIORIDAD || 'baja',
           started_at: data.turno.HORA,
+=======
+          reason: data.turno.ID_AREA === 1 ? "Reparación" : `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
+          name: data.turno.cliente, // cliente
+          empleado_nombre: data.turno.empleado_nombre, // ⚡ usa exactamente este nombre
+          priority: data.turno.PRIORIDAD || "baja",
+          started_at: new Date(data.turno.ATENCION_EN).toLocaleString(),
+>>>>>>> 5ca6be0eaace416c2ba2ec2090e73469b541333b
           isReparacion: data.turno.ID_AREA === 1,
         };
+
+
 
         setTurno(mappedTurno);
       } else {
@@ -43,7 +54,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
     return () => clearInterval(interval);
   }, []);
 
-  if (!turno) return <p>No hay turno en atención.</p>;
+  if (!turno) return <div className="current-turn-card h-100 position-relative flex-fill text-center"><p>No hay turno en atención.</p></div>;
 
   const isSuperadmin = variant === 'superadmin';
 
@@ -58,9 +69,11 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
           {turno.reason}
         </div>
 
-        <div className="customer-name" style={{ fontSize: '15px' }}>
-          {turno.name}
+        <div className="customer-name" style={{ fontSize: '14px' }}>
+          {turno.empleado_nombre ? `Atendido por: ${turno.empleado_nombre}` : null}
         </div>
+
+
 
         <div className="mb-3">
           <span className="badge bg-light text-dark fs-6">
