@@ -115,7 +115,9 @@ const Header = () => {
         >
           <div
             className="custom-modal"
-            onClick={(e) => e.stopPropagation()} // Evita que el click dentro cierre el modal
+            onClick={(e) => {
+              return e.stopPropagation();
+            }} // Evita que el click dentro cierre el modal
           >
             {/* Encabezado con imagen y nombre */}
             <div className="modal-header-profile">
