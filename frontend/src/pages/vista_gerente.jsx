@@ -21,7 +21,7 @@ const VistaGerente = () => {
   const [busqueda, setBusqueda] = useState(""); // 🔍 búsqueda
   const [vistaLista, setVistaLista] = useState(false);
 
-  //  Protegemos la vista y bloqueamos retroceso
+  // Protegemos la vista y bloqueamos retroceso
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
     if (!empleado) {
@@ -30,11 +30,11 @@ const VistaGerente = () => {
       setNombreEmpleado(empleado.NOMBRE);
       setFiltro(empleado.CARGO.toLowerCase()); // "reparacion" o "cotizacion"
 
-      //  Bloquear retroceso
+      // Bloquear retroceso
+      const blockBack = () => window.history.go(1);
       window.history.pushState(null, "", window.location.href);
-      window.onpopstate = () => {
-        window.history.go(1);
-      };
+      window.addEventListener("popstate", blockBack);
+      return () => window.removeEventListener("popstate", blockBack);
     }
   }, [navigate]);
 
@@ -47,9 +47,7 @@ const VistaGerente = () => {
 
     axios
       .get(`http://127.0.0.1:8000/api/turnos/fila?cargo=${filtro}`)
-      .then((res) => {
-        setTurnos(res.data);
-      })
+      .then((res) => setTurnos(res.data))
       .catch((e) => setErr(e.message || "Error al obtener turnos"))
       .finally(() => setLoading(false));
   }, [filtro]);
@@ -61,35 +59,58 @@ const VistaGerente = () => {
   };
 
   return (
-    <div className="full-width-container">
-      {/* Encabezado */}
+    <div className="full-width-container gerente-page">
+      {/* HERO */}
       <div className="hero-section">
         <div className="container text-center">
           <h2 className="display-4 fw-bold mb-1">
-            {nombreEmpleado} - Área de{" "}
-            {filtro === "reparacion" ? "Reparación" : "Cotización"}
+            {nombreEmpleado} - Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}
           </h2>
           <p className="lead opacity-75">
-            Área de gestión de turnos para{" "}
-            {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
+            Área de gestión de turnos para {filtro === "reparacion" ? "reparaciones" : "cotizaciones"}.
           </p>
         </div>
       </div>
 
-      {/* Contenido */}
-      <div className="container" style={{ marginTop: "-3rem" }}>
-        <div className="row full-width-row g-4">
+      {/* CONTENIDO */}
+      <div className="container main-content">
+        {/* Panel de filtros / acciones (mismo look que Historial) */}
+        <div className="filtros-panel mb-4">
+          <div className="filtros-grid">
+            {/* Buscar */}
+            <div>
+              <label className="filtro-label">Buscar empleado</label>
+              <input
+                className="form-control filtro-input"
+                placeholder="Buscar empleado…"
+                aria-label="Buscar empleado"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+            </div>
+
+            {/* Acciones */}
+            <button className="filtro-btn" onClick={() => navigate("/historial")}>
+              Historial
+            </button>
+
+            <button className="filtro-btn" onClick={() => navigate("/administrar_empleados")}>
+              Administrar
+            </button>
+          </div>
+        </div>
+
+        <div className="row g-4 full-width-row">
           {/* Turnos en atención */}
           <div className="col-md-8 mb-4">
-            <div className="card shadow">
+            <div className="card shadow turnos-card">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
-                  <Zap size={20} className="text-danger me-2" /> Turnos en
-                  Atención
+                  <Zap size={20} className="text-danger me-2" /> Turnos en Atención
                 </h4>
 
-                {/* Buscador + toggle vista */}
-                <div className="d-flex align-items-center gap-2">                  
+                {/* Toggle vista (lista / mosaico) */}
+                <div className="d-flex align-items-center gap-2">
                   <button
                     className="btn btn-outline-secondary btn-sm py-1 px-2"
                     onClick={() => setVistaLista(!vistaLista)}
@@ -100,32 +121,12 @@ const VistaGerente = () => {
                 </div>
               </div>
 
-              {/*Solo estos dos botones, centrados y compactos */}
-              <div className="d-flex justify-content-center gap-3 mb-4">
-                <button
-                  className="btn btn-danger btn-compacto"
-                  onClick={() => navigate("/historial")}
-                >
-                  Historial
-                </button>
-                <button
-                  className="btn btn-danger btn-compacto"
-                  onClick={() => navigate("/administrar_empleados")}
-                >
-                  Administrar
-                </button>
-              </div>
-
               {/* Contenedor dinámico */}
-              <div
-                className={vistaLista ? "turnos-list" : "turnos-grid"}
-                style={{ padding: "1rem" }}
-              >
-                {/* 🔍 Pasamos la búsqueda a WorkerTurnCard */}
+              <div className={vistaLista ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
                 <WorkerTurnCard
-                  filtroBusqueda={filtro}
+                  filtroBusqueda={busqueda}  // 👈 usa la búsqueda de arriba
                   mostrarCargo={false}
-                  busqueda={busqueda}
+                  /* si WorkerTurnCard soporta área, podrías pasar filterArea={filtro} */
                 />
               </div>
             </div>
@@ -133,11 +134,10 @@ const VistaGerente = () => {
 
           {/* Cola de turnos */}
           <div className="col-lg-4">
-            <div className="card shadow-lg full-width-card">
+            <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
               <div className="card-body p-4">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Flag size={20} className="text-danger me-2" /> Fila Actual (
-                  {filtro})
+                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({filtro})
                 </h4>
                 <div className="d-flex flex-column gap-3">
                   {loading && <p className="text-muted">Cargando...</p>}
@@ -146,7 +146,6 @@ const VistaGerente = () => {
                     <p className="text-muted">No hay turnos pendientes</p>
                   )}
 
-                  {/* ✅ Aquí ya NO aplicamos el filtro de búsqueda */}
                   {turnos.map((turn) => (
                     <QueueItem key={turn.turn_number} turn={turn} />
                   ))}
@@ -155,17 +154,15 @@ const VistaGerente = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div> {/* /container main-content */}
     </div>
   );
 };
 
-// Historial
+// Historial (se queda igual)
 export const HistorialTurnos = () => {
   const navigate = useNavigate();
-  const [historial] = useState(
-    JSON.parse(localStorage.getItem("historial")) || []
-  );
+  const [historial] = useState(JSON.parse(localStorage.getItem("historial")) || []);
 
   return (
     <div className="container mt-4">
@@ -173,8 +170,7 @@ export const HistorialTurnos = () => {
       {historial.length > 0 ? (
         historial.map((t) => (
           <div key={t.turn_number} className="card mb-2 p-2">
-            #{t.turn_number} - {t.name} ({t.reason}) -{" "}
-            <StatusBadge status={t.status} />
+            #{t.turn_number} - {t.name} ({t.reason}) - <StatusBadge status={t.status} />
           </div>
         ))
       ) : (
