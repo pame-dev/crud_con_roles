@@ -1,11 +1,27 @@
-/* Contenedor principal */
+/* ===== Contenedor principal ===== */
 .administrar-page {
-  margin-top: 4rem;
+  margin-top: 0.2rem;
   padding-bottom: 3rem;
 }
 
-/* Header */
+/* ===== Paleta (solo colores) ===== */
+:root{
+  /* Rojos de marca */
+  --brand-red:       #E23B43;   /* principal */
+  --brand-red-dark:  #B3212B;   /* acento/gradiente */
+  --brand-red-85:    rgba(226,59,67,.90);
+  --brand-red-dark-85: rgba(179,33,43,.90);
 
+  /* Superficies claras */
+  --panel-white-1:   rgba(255,255,255,0.92);
+  --panel-white-2:   rgba(255,255,255,0.78);
+
+  /* Bordes/contrastes suaves */
+  --soft-border:     rgba(0,0,0,0.08);
+  --muted-white-bd:  rgba(255,255,255,0.18);
+}
+
+/* ===== Header ===== */
 .header {
   align-items: center;
   margin-bottom: 1.5rem;
@@ -20,51 +36,70 @@
   text-align: center;
 }
 
-/* El hero sirve de referencia para posicionar la flecha */
-.hero-section { padding: 34px 0 80px; }
+/* ===== Hero local (NO global) ===== */
+.hero-seccion { 
+  padding: 10px 0 0; 
+}
 
 /* Fila del hero: [flecha] [título centrado] [spacer] */
+:root{
+  --hero-btn-d: 44px;   /* diámetro del botón */
+  --hero-icon-d: 22px;  /* tamaño del ícono */
+}
+
 .hero-row{
   width: min(1100px, 92vw);
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 44px 1fr 44px; /* flecha, contenido, espejo */
+  grid-template-columns: var(--hero-btn-d) 1fr var(--hero-btn-d);
   align-items: center;
   gap: 12px;
 }
 
-/* Botón circular estilo blanco,*/
+/* Botón circular blanco del hero */
 .btn_volver.hero-back{
-  position: static;
-  width: 44px; 
-  height: 44px;
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+  border: 2px solid #fff;
   border-radius: 999px;
   background: transparent;
-  border: 2px solid #fff;
   color: #fff;
   display: flex; 
   align-items: center; 
   justify-content: center;
+  padding: 0;
+  line-height: 0;
   box-shadow: 0 2px 10px rgba(0,0,0,.25);
-  transition: background .2s, transform .1s;
+  transition: background .2s ease, transform .1s ease;
 }
-.btn_volver.hero-back:hover { background: rgba(255,255,255,.12); transform: translateY(-1px); }
-.btn_volver.hero-back svg { stroke: currentColor; }
+
+.btn_volver.hero-back:hover { 
+  background: rgba(255,255,255,.12); 
+  transform: translateY(-1px); 
+}
+
+.btn_volver.hero-back svg {
+  width: var(--hero-icon-d) !important; 
+  height: var(--hero-icon-d) !important;
+  stroke: currentColor;
+  flex: 0 0 auto;
+}
 
 /* Spacer del lado derecho del mismo tamaño que el botón */
-.hero-right-spacer{ width: 44px; height: 44px; }
+.hero-right-spacer{ 
+  width: var(--hero-btn-d); 
+  height: var(--hero-btn-d); 
+}
 
+/* Responsive: botón un poco más pequeño en móvil */
 @media (max-width: 420px){
-  .hero-row{ 
-    grid-template-columns: 40px 1fr 40px; 
-  }
-  .btn_volver.hero-back, .hero-right-spacer{ 
-    width: 40px; 
-    height: 40px; 
+  :root{
+    --hero-btn-d: 40px;
+    --hero-icon-d: 20px;
   }
 }
 
-/* Card de empleado */
+/* ===== Tarjetas de empleado ===== */
 .empleado-card {
   border-radius: 12px;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -76,7 +111,7 @@
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Botones de acción (editar / eliminar) */
+/* ===== Botones de acción (editar / eliminar) ===== */
 .icon-btn {
   border-radius: 50%;
   display: flex;
@@ -90,17 +125,17 @@
   background: #f0f0f0;
 }
 
-/* Botón agregar */
+/* ===== Botón agregar ===== */
 .add-btn {
   border-radius: 10px;
   padding: 0.65rem 1.5rem;
 }
 
-/* Contenedor: botón izquierda + título centrado + spacer derecha */
+/* ===== Contenedor: botón izquierda + título centrado + spacer derecha ===== */
 .header-with-back{
   display: flex;
   align-items: center;
-  justify-content: center;     /* centra el conjunto */
+  justify-content: center;
   gap: 12px;
   margin-bottom: 1rem;
 }
@@ -109,7 +144,7 @@
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  padding: 0.375rem 0.75rem;  /* igual a Bootstrap btn */
+  padding: 0.375rem 0.75rem;
   font-size: 1rem;
   border-radius: 0.375rem;
 }
@@ -125,6 +160,7 @@
   gap: 28px;
   grid-template-columns: 1fr;
 }
+
 @media (min-width: 768px) { 
   .grilla-grupos { 
     grid-template-columns: repeat(2, 1fr); 
@@ -149,6 +185,7 @@
   gap: 18px;
   grid-template-columns: 1fr;
 }
+
 @media (min-width: 768px) { 
   .subgrilla { 
     grid-template-columns: repeat(2, 1fr); 
@@ -159,7 +196,7 @@
   background: transparent; 
 }
 
-/* Titulares */
+/* ===== Titulares ===== */
 .grupo-title {
   font-weight: 900;
   text-align: center;
@@ -169,9 +206,9 @@
   border-radius: 999px;
   margin: 2px auto 14px;
   width: min(92%, 520px);
-  background: linear-gradient(90deg, rgba(255,255,255,0.16), rgba(255,255,255,0.07));
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.15);
+  background: linear-gradient(90deg, var(--brand-red-dark), var(--brand-red));
+  border: 1px solid var(--muted-white-bd);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
 }
 
 .sub-title{
@@ -181,8 +218,8 @@
   font-size: clamp(1.1rem, .95rem + .8vw, 1.6rem);
   padding: .5rem 1rem;
   border-radius: 999px;
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.18);
+  background: linear-gradient(90deg, var(--brand-red-dark-85), var(--brand-red-85));
+  border: 1px solid var(--muted-white-bd);
   width: min(92%, 420px);
   margin: 0.2rem auto 0.9rem;
 }
@@ -197,24 +234,22 @@
 .grupo-col {
   border-radius: 20px;
   padding: 16px 16px 18px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
-  border: 1px solid rgba(255,255,255,0.18);
-  box-shadow:
-    0 10px 25px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.15);
+  background: linear-gradient(180deg, var(--panel-white-1), var(--panel-white-2));
+  border: 1px solid var(--muted-white-bd);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
   backdrop-filter: blur(6px);
 }
 
 .grupo-empty {
-  color: #ffffffcc;
+  color: #333;
   text-align: center;
   padding: 1rem .5rem;
-  border: 1px dashed rgba(255,255,255,0.25);
+  border: 1px dashed var(--soft-border);
   border-radius: 12px;
-  background: rgba(255,255,255,0.04);
+  background: rgba(255,255,255,0.6);
 }
 
-/* Colores de los iconos de acción */
+/* ===== Colores de los iconos de acción ===== */
 .icon-btn.icon-edit { 
   color:#16a34a; 
 }
@@ -230,7 +265,3 @@
 .icon-btn.icon-delete:hover { 
   background: rgba(220,38,38,.12); 
 }
-
-
-
-
