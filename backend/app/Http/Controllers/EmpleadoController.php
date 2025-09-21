@@ -48,14 +48,25 @@ class EmpleadoController extends Controller
         ], 201);
     }
 
-    // NUEVO MÉTODO: todos los trabajadores con sus turnos en 'en_atencion'
+    
+    // MÉTODO ACTUALIZADO: trabajadores con turno INCLUYENDO estado
     public function trabajadoresConTurno()
     {
         $trabajadores = Empleado::where('ID_ROL', 2) // 👈 Filtrar solo rol 2
             ->with(['turnos' => function($q) {
                 $q->where('ESTATUS', 'en_atencion');
             }])
-            ->get();
+            ->get()
+            ->map(function($emp) {
+                return [
+                    'ID_EMPLEADO' => $emp->ID_EMPLEADO,
+                    'NOMBRE' => $emp->NOMBRE,
+                    'APELLIDOS' => $emp->APELLIDOS,
+                    'CARGO' => $emp->CARGO,
+                    'ESTADO' => $emp->ESTADO, // ← AÑADE ESTA LÍNEA
+                    'turnos' => $emp->turnos // ← Los turnos se mantienen
+                ];
+            });
         
         return response()->json($trabajadores);
     }
@@ -86,6 +97,7 @@ class EmpleadoController extends Controller
             'CORREO'     => $request->correo,
             'CARGO'      => $request->cargo,
             'ID_ROL'     => $request->id_rol,
+            'ESTADO'     => $request->estado,
         ]);
 
         return response()->json([
@@ -103,5 +115,32 @@ class EmpleadoController extends Controller
             ->where('ID_EMPLEADO', '!=', $id)
             ->exists();
         return response()->json(['existe' => $existe]);
+    }
+
+    public function ausentes()
+        {
+            $ausentes = Empleado::where('ESTADO', 0)->get();
+            return response()->json($ausentes);
+        }
+
+    // NUEVO MÉTODO: Actualizar estado de empleado (ausente/presente)
+    public function actualizarEstado($id, Request $request)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
+        $validated = $request->validate([
+            'estado' => 'required|boolean'
+        ]);
+
+        $empleado->ESTADO = $validated['estado'];
+        $empleado->save();
+
+        return response()->json([
+            'message' => 'Estado actualizado correctamente',
+            'empleado' => $empleado
+        ]);
     }
 }

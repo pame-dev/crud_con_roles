@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, TrendingUp, Tv, Pencil } from "lucide-react";
+import { User, TrendingUp, Tv, Pencil, Globe } from "lucide-react";
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
-
+import { useTranslation } from "react-i18next";
 
 const Header = () => {
   const location = useLocation();
@@ -15,8 +15,15 @@ const Header = () => {
     "/vista_gerente",
     "/vista_trabajador",
     "/vista_superadministrador",
+    "/historial",
+    "/administrar_empleados"
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
+  const { t, i18n } = useTranslation();
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
+  };
 
   // Obtener empleado del localStorage al cargar el componente
   useEffect(() => {
@@ -35,7 +42,7 @@ const Header = () => {
         <div className="container-fluid">
 
           {/* Logo */}
-          <Link to="/" className="navbar-brand d-flex align-items-center">
+          <Link to="#" className="navbar-brand d-flex align-items-center">
             <img src={logo} alt="PitLine Logo" className="logo-image" />
             <div>
               <h4 className="mb-0 fw-bold">PitLine</h4>
@@ -82,6 +89,19 @@ const Header = () => {
                   >
                     <Tv size={20} className="me-2" />
                     Pantalla Completa
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link
+                    to="#"
+                    className="nav-link d-flex align-items-center"
+                    onClick={(e) => {
+                      e.preventDefault(); // evita que navegue
+                      toggleLanguage();
+                    }}
+                  >
+                    <Globe size={20} className="me-2" />
+                    {t("traducir")}
                   </Link>
                 </li>
               </ul>

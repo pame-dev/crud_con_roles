@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Wrench, Clock } from '../iconos';
-import { ArrowRightCircle } from "lucide-react"; 
-import './CurrentTurnCard.css';
-import { pasarTurno } from "../api/turnosApi"; // Importa la función pasarTurno
+import './WorkerTurnCard.css';
+import { pasarTurno } from "../api/turnosApi";
 
-
-const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
+const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista = false }) => {
   const [trabajadores, setTrabajadores] = useState([]);
-  const [turnoEnProceso, setTurnoEnProceso] = useState(null); // ID del trabajador cuyo turno se está pasando
+  const [turnoEnProceso, setTurnoEnProceso] = useState(null);
 
-  // Función para traer trabajadores
   const fetchTrabajadores = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/api/trabajadores/con-turno');
@@ -21,14 +17,12 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
     }
   };
 
-  // Refrescar cada 10 segundos
   useEffect(() => {
     fetchTrabajadores();
     const interval = setInterval(fetchTrabajadores, 10000);
     return () => clearInterval(interval);
   }, []);
 
-  // Filtrado por nombre o cargo
   const trabajadoresFiltrados = trabajadores.filter(t =>
     t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
     (t.CARGO && t.CARGO.toLowerCase().includes(filtroBusqueda.toLowerCase()))
@@ -36,84 +30,92 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false }) => {
 
   if (!trabajadoresFiltrados.length) return <p>No hay trabajadores que coincidan.</p>;
 
-
-  
-  // Función para pasar turno
   const handlePasarTurno = async (idEmpleado, cargo) => {
-    setTurnoEnProceso(idEmpleado); // activar mensaje
+    setTurnoEnProceso(idEmpleado);
     try {
       await pasarTurno(idEmpleado, cargo);
-      await fetchTrabajadores(); // refrescar lista si quieres
+      await fetchTrabajadores();
     } catch (err) {
       console.error("Error al pasar turno:", err);
     } finally {
-      setTurnoEnProceso(null); // quitar mensaje
+      setTurnoEnProceso(null);
     }
   };
 
-
-
+  const formatHora = (hora) => {
+    if (!hora) return "—";
+    const date = new Date(hora);
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  };
 
   return (
     <>
       {trabajadoresFiltrados.map((t) => {
-        const turno = t.turnos.length > 0 ? t.turnos[0] : null;
+        const turno = t.turnos && t.turnos.length > 0 ? t.turnos[0] : null;
+        
+        // VERIFICACIÓN del estado 
+        const estaAusente = t.ESTADO === 0;
 
         return (
-          <div key={t.ID_EMPLEADO} className="current-turn-card h-100 position-relative flex-fill mb-3">
-            <div className="text-center">
-              {/* Nombre del trabajador */}
-              <div className="turn-number-display" style={{ fontSize: '28px' }}>
-                {t.NOMBRE} {t.APELLIDOS}
-              </div>
-
-              {/* Mostrar cargo solo en superadministrador */}
-              {mostrarCargo && (
-                <div className="cargo-display" style={{ fontSize: '14px', color: '#fcfbfbff', marginBottom: '5px' }}>
-                  Cargo: {t.CARGO}
+          <div key={t.ID_EMPLEADO} className="current-turn-card mb-2 p-3 shadow-sm rounded">
+            {modoLista ? (
+              <div className="d-flex justify-content-between align-items-center">
+                {/* IZQUIERDA */}
+                <div>
+                  <div className="fw-bold fs-5">
+                    <i className="bi bi-person-circle me-1"></i> {t.NOMBRE} {t.APELLIDOS}
+                    {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
+                  </div>
+                  {mostrarCargo && <div className="text-muted"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
+                  {turno ? (
+                    <>
+                      <div><i className="me-1"></i>Turno: #{turno.ID_TURNO}</div>
+                    </>
+                  ) : (
+                    <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
+                  )}
                 </div>
-              )}
 
-              {/* Información del turno */}
-              {turno ? (
-                <>
-                  <div className="customer-name" style={{ fontSize: '18px' }}>
-                    {turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}
-                  </div>
-                  <div className="customer-name" style={{ fontSize: '15px' }}>
-                    Atendiendo turno: #{turno.ID_TURNO}
-                  </div>
-                  <div className="mb-3">
-                    <span className="badge bg-light text-dark fs-6">
-                      <Wrench size={14} className="me-1" />
-                      <span style={{ fontSize: '12px' }}>
-                        {turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="turn-details">
-                    <div className="detail-item">
-                      <Clock size={18} className="detail-icon" />
-                      <span style={{ fontSize: '12px' }}>Inició: {turno.HORA}</span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <p style={{ fontSize: '14px', color: '#d4c2c2ff' }}>
-                  {turnoEnProceso === t.ID_EMPLEADO ? "Pasando de turno..." : "no está atendiendo"}
-                </p>
-              )}
-
-              {/* Botón fijo */}
-              <div className="worker-footer mt-3">
+                {/* DERECHA */}
+                <div className="text-end">
+                  <div className="mb-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+                  <button
+                    className="btn btn-danger btn-sm d-flex align-items-center"
+                    onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
+                    disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente} 
+                  >
+                    <i className="bi bi-arrow-right-circle me-1"></i>
+                    {estaAusente ? "Ausente" : (turnoEnProceso === t.ID_EMPLEADO ? "..." : "Pasar")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // MODO MOSAICO
+              <div className="text-center">
+                <div className="fw-bold fs-4">
+                  <i className="bi bi-person-circle me-1"></i>{t.NOMBRE} {t.APELLIDOS}
+                  {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
+                </div>
+                {mostrarCargo && <div className="text-muted mb-1"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
+                {turno ? (
+                  <>
+                    <div><i className="bi bi-gear me-1"></i>{turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}</div>
+                    <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
+                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+                  </>
+                ) : (
+                  <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
+                )}
                 <button
-                  className="btn-pass-turn"
+                  className="btn btn-danger mt-2 d-flex align-items-center justify-content-center"
                   onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
+                  disabled={estaAusente}
                 >
-                  Pasar turno
+                  <i className="bi bi-arrow-right-circle me-1"></i>
+                  {estaAusente ? "Ausente" : "Pasar turno"}
                 </button>
               </div>
-            </div>
+            )}
           </div>
         );
       })}

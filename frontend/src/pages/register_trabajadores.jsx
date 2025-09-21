@@ -17,33 +17,59 @@ const RegisterTrabajadores = () => {
     id_rol: ''
   });
 
+    const [correoError, setCorreoError] = useState(""); // ← aquí faltaba
+
+  // ← esta función faltaba
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
-  };
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
 
+    if (name === "correo") {
+      setCorreoError(""); // limpiar error al escribir de nuevo
+    }
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
+    setCorreoError("");
 
-    // antes de mandar, reforzamos que cargo e id_rol vayan correctos
-    const payload = {
-      ...formData,
-      cargo: empleadoLogueado?.CARGO,
-      id_rol: 2
-    };
-    
-    axios
-      .post("http://127.0.0.1:8000/api/empleados", payload)
-      .then((res) => {
-        alert("Empleado registrado correctamente");
-        console.log(res.data);
+    // Validar si el correo ya existe antes de enviar
+    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: formData.correo }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.existe) {
+          setCorreoError("El correo ya está registrado por otro empleado.");
+          return;
+        }
+
+        // Si no existe, registramos al empleado
+        const payload = {
+          ...formData,
+          cargo: empleadoLogueado?.CARGO,
+          id_rol: 2,
+        };
+
+        axios
+          .post("http://127.0.0.1:8000/api/empleados", payload)
+          .then((res) => {
+            alert("Empleado registrado correctamente");
+            console.log(res.data);
+            navigate("/administrar_empleados");
+          })
+          .catch((err) => {
+            console.error(err);
+            alert("Error al registrar empleado");
+          });
       })
       .catch((err) => {
-        console.error(err);
-        alert("Error al registrar empleado");
+        setCorreoError("Error al validar el correo.");
+        console.error("Error al validar correo:", err);
       });
   };
 
@@ -88,6 +114,9 @@ const RegisterTrabajadores = () => {
                     onChange={handleChange}
                     required
                   />
+                      {correoError && (
+                      <p className="text-danger mt-1">{correoError}</p>
+                    )}
                 </div>
 
                 

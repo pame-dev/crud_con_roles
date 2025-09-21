@@ -1,0 +1,75 @@
+/* Fondo rojo con imagen difuminada */
+.terminos-page {
+  min-height: 100vh;
+  background: linear-gradient(
+      rgba(220, 53, 69, 0.85),
+      rgba(220, 53, 69, 0.85)
+    ),
+    url('/assets/fondo-rojo.jpg') center/cover no-repeat;
+  padding-top: 3rem;
+  padding-bottom: 1rem;
+}
+
+/* Botón volver */
+.btn_volver {
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  padding: 0.5rem 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.btn_volver:hover {
+  background-color: #c82333;
+}
+
+/* Título */
+.terminos-title {
+  color: #fff;
+  text-align: center;
+  font-size: 2rem;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Tarjeta de contenido */
+.shadow-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+/* Lista */
+.terminos-content ol {
+  padding-left: 1.5rem;
+  margin-top: 1rem;
+}
+
+.terminos-content ol li {
+  margin-bottom: 0.7rem;
+}
+
+/* Parrafos */
+.terminos-content p {
+  margin-bottom: 1rem;
+}
+
+/* Botón final */
+.text-center .btn-danger {
+  border-radius: 10px;
+  background-color: #dc3545;
+  transition: 0.3s;
+}
+
+.text-center .btn-danger:hover {
+  background-color: #c82333;
+}

@@ -77,14 +77,22 @@ const Login = () => {
         break;
     }
 
-  } catch (err) {
-      console.error("Error completo al iniciar sesión:", err);  // 🔹 aquí ves todo
+    } catch (err) {
+      console.error("Error completo al iniciar sesión:", err);
+      
+      // 🔹 Captura el error del backend
+      if (err.response?.status === 404) {
+        setError("El correo no existe en el sistema.");
+      } else if (err.response?.status === 401) {
+        setError("Contraseña incorrecta.");
+      } else {
+        setError("No se pudo iniciar sesión. Intenta de nuevo.");
+      }
 
-    setError(err.response?.data?.error || "No se pudo iniciar sesión. Intenta de nuevo.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
 
 
@@ -156,7 +164,7 @@ const Login = () => {
                   checked={form.termsAccepted}
                   onChange={handleChange}
                 />
-                <span>Acepto los términos y condiciones</span>
+                <span>Acepto los <a className="linkk" href="/terminos_y_condiciones">Terminos y Condiciones</a></span>
               </label>
               <a className="link" href="/olvide_mi_contrasena">Olvidé mi contraseña</a>
             </div>
