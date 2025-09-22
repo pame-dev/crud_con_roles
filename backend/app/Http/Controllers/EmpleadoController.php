@@ -9,12 +9,12 @@ class EmpleadoController extends Controller
 {
     public function index()
     {
-        return response()->json(Empleado::all());
+        return response()->json(Empleado::where('ACTIVO', 1)->get()); // Filtra empleados activos
     }
 
     public function show($id)
     {
-        $empleado = Empleado::find($id);
+        $empleado = Empleado::where('ID_EMPLEADO', $id)->where('ACTIVO', 1)->first();
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
@@ -71,18 +71,29 @@ class EmpleadoController extends Controller
         return response()->json($trabajadores);
     }
 
-    // NUEVO MÉTODO: eliminar empleado
+    // NUEVO MÉTODO: eliminar/desactivar empleado
     public function destroy($id)
     {
         $empleado = Empleado::find($id);
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
-        // Eliminar turnos asociados antes de eliminar el empleado
-        $empleado->turnos()->delete();
+        $empleado->ACTIVO = 0; // Marcar como inactivo en lugar de eliminar
+        $empleado->save();
 
-        $empleado->delete();
-        return response()->json(['message' => 'Empleado eliminado correctamente']);
+        return response()->json(['message' => 'Empleado desactivado correctamente']);
+    }
+
+    public function recuperar($id)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+        $empleado->ACTIVO = 1; // Marcar como activo
+        $empleado->save();
+
+        return response()->json(['message' => 'Empleado recuperado correctamente']);
     }
 
     public function update(Request $request, $id)

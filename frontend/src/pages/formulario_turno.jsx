@@ -7,6 +7,7 @@ import logoImg from "../assets/logo-fondo-negro.png";
 
 const FormularioTurno = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // estado de carga
   const [formData, setFormData] = useState({
     nombre: '',
     apellidos: '',
@@ -30,18 +31,18 @@ const FormularioTurno = () => {
       return;
     }
 
-    try {
-      // Mapear área a ID
-      const areaMap = { rep: 1, cot: 2 };
+    if (formData.telefono.length < 10) {
+      alert("El número de teléfono debe tener exactamente 10 dígitos.");
+      return;
+    }
 
-      // Obtener fecha y hora actuales ajustadas a Ciudad de México
+    try {
+      setLoading(true); // activar animación
+
+      const areaMap = { rep: 1, cot: 2 };
       const ahora = new Date();
       const opciones = { timeZone: 'America/Mexico_City' };
-      
-      // Formatear fecha como YYYY-MM-DD
-      const fecha = ahora.toLocaleDateString('en-CA', opciones); // Formato ISO (YYYY-MM-DD)
-      
-      // Formatear hora como HH:MM:SS
+      const fecha = ahora.toLocaleDateString('en-CA', opciones);
       const hora = ahora.toLocaleTimeString('es-MX', {
         hour: '2-digit',
         minute: '2-digit',
@@ -49,8 +50,6 @@ const FormularioTurno = () => {
         hour12: false,
         timeZone: 'America/Mexico_City'
       });
-
-      console.log("Fecha:", fecha, "Hora:", hora);
 
       const response = await fetch("http://127.0.0.1:8000/api/turnos", {
         method: "POST",
@@ -71,28 +70,23 @@ const FormularioTurno = () => {
         // Crear PDF tipo boleto
         const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: [250, 400] });
 
-        // Borde tipo boleto
         doc.setDrawColor(0);
         doc.setLineWidth(1.5);
         doc.roundedRect(10, 10, 230, 380, 10, 10, 'S');
 
-        // Encabezado oscuro con borde redondeado
         doc.setFillColor(30, 30, 30);
         doc.roundedRect(10, 10, 230, 60, 10, 10, 'F'); 
 
-        // Logo
         const img = new Image();
         img.src = logoImg;
         img.onload = function() {
           doc.addImage(img, 'PNG', 20, 15, 40, 40);
 
-          // Texto encabezado separado del logo
           doc.setFontSize(14);
           doc.setTextColor(255, 255, 255);
           doc.setFont("helvetica", "bold");
           doc.text("Comprobante de Turno", 140, 55, { align: "center" });
 
-          // Datos del turno más abajo
           doc.setFontSize(12);
           doc.setTextColor(0);
           doc.setFont("helvetica", "normal");
@@ -105,28 +99,29 @@ const FormularioTurno = () => {
           doc.text(`Fecha: ${fecha}`, 20, startY + 4*lineHeight);
           doc.text(`Hora: ${hora}`, 20, startY + 5*lineHeight);
 
-          // Línea punteada tipo perforación
           doc.setLineWidth(0.5);
           doc.setDrawColor(150);
           doc.setLineDash([2, 2], 0);
           doc.line(20, startY + 6*lineHeight, 230, startY + 6*lineHeight);
 
-          // Pie de página
           doc.setLineDash([], 0);
           doc.setFontSize(10);
           doc.text("Gracias por confiar en nosotros", 125, 360, { align: "center" });
 
-          // Guardar PDF
           doc.save(`Turno_${data.turno}.pdf`);
+
+          setLoading(false); // desactivar animación
+          navigate("/");
         };
 
         alert(`Turno solicitado con éxito. Tu turno es: ${data.turno}`);
-        navigate("/");
       } else {
+        setLoading(false);
         alert("Error al solicitar turno: " + (data.message || "Intenta de nuevo."));
       }
 
     } catch (error) {
+      setLoading(false);
       console.error("Error:", error);
       alert("Hubo un error de conexión con el servidor.");
     }
@@ -136,6 +131,14 @@ const FormularioTurno = () => {
 
   return (
     <div className="formulario-compact-container">
+      {/* Overlay de carga */}
+      {loading && (
+        <div className="loading-overlay">
+          <div className="spinner"></div>
+          <p>Solicitando turno...</p>
+        </div>
+      )}
+
       <div className="formulario-compact-card">
         <div className="form-compact-header">
           <div className="header-compact-icon">
@@ -182,7 +185,12 @@ const FormularioTurno = () => {
                 className="form-compact-control" 
                 name="telefono"
                 value={formData.telefono}
-                onChange={handleChange}
+                onChange={(e) => {
+                  const value = e.target.value.replace(/\D/g, "");
+                  if (value.length <= 10) {
+                    setFormData(prev => ({ ...prev, telefono: value }));
+                  }
+                }}
                 placeholder="Número de teléfono" 
                 required
               />
@@ -206,15 +214,16 @@ const FormularioTurno = () => {
           
           <div className="form-compact-footer">
             <p className="required-compact-note">* Campos obligatorios</p>
-            
             <div className="botones-compact-container">
-              <button type="submit" className="submit-compact-button">
-                <i className="fas fa-check-circle"></i>
-                Solicitar Turno
+              <button type="submit" className="submit-compact-button" disabled={loading}>
+                {loading ? (
+                  <><i className="fas fa-spinner fa-spin"></i> Solicitando...</>
+                ) : (
+                  <><i className="fas fa-check-circle"></i> Solicitar Turno</>
+                )}
               </button>
-              <button type="button" className="cancel-compact-button" onClick={handleCancel}>
-                <i className="fas fa-times-circle"></i>
-                Cancelar
+              <button type="button" className="cancel-compact-button" onClick={handleCancel} disabled={loading}>
+                <i className="fas fa-times-circle"></i> Cancelar
               </button>
             </div>
           </div>

@@ -53,7 +53,7 @@ export default function AdministrarEmpleados() {
           id: e.ID_EMPLEADO,
           ID_EMPLEADO: e.ID_EMPLEADO,
           nombre: e.NOMBRE,
-          cargo: (e.CARGO || "").toLowerCase(), // cotizacion | reparacion | general ...
+          cargo: (e.CARGO || "").toLowerCase(),
           tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
           ID_ROL: e.ID_ROL,
         }));
@@ -80,24 +80,19 @@ export default function AdministrarEmpleados() {
   if (isSuper) {
     visibles = empleados.filter((e) => e.tipo !== "Administrador");
   } else if (role === "gerente") {
-    // Un gerente solo ve empleados de su área
-    visibles = empleados.filter((e) => e.ID_ROL === 2 && e.cargo === (storedEmpleado?.CARGO || "").toLowerCase());
+    visibles = empleados.filter(
+      (e) => e.ID_ROL === 2 && e.cargo === (storedEmpleado?.CARGO || "").toLowerCase()
+    );
   }
 
-  // ---- Grupos para el layout por columnas ----
+  // ---- Grupos ----
   const gerentes = isSuper ? visibles.filter((e) => e.tipo === "Gerente") : [];
   const cotizacion = visibles.filter((e) => e.tipo !== "Gerente" && e.cargo === "cotizacion");
   const reparacion = visibles.filter((e) => e.tipo !== "Gerente" && e.cargo === "reparacion");
 
-  const gruposUI = isSuper
-    ? [
-        { key: "gerentes", title: "Gerentes", items: gerentes },
-        { key: "cotizacion", title: "Cotización", items: cotizacion },
-        { key: "reparacion", title: "Reparación", items: reparacion },
-      ]
-    : [
-        { key: "area", title: `Área de ${capital(storedEmpleado?.CARGO || "")}`, items: visibles },
-      ];
+  // ---- Layout dinámico ----
+  const isGerente = role === "gerente";
+  const gerenteCargo = storedEmpleado?.CARGO?.toLowerCase();
 
   return (
     <AnimatePresence>
@@ -112,29 +107,19 @@ export default function AdministrarEmpleados() {
         <div className="hero-section">
           <div className="hero-seccion">
             <div className="hero-row">
-              <button
-                className="btn_volver hero-back"
-                onClick={goBack}
-                aria-label="Regresar"
-                title="Regresar"
-              >
+              <button className="btn_volver hero-back" onClick={goBack} title="Regresar">
                 <ArrowLeft size={22} />
               </button>
               <div className="hero-copy text-center">
                 <h3 className="display-3 fw-bold mb-1">Administración de Empleados</h3>
-                  <p className="lead opacity-75">
-                    Gestiona gerentes y trabajadores de manera rápida y sencilla.
-                  </p>
-                </div>
-
-            {/* Spacer derecho para mantener el centrado simétrico */}
-            <div aria-hidden="true" className="hero-right-spacer" />
-            
+                <p className="lead opacity-75">
+                  Gestiona gerentes y trabajadores de manera rápida y sencilla.
+                </p>
+              </div>
+              <div aria-hidden="true" className="hero-right-spacer" />
+            </div>
           </div>
         </div>
-      </div>
-
-
 
         {/* CONTENIDO */}
         <div className="container" style={{ marginTop: "0", paddingBottom: "1rem" }}>
@@ -144,79 +129,115 @@ export default function AdministrarEmpleados() {
             )}
           </div>
 
-          {/* === LAYOUT: GERENTES + PANEL TRABAJADORES (con 2 subcolumnas) === */}
           <div className="grilla-grupos">
-
-            {/* Columna: Gerentes */}
-            <section className="grupo-col">
-              <h3 className="grupo-title">Gerentes</h3>
-
-              <div className="grupo-cards">
-                {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
-                {gerentes.map((emp) => (
-                  <article className="card empleado-card" key={emp.id}>
-                    <div className="card-body d-flex justify-content-between align-items-center">
-                      <div>
-                        <div className="fw-bold">{emp.nombre}</div>
-                        {/* Mostrar el ÁREA del gerente */}
-                        <div className="text-muted small">{capital(emp.cargo)}</div>
+            {/* Columna: Gerentes (solo visible para superadmin) */}
+            {isSuper && (
+              <section className="grupo-col">
+                <h3 className="grupo-title">Gerentes</h3>
+                <div className="grupo-cards">
+                  {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                  {gerentes.map((emp) => (
+                    <article className="card empleado-card" key={emp.id}>
+                      <div className="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                          <div className="fw-bold">{emp.nombre}</div>
+                          <div className="text-muted small">{capital(emp.cargo)}</div>
+                        </div>
+                        <div className="d-flex gap-2">
+                          <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                            <Edit size={18} />
+                          </button>
+                          <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                            <Trash2 size={18} />
+                          </button>
+                        </div>
                       </div>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            )}
 
-                      <div className="d-flex gap-2">
-                        <button
-                          className="btn btn-light btn-sm icon-btn icon-edit"
-                          title="Editar"
-                          onClick={() => editar(emp.id)}
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button
-                          className="btn btn-light btn-sm icon-btn icon-delete"
-                          title="Eliminar"
-                          onClick={() => eliminar(emp.id)}
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-
-            {/* Panel: Trabajadores (ocupa 2 columnas en desktop) */}
+            {/* Panel: Trabajadores */}
             <section className="grupo-col trabajadores-col">
-              <h3 className="grupo-title">Trabajadores</h3>
-
-              <div className="subgrilla">
-                {/* Subcol: Cotización */}
+              {/* 👇 cambia el título según el rol */}
+              <h3 className="grupo-title">
+                {isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}
+              </h3>
+                      
+              {isSuper ? (
+                // SUPERADMIN → ve dos subcols dentro de la grilla
+                <div className="subgrilla">
+                  <div className="subcol">
+                    <h4 className="sub-title">Cotización</h4>
+                    <div className="grupo-cards">
+                      {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                      {cotizacion.map((emp) => (
+                        <article className="card empleado-card" key={emp.id}>
+                          <div className="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                              <div className="fw-bold">{emp.nombre}</div>
+                              <div className="text-muted small">Empleado de Cotización</div>
+                            </div>
+                            <div className="d-flex gap-2">
+                              <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                                <Edit size={18} />
+                              </button>
+                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                    
+                  <div className="subcol">
+                    <h4 className="sub-title">Reparación</h4>
+                    <div className="grupo-cards">
+                      {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                      {reparacion.map((emp) => (
+                        <article className="card empleado-card" key={emp.id}>
+                          <div className="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                              <div className="fw-bold">{emp.nombre}</div>
+                              <div className="text-muted small">Empleado de Reparación</div>
+                            </div>
+                            <div className="d-flex gap-2">
+                              <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                                <Edit size={18} />
+                              </button>
+                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                // GERENTE → ve solo su bloque, ocupando todo el ancho
                 <div className="subcol">
-                  <h4 className="sub-title">Cotización</h4>
+                  <h4 className="sub-title">{capital(gerenteCargo)}</h4>
                   <div className="grupo-cards">
-                    {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
-                    {cotizacion.map((emp) => (
+                    {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).length === 0 && (
+                      <p className="grupo-empty">Cargando...</p>
+                    )}
+                    {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).map((emp) => (
                       <article className="card empleado-card" key={emp.id}>
                         <div className="card-body d-flex justify-content-between align-items-center">
                           <div>
                             <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de Cotización</div>
+                            <div className="text-muted small">Empleado de {capital(gerenteCargo)}</div>
                           </div>
-
                           <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-edit"
-                              title="Editar"
-                              onClick={() => editar(emp.id)}
-                            >
+                            <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
                               <Edit size={18} />
                             </button>
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-delete"
-                              title="Eliminar"
-                              onClick={() => eliminar(emp.id)}
-                            >
+                            <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
                               <Trash2 size={18} />
                             </button>
                           </div>
@@ -225,47 +246,10 @@ export default function AdministrarEmpleados() {
                     ))}
                   </div>
                 </div>
-
-                {/* Subcol: Reparación */}
-                <div className="subcol">
-                  <h4 className="sub-title">Reparación</h4>
-                  <div className="grupo-cards">
-                    {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-
-                    {reparacion.map((emp) => (
-                      <article className="card empleado-card" key={emp.id}>
-                        <div className="card-body d-flex justify-content-between align-items-center">
-                          <div>
-                            <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de Reparación</div>
-                          </div>
-
-                          <div className="d-flex gap-2">
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-edit"
-                              title="Editar"
-                              onClick={() => editar(emp.id)}
-                            >
-                              <Edit size={18} />
-                            </button>
-                            <button
-                              className="btn btn-light btn-sm icon-btn icon-delete"
-                              title="Eliminar"
-                              onClick={() => eliminar(emp.id)}
-                            >
-                              <Trash2 size={18} />
-                            </button>
-                          </div>
-                        </div>
-                      </article>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              )}
             </section>
 
           </div>
-
 
           <div className="text-center mt-4">
             <Link to={registerPath} className="btn btn-danger fw-bold px-4 add-btn">
@@ -277,4 +261,3 @@ export default function AdministrarEmpleados() {
     </AnimatePresence>
   );
 }
-
