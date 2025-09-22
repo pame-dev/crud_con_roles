@@ -5,21 +5,12 @@ import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
 import { useTranslation } from "react-i18next";
-import React from "react";
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
-  const { empleado, logout } = useContext(EmpleadoContext); //setEmpleado eliminado, antes de " , logout"
-  const [showModal, setShowModal] = useState(false); //valor predeterminado para el modal (oculto) se pasara a true cuando se presione 
-  
-  const [isEditing, setIsEditing] = useState(false); // Estado para editar perfil(modal)
-  const [formData, setFormData] = useState({...empleado}); // Estado para los datos del formulario
-
-//RECORDATORIO: terminar el editar y modificar el cancelar
-//colocar en los inputs el "isEditing"
-//checar composer.phar en backend
-
+  const { empleado, setEmpleado, logout } = useContext(EmpleadoContext);
+  const [showModal, setShowModal] = useState(false);
   const soloUsuario = [
     "/vista_gerente",
     "/vista_trabajador",
@@ -28,7 +19,6 @@ const Header = () => {
     "/administrar_empleados"
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
-
   const { t, i18n } = useTranslation();
 
   const toggleLanguage = () => {
@@ -45,36 +35,6 @@ const Header = () => {
       collapse.hide();
     }
   }, [location]);
-
-
-
-// ╔═══════════════════════════════╗
-// ║           EDITAR              ║
-// ╚═══════════════════════════════╝
-// con esste bloque se pueden manejar los cambios en los inputs del modal mas no se guardaran aún 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({...formData, [name]: value });
-  };
-
-// ╔═══════════════════════════════╗
-// ║           GUARDAR             ║
-// ╚═══════════════════════════════╝
-// Esta función se llamará cuando el usuario haga clic en "Guardar" en el modal (vaya, esto guarda los datos editados)
-  const handleSave = () => {
-    console.log("Guardando datos:", formData);
-    setIsEditing(false);
-    setShowModal(false);    
-  };
-
-// ╔═══════════════════════════════╗
-// ║           CANCELAR            ║
-// ╚═══════════════════════════════╝
-  //se llamara esta funcion cuando el usuarioo haga clic en cancelar
-  const handleCancel = () => {
-    setIsEditing(false);
-    setFormData({...empleado}); // Restablece los datos al estado original del empleado
-  };
 
   return (
     <>
@@ -175,9 +135,7 @@ const Header = () => {
         >
           <div
             className="custom-modal"
-            onClick={(e) => {
-              return e.stopPropagation();
-            }} // Evita que el click dentro cierre el modal
+            onClick={(e) => e.stopPropagation()} // Evita que el click dentro cierre el modal
           >
             {/* Encabezado con imagen y nombre */}
             <div className="modal-header-profile">
@@ -185,85 +143,49 @@ const Header = () => {
                 <h5 className="profile-name">{empleado.NOMBRE}</h5>
                 <p className="profile-email">{empleado.CORREO}</p>
               </div>
-
-              {/* NUEVO: lápiz / guardar / cancelar */}
-              {!isEditing ? (
-                <button className="edit-btn" onClick={() => setIsEditing(true)}>
-                  <Pencil size={16} />
-                </button>
-              ) : (
-                <div className="d-flex gap-2">
-                  <button className="edit-btn" onClick={handleSave}>
-                    <Save size={16} />
-                  </button>
-                  <button className="edit-btn" onClick={handleCancel}>
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
-
             </div>
 
             {/* Opciones */}
             <div className="modal-options">
+              
               <span className="profile-label">Nombre</span>
               <div className="content-profile-row">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="NOMBRE"
-                    value={formData.NOMBRE}
-                    onChange={handleChange}
-                    className="profile-input"
-                  />
-                ) : (
-                  <div className="profile-row">{empleado.NOMBRE}</div>
-                )}
+                <div className="profile-row">
+                  <span className="profile-data">{empleado.NOMBRE}</span>
+                </div>
+                <button className="edit-btn">
+                  <Pencil size={16} />
+                </button>
               </div>
 
               <span className="profile-label">Correo</span>
               <div className="content-profile-row">
-                {isEditing ? (
-                  <input
-                    type="email"
-                    name="CORREO"
-                    value={formData.CORREO}
-                    onChange={handleChange}
-                    className="profile-input"
-                  />
-                ) : (
-                  <div className="profile-row">{empleado.CORREO}</div>
-                )}
+                <div className="profile-row">
+                  <span className="profile-data">{empleado.CORREO}</span>
+                </div>
+                <button className="edit-btn">
+                  <Pencil size={16} />
+                </button>
               </div>
 
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row">
-                {isEditing ? (
-                  <input
-                    type="password"
-                    name="CONTRASENA"
-                    value={formData.CONTRASENA}
-                    onChange={handleChange}
-                    className="profile-input"
-                  />
-                ) : (
-                  <div className="profile-row">{empleado.CONTRASENA}</div>
-                )}
+                <div className="profile-row">
+                  <span className="profile-data">{empleado.CONTRASENA}</span>
+                </div>
+                <button className="edit-btn">
+                  <Pencil size={16} />
+                </button>
               </div>
 
               <span className="profile-label">Area</span>
               <div className="content-profile-row">
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="CARGO"
-                    value={formData.CARGO}
-                    onChange={handleChange}
-                    className="profile-input"
-                  />
-                ) : (
-                  <div className="profile-row">{empleado.CARGO}</div>
-                )}
+                <div className="profile-row">
+                  <span className="profile-data">{empleado.CARGO}</span>
+                </div>
+                <button className="edit-btn">
+                  <Pencil size={16} />
+                </button>
               </div>
 
               
