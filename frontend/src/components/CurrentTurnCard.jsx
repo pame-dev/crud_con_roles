@@ -14,23 +14,14 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
       const data = await response.json();
 
       if (response.ok && data.turno) {
+        // Asegúrate de usar el campo correcto de tu API
         const mappedTurno = {
           turn_number: data.turno.ID_TURNO,
-<<<<<<< HEAD
-          reason:
-            data.turno.ID_AREA === 1
-              ? 'Reparación'
-              : `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
-          name: `${data.turno.NOMBRE} ${data.turno.APELLIDOS}`,
-          priority: data.turno.PRIORIDAD || 'baja',
-          started_at: data.turno.HORA,
-=======
           reason: data.turno.ID_AREA === 1 ? "Reparación" : `Pase al módulo: ${data.turno.ID_EMPLEADO}`,
           name: data.turno.cliente, // cliente
           empleado_nombre: data.turno.empleado_nombre, // ⚡ usa exactamente este nombre
           priority: data.turno.PRIORIDAD || "baja",
           started_at: new Date(data.turno.ATENCION_EN).toLocaleString(),
->>>>>>> 5ca6be0eaace416c2ba2ec2090e73469b541333b
           isReparacion: data.turno.ID_AREA === 1,
         };
 
