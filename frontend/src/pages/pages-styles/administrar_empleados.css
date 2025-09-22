@@ -182,9 +182,14 @@
 /* Subgrid interno para Cotización / Reparación */
 .subgrilla {
   display: grid;
-  gap: 18px;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
+
+.subgrilla-una-columna {
+  grid-template-columns: 1fr; /* solo una columna */
+}
+
 
 @media (min-width: 768px) { 
   .subgrilla { 

@@ -16,7 +16,8 @@ class Empleado extends Model
         'CARGO',
         'CONTRASENA',
         'ID_ROL',
-        'ESTADO'
+        'ESTADO',
+        'ACTIVO'
     ];
 
     // Relación con Turnos
