@@ -11,7 +11,6 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
-        $user = Empleado::where('CORREO', $request->user)->first();
                         // Buscar al usuario por correo
         $user = Empleado::where('CORREO', $request->user)->first();
 
@@ -52,11 +51,16 @@ class AuthController extends Controller
             ], 404);
         }
 
-        // generar token, enviar correo...
-        return response()->json([
-            'message' => 'Se envió un código a tu correo.'
-        ]);
-    }
+        $code = rand(100000, 999999);
+
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $request->email],
+            ['token' => $code, 'created_at' => now()]
+        );
+
+        Mail::to($request->email)->send(new RecuperarContrasenaMail($request->email, $code));
+                return response()->json(['message' => 'Código de recuperación enviado al correo.']);
+            }
 
 
     // 2️⃣ Verificar código (solo validación)
