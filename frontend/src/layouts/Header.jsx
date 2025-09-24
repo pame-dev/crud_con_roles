@@ -16,7 +16,9 @@ const Header = () => {
     "/vista_trabajador",
     "/vista_superadministrador",
     "/historial",
-    "/administrar_empleados"
+    "/administrar_empleados",
+    "/register_gerentes_y_trabajadores",
+    "/register_trabajadores"
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
   const { t, i18n } = useTranslation();
@@ -47,7 +49,7 @@ const Header = () => {
             <div>
               <h4 className="mb-0 fw-bold">PitLine</h4>
               <small className="text-light opacity-75">
-                Taller Mecánico Profesional
+                Acelera tu servicio
               </small>
             </div>
           </Link>
