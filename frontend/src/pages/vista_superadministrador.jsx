@@ -47,7 +47,7 @@ const VistaSuperadministrador = () => {
     <div className="full-width-container superadmin-page">
       {/* HERO */}
       <div className="hero-section">
-        <div className="container text-center">
+        <div className="container text-center mt-3">
           <h2 className="display-4 fw-bold mb-1">Administración</h2>
           <h3 className="display-13 fw-bold mb-1">Área general</h3>
         </div>
@@ -129,22 +129,35 @@ const VistaSuperadministrador = () => {
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
-                <h5 className="modal-title">Confirmar acción</h5>
+              <div className="modal-header flex-column text-center border-0 pb-0">
+                <div className="d-flex align-items-center justify-content-center gap-2">
+                  <i className="bi bi-exclamation-triangle-fill text-warning fs-3"></i>
+                  <h5 className="modal-title mb-0 fw-bold">Confirmar acción</h5>
+                </div>
                 <button
                   type="button"
-                  className="btn-close"
+                  className="btn-close position-absolute top-0 end-0 m-3"
                   onClick={() => setShowModal(false)}
                 />
               </div>
-              <div className="modal-body">
-                <p>¿Seguro que deseas finalizar el día?</p>
+
+              <div className="modal-body text-center">
+                <div className="d-flex justify-content-center align-items-center gap-2">
+                  <i className="bi bi-question-circle-fill text-primary fs-4"></i>
+                  <p className="mb-0 fs-5 fw-medium">¿Seguro que deseas finalizar el día?</p>
+                </div>
               </div>
+
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                >
+                  <i className="bi bi-x-circle me-1"></i>
                   Cancelar
                 </button>
                 <button className="btn btn-danger" onClick={confirmarFinalizar}>
+                  <i className="bi bi-check-circle me-1"></i>
                   Confirmar
                 </button>
               </div>
@@ -152,6 +165,7 @@ const VistaSuperadministrador = () => {
           </div>
         </div>
       )}
+
     </div> /* /full-width-container */
   );
 };
