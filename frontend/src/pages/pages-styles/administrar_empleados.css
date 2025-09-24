@@ -161,15 +161,27 @@
   grid-template-columns: 1fr;
 }
 
+.grilla-grupos-para-gerente {
+  display: grid;
+  gap: 28px;
+  grid-template-columns: 1fr;
+}
+
 @media (min-width: 768px) { 
   .grilla-grupos { 
     grid-template-columns: repeat(2, 1fr); 
   } 
+  .grilla-grupos-para-gerente { 
+    grid-template-columns: repeat(1, 1fr); 
+  }
 }
 @media (min-width: 1100px) { 
   .grilla-grupos { 
     grid-template-columns: repeat(3, 1fr); 
   } 
+  .grilla-grupos-para-gerente { 
+    grid-template-columns: repeat(1, 1fr); 
+  }
 }
 
 /* Panel “Trabajadores” que ocupa 2 columnas en desktop */
