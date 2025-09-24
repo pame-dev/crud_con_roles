@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, TrendingUp, Tv, Pencil, Globe } from "lucide-react";
+import { User, TrendingUp, Tv, Pencil, Globe, Save, X } from "lucide-react"; // ✅ un solo import
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
+import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
+
 // import React from "react"; // ya no es necesario importar React en versiones recientes si solo usas JSX, importar dos veces react genera errores (ya esta declarado en la linea 1)
 
 const Header = () => {
@@ -12,7 +14,6 @@ const Header = () => {
   const navigate = useNavigate(); 
   const { empleado, logout } = useContext(EmpleadoContext); //setEmpleado eliminado, antes de " , logout"
   const [showModal, setShowModal] = useState(false); //valor predeterminado para el modal (oculto) se pasara a true cuando se presione 
-  
   const [isEditing, setIsEditing] = useState(false); // Estado para editar perfil(modal)
   const [formData, setFormData] = useState({...empleado}); // Estado para los datos del formulario
 
@@ -48,8 +49,6 @@ const Header = () => {
     }
   }, [location]);
 
-
-
 // ╔═══════════════════════════════╗
 // ║           EDITAR              ║
 // ╚═══════════════════════════════╝
@@ -64,9 +63,32 @@ const Header = () => {
 // ╚═══════════════════════════════╝
 // Esta función se llamará cuando el usuario haga clic en "Guardar" en el modal (vaya, esto guarda los datos editados)
   const handleSave = () => {
-    console.log("Guardando datos:", formData);
-    setIsEditing(false);
-    setShowModal(false);    
+    // Validar datos antes de enviar
+    const datosActualizados = {
+      nombre: formData.NOMBRE.trim(),      // 🔹 convertimos a minúsculas
+      correo: formData.CORREO.trim(),      // Hacer lo mismo para correo
+      cargo: formData.CARGO.trim(),
+      ...(formData.CONTRASENA ? { contrasena: formData.CONTRASENA } : {}),
+    };
+
+    // Verificar que los datos no estén vacíos
+    if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
+      alert("Por favor, completa todos los campos obligatorios.");
+      return;
+    }
+
+    actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
+      .then((res) => {
+        alert("Perfil actualizado correctamente");
+        setIsEditing(false);
+        setShowModal(false);
+        // Actualizar localStorage y contexto si es necesario
+        localStorage.setItem("empleado", JSON.stringify(res.empleado));
+        // Si tienes setEmpleado en el contexto, actualízalo aquí
+      })
+      .catch((err) => {
+        alert("Error al actualizar perfil: " + (err?.error || "Error desconocido"));
+      });
   };
 
 // ╔═══════════════════════════════╗
@@ -268,7 +290,6 @@ const Header = () => {
                 )}
               </div>
 
-              
             </div>
 
             {/* Footer */}
@@ -278,7 +299,7 @@ const Header = () => {
                 onClick={() => {
                   logout(); 
                   setShowModal(false);
-                  navigate("/");
+                  navigate("/"); 
                 }}
               >
                 Cerrar Sesión
@@ -287,11 +308,8 @@ const Header = () => {
           </div>
         </div>
       )}
-
-
     </>
-
   );
 };
 
-export default Header; 
+export default Header;
