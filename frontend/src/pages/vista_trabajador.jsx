@@ -5,6 +5,8 @@ import CurrentTurnCard from '../components/CurrentTurnCard';
 import './pages-styles/admin.css';  
 import axios from 'axios';
 import { useEffect } from "react";
+import WorkerTurnCard from "../components/WorkerTurnCard";
+
 
 
 // Vista Administrador
@@ -16,23 +18,44 @@ const VistaTrabajador = () => {
     const [filtro, setFiltro] = useState("");
     const [historial, setHistorial] = useState([]);
     const [nombreEmpleado, setNombreEmpleado] = useState("");
+    
 
     // Obtener empleado y bloquear botón atrás
     useEffect(() => {
       const empleado = JSON.parse(localStorage.getItem("empleado"));
       if (!empleado) {
         navigate("/login", { replace: true });
-      } else {
-        setNombreEmpleado(empleado.NOMBRE);
-        setFiltro(empleado.CARGO.toLowerCase());
-      
-        // Bloquear retroceso
-        window.history.pushState(null, "", window.location.href);
-        window.onpopstate = () => {
-          window.history.go(1);
-        };
+        return;
       }
+
+      setNombreEmpleado(empleado.NOMBRE);
+      setFiltro(empleado.CARGO.toLowerCase());
+
+      // Bloquear retroceso
+      window.history.pushState(null, "", window.location.href);
+      window.onpopstate = () => {
+        window.history.go(1);
+      };
+
+      // Función para traer turno en atención
+      const fetchTurno = async () => {
+        try {
+          const res = await axios.get(`http://127.0.0.1:8000/api/turnos/en_atencion/${empleado.ID_EMPLEADO}`);
+          setTurnoActual(res.data.turno);
+        } catch (err) {
+          console.error(err);
+          setTurnoActual(null);
+        }
+      };
+
+      fetchTurno();
+      const intervalo = setInterval(fetchTurno, 10000); // Actualizar cada 10 segundos
+      return () => clearInterval(intervalo);
+
+
+
     }, [navigate]);
+
 
     useEffect(() => {
       if (!filtro) return; // Evitar consulta si no hay filtro todavía
@@ -95,7 +118,10 @@ const VistaTrabajador = () => {
                 </h4>
 
                 {turnoActual ? (
-                  <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
+                  <WorkerTurnCard 
+                    variant="trabajador" 
+                    idEmpleadoActual={turnoActual.ID_EMPLEADO} 
+                  />
                 ) : (
                   <p>No hay turno en atención.</p>
                 )}

@@ -258,4 +258,15 @@ class TurnController extends Controller
         ]);
     }
 
+    public function turnoEnAtencionPorEmpleado($idEmpleado)
+    {
+        $turno = Turno::where('ID_EMPLEADO', $idEmpleado)
+                    ->where('ESTATUS', 'En_atencion')
+                    ->first();
+
+        return response()->json(['turno' => $turno]);
+    }
+
+
+
 }
