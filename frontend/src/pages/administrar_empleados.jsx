@@ -5,10 +5,14 @@ import { Edit, Trash2, ArrowLeft } from "../iconos";
 import { getCurrentUserRole } from "../hooks/auth";
 import "./pages-styles/administrar_empleados.css";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEmpleados } from "../layouts/EmpleadoContext";
 
 export default function AdministrarEmpleados() {
   const navigate = useNavigate();
   const [empleados, setEmpleados] = useState([]);
+
+  // Contexto de empleados
+  const { marcarAusente, quitarAusente, cargarAusentes } = useEmpleados();
 
   // ---- Guardas / sesión ----
   useEffect(() => {
@@ -56,11 +60,18 @@ export default function AdministrarEmpleados() {
           cargo: (e.CARGO || "").toLowerCase(),
           tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
           ID_ROL: e.ID_ROL,
+          estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1 // por defecto presente
         }));
         setEmpleados(empleadosNormalizados);
       })
       .catch(console.error);
   }, []);
+
+  // ---- Cargar ausentes al montar ----
+  useEffect(() => {
+    cargarAusentes();
+  }, [cargarAusentes]);
+
 
   // ---- Helpers ----
   const editar = (id) => navigate(`/editar_empleado/${id}`);
@@ -74,6 +85,18 @@ export default function AdministrarEmpleados() {
       .catch(console.error);
   };
   const capital = (s = "") => s.charAt(0).toUpperCase() + s.slice(1);
+
+
+  // ---- Optimistic update para ausentes/presentes ----
+  const toggleAusente = (emp) => {
+    // Actualización inmediata en UI
+    setEmpleados((prev) =>
+      prev.map((e) => (e.id === emp.id ? { ...e, estado: e.estado === 0 ? 1 : 0 } : e))
+    );
+    // Llamada a backend
+    if (emp.estado === 0) quitarAusente(emp.id).catch(console.error);
+    else marcarAusente(emp.id).catch(console.error);
+  };
 
   // ---- Visibilidad por rol ----
   let visibles = [];
@@ -151,6 +174,13 @@ export default function AdministrarEmpleados() {
                             <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
                               <Trash2 size={18} />
                             </button>
+
+                            <button
+                              className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
+                              onClick={() => toggleAusente(emp)}
+                            >
+                              {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                            </button>
                           </div>
                         </div>
                       </article>
@@ -182,6 +212,12 @@ export default function AdministrarEmpleados() {
                                 <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
                                   <Trash2 size={18} />
                                 </button>
+                                  <button
+                                    className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
+                                    onClick={() => toggleAusente(emp)}
+                                  >
+                                    {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                                  </button>
                               </div>
                             </div>
                           </article>
@@ -206,6 +242,12 @@ export default function AdministrarEmpleados() {
                                 </button>
                                 <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
                                   <Trash2 size={18} />
+                                </button>
+                                <button
+                                  className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
+                                  onClick={() => toggleAusente(emp)}
+                                >
+                                  {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
                                 </button>
                               </div>
                             </div>
@@ -244,6 +286,12 @@ export default function AdministrarEmpleados() {
                               </button>
                               <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
                                 <Trash2 size={18} />
+                              </button>
+                              <button
+                                className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
+                                onClick={() => toggleAusente(emp)}
+                              >
+                                {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
                               </button>
                             </div>
                           </div>
