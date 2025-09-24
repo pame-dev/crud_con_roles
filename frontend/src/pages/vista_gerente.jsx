@@ -62,7 +62,7 @@ const VistaGerente = () => {
     <div className="full-width-container gerente-page">
       {/* HERO */}
       <div className="hero-section">
-        <div className="container text-center">
+        <div className="container text-center mt-4">
           <h2 className="display-4 fw-bold mb-1">
             {nombreEmpleado} - Área de {filtro === "reparacion" ? "Reparación" : "Cotización"}
           </h2>
