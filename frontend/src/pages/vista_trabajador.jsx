@@ -79,7 +79,7 @@ const VistaTrabajador = () => {
 
         <div className="hero-section">  {/* Sección Encabezado, Header */}
           <div className="container text-center mt-5">
-            <h2 className="display-4 fw-bold mb-1">{nombreEmpleado} - {filtro}</h2>
+            <h2 className="display-4 fw-bold mb-1">{nombreEmpleado} - {filtro === "reparacion" ? "Reparación" : "Cotización"}</h2>
             <p className="lead opacity-75">
               Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
             </p>

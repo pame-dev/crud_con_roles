@@ -48,7 +48,7 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="container" style={{ marginTop: '-5rem', padding: '0' }}>
+        <div className="container" style={{ marginTop: '-5rem', padding: '0', marginBottom: '2rem' }}>
           <div className="row full-width-row g-3">
 
             {/* Sección izquierda: acciones y CurrentTurnCard */}
