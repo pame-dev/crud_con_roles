@@ -129,109 +129,20 @@ export default function AdministrarEmpleados() {
             )}
           </div>
 
-          <div className="grilla-grupos">
-            {/* Columna: Gerentes (solo visible para superadmin) */}
-            {isSuper && (
-              <section className="grupo-col">
-                <h3 className="grupo-title">Gerentes</h3>
-                <div className="grupo-cards">
-                  {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
-                  {gerentes.map((emp) => (
-                    <article className="card empleado-card" key={emp.id}>
-                      <div className="card-body d-flex justify-content-between align-items-center">
-                        <div>
-                          <div className="fw-bold">{emp.nombre}</div>
-                          <div className="text-muted small">{capital(emp.cargo)}</div>
-                        </div>
-                        <div className="d-flex gap-2">
-                          <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
-                            <Edit size={18} />
-                          </button>
-                          <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
-                            <Trash2 size={18} />
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Panel: Trabajadores */}
-            <section className="grupo-col trabajadores-col">
-              {/* 👇 cambia el título según el rol */}
-              <h3 className="grupo-title">
-                {isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}
-              </h3>
-                      
-              {isSuper ? (
-                // SUPERADMIN → ve dos subcols dentro de la grilla
-                <div className="subgrilla">
-                  <div className="subcol">
-                    <h4 className="sub-title">Cotización</h4>
-                    <div className="grupo-cards">
-                      {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-                      {cotizacion.map((emp) => (
-                        <article className="card empleado-card" key={emp.id}>
-                          <div className="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                              <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small">Empleado de Cotización</div>
-                            </div>
-                            <div className="d-flex gap-2">
-                              <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
-                                <Edit size={18} />
-                              </button>
-                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
-                                <Trash2 size={18} />
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                    
-                  <div className="subcol">
-                    <h4 className="sub-title">Reparación</h4>
-                    <div className="grupo-cards">
-                      {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
-                      {reparacion.map((emp) => (
-                        <article className="card empleado-card" key={emp.id}>
-                          <div className="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                              <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small">Empleado de Reparación</div>
-                            </div>
-                            <div className="d-flex gap-2">
-                              <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
-                                <Edit size={18} />
-                              </button>
-                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
-                                <Trash2 size={18} />
-                              </button>
-                            </div>
-                          </div>
-                        </article>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                // GERENTE → ve solo su bloque, ocupando todo el ancho
-                <div className="subcol">
-                  <h4 className="sub-title">{capital(gerenteCargo)}</h4>
+            {/* Panel: para el superadmin*/}
+            {isSuper ? (
+              <div className="grilla-grupos">  
+                {/* seccion para gerentes */}
+                <section className="grupo-col">
+                  <h3 className="grupo-title">Gerentes</h3>
                   <div className="grupo-cards">
-                    {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).length === 0 && (
-                      <p className="grupo-empty">Cargando...</p>
-                    )}
-                    {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).map((emp) => (
+                    {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                    {gerentes.map((emp) => (
                       <article className="card empleado-card" key={emp.id}>
                         <div className="card-body d-flex justify-content-between align-items-center">
                           <div>
                             <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de {capital(gerenteCargo)}</div>
+                            <div className="text-muted small">{capital(emp.cargo)}</div>
                           </div>
                           <div className="d-flex gap-2">
                             <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
@@ -245,12 +156,104 @@ export default function AdministrarEmpleados() {
                       </article>
                     ))}
                   </div>
-                </div>
-              )}
-            </section>
-
-          </div>
-
+                </section>
+                {/* seccion para trabajadores */}
+                <section className="grupo-col trabajadores-col">
+                  {/* 👇 cambia el título según el rol */}
+                  <h3 className="grupo-title">
+                    {isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}
+                  </h3>
+                  <div className="subgrilla">
+                    <div className="subcol">
+                      <h4 className="sub-title">Cotización</h4>
+                      <div className="grupo-cards">
+                        {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                        {cotizacion.map((emp) => (
+                          <article className="card empleado-card" key={emp.id}>
+                            <div className="card-body d-flex justify-content-between align-items-center">
+                              <div>
+                                <div className="fw-bold">{emp.nombre}</div>
+                                <div className="text-muted small">Empleado de Cotización</div>
+                              </div>
+                              <div className="d-flex gap-2">
+                                <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                                  <Edit size={18} />
+                                </button>
+                                <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                        
+                    <div className="subcol">
+                      <h4 className="sub-title">Reparación</h4>
+                      <div className="grupo-cards">
+                        {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
+                        {reparacion.map((emp) => (
+                          <article className="card empleado-card" key={emp.id}>
+                            <div className="card-body d-flex justify-content-between align-items-center">
+                              <div>
+                                <div className="fw-bold">{emp.nombre}</div>
+                                <div className="text-muted small">Empleado de Reparación</div>
+                              </div>
+                              <div className="d-flex gap-2">
+                                <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                                  <Edit size={18} />
+                                </button>
+                                <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                                  <Trash2 size={18} />
+                                </button>
+                              </div>
+                            </div>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>  
+            ) : ( 
+              // Panel: para el gerente
+              <div className="grilla-grupos-para-gerente">
+                {/* seccion para trabajadores nadamas*/}
+                <section className="grupo-col trabajadores-col">
+                  {/* 👇 cambia el título según el rol */}
+                  <h3 className="grupo-title">
+                    {isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}
+                  </h3>
+                  <div className="subcol">
+                    <h4 className="sub-title">{capital(gerenteCargo)}</h4>
+                    <div className="grupo-cards">
+                      {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).length === 0 && (
+                        <p className="grupo-empty">Cargando...</p>
+                      )}
+                      {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).map((emp) => (
+                        <article className="card empleado-card" key={emp.id}>
+                          <div className="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                              <div className="fw-bold">{emp.nombre}</div>
+                              <div className="text-muted small">Empleado de {capital(gerenteCargo)}</div>
+                            </div>
+                            <div className="d-flex gap-2">
+                              <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
+                                <Edit size={18} />
+                              </button>
+                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp.id)}>
+                                <Trash2 size={18} />
+                              </button>
+                            </div>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            )}
           <div className="text-center mt-4">
             <Link to={registerPath} className="btn btn-danger fw-bold px-4 add-btn">
               Agregar Trabajador +
