@@ -29,6 +29,20 @@ const RegisterGerentes = () => {
     e.preventDefault();
     setCorreoError("");
 
+      // Validar nombre y apellidos
+  if (formData.nombre.length < 3) {
+    alert("El nombre debe tener al menos 3 caracteres.");
+    return;
+  }
+
+    // Expresión regular para validar contraseña segura
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+    if (!passwordRegex.test(formData.contrasena)) {
+      alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
+      return;
+    }
+
     // Validar si el correo ya existe antes de enviar
     fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
       method: "POST",
