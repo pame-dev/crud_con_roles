@@ -12,11 +12,13 @@ const RegisterGerentes = () => {
     correo: '',
     cargo: '',
     contrasena: '',
+    confirmarContrasena: '',
     id_rol: ''
   });
 
   const [correoError, setCorreoError] = useState("");
-
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -34,6 +36,12 @@ const RegisterGerentes = () => {
     alert("El nombre debe tener al menos 3 caracteres.");
     return;
   }
+
+      // Validar contraseñas coincidan
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      alert("Las contraseñas no coinciden.");
+      return;
+    }
 
     // Expresión regular para validar contraseña segura
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
@@ -144,17 +152,52 @@ const RegisterGerentes = () => {
                 </div>
 
                 
+                 <div className="mb-3">
+                  <label className="input-group">
+                    <span className="icon"><i className="fa-solid fa-lock"></i></span>
+                    <input
+                      type={showPwd ? "text" : "password"}
+                      name="contrasena"
+                      placeholder="Contraseña"
+                      value={formData.contrasena}
+                      onChange={handleChange}
+                      required
+                      minLength={8}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      className="eye"
+                      onClick={() => setShowPwd((s) => !s)}
+                      aria-label={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                      <i className={`fa-solid ${showPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
+                    </button>
+                  </label>
+                </div>
+
                 <div className="mb-3">
-                  <label htmlFor="contrasena" className="form-label">Contraseña</label>
-                  <input
-                    type="password"
-                    className="form-control"
-                    id="contrasena"
-                    name="contrasena"
-                    value={formData.contrasena}
-                    onChange={handleChange}
-                    required
-                  />
+                  <label className="input-group">
+                    <span className="icon"><i className="fa-solid fa-lock"></i></span>
+                    <input
+                      type={showConfirmPwd ? "text" : "password"}
+                      name="confirmarContrasena"
+                      placeholder="Confirmar Contraseña"
+                      value={formData.confirmarContrasena}
+                      onChange={handleChange}
+                      required
+                      minLength={8}
+                      autoComplete="current-password"
+                    />
+                    <button
+                      type="button"
+                      className="eye"
+                      onClick={() => setShowConfirmPwd((s) => !s)}
+                      aria-label={showConfirmPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+                    >
+                      <i className={`fa-solid ${showConfirmPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
+                    </button>
+                  </label>
                 </div>
                 
                 <div className="mb-4">
