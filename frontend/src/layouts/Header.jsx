@@ -4,7 +4,7 @@ import { User, TrendingUp, Tv, Pencil, Globe, Save, X } from "lucide-react"; // 
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
-import { actualizarEmpleado } from "../api/empleadosApi";
+//import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
 
 // import React from "react"; // ya no es necesario importar React en versiones recientes si solo usas JSX, importar dos veces react genera errores (ya esta declarado en la linea 1)
