@@ -50,24 +50,29 @@ class EmpleadoController extends Controller
 
     
     // MÉTODO ACTUALIZADO: trabajadores con turno INCLUYENDO estado
-    public function trabajadoresConTurno()
+    public function trabajadoresConTurno(Request $request)
     {
-        $trabajadores = Empleado::where('ID_ROL', 2) // 👈 Filtrar solo rol 2
+        $query = Empleado::where('ID_ROL', 2) // solo trabajadores
             ->with(['turnos' => function($q) {
                 $q->where('ESTATUS', 'en_atencion');
-            }])
-            ->get()
-            ->map(function($emp) {
-                return [
-                    'ID_EMPLEADO' => $emp->ID_EMPLEADO,
-                    'NOMBRE' => $emp->NOMBRE,
-                    'APELLIDOS' => $emp->APELLIDOS,
-                    'CARGO' => $emp->CARGO,
-                    'ESTADO' => $emp->ESTADO, // ← AÑADE ESTA LÍNEA
-                    'turnos' => $emp->turnos // ← Los turnos se mantienen
-                ];
-            });
-        
+            }]);
+
+        // Si envían cargo, filtramos por el cargo del gerente
+        if ($request->has('cargo') && $request->cargo) {
+            $query->where('CARGO', $request->cargo);
+        }
+
+        $trabajadores = $query->get()->map(function($emp) {
+            return [
+                'ID_EMPLEADO' => $emp->ID_EMPLEADO,
+                'NOMBRE' => $emp->NOMBRE,
+                'APELLIDOS' => $emp->APELLIDOS,
+                'CARGO' => $emp->CARGO,
+                'ESTADO' => $emp->ESTADO,
+                'turnos' => $emp->turnos
+            ];
+        });
+
         return response()->json($trabajadores);
     }
 
