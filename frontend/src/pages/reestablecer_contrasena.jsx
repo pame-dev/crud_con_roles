@@ -22,6 +22,13 @@
         setError("");
         setSuccess("");
 
+          // Expresión regular para validar contraseña segura
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+        if (!passwordRegex.test(formData.contrasena)) {
+            alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
+            return;
+        }
         try {
         setSubmitting(true);
 
