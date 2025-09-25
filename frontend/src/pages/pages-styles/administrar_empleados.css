@@ -354,8 +354,6 @@
 }
 .pager-btn:disabled{ opacity: .45; cursor: not-allowed; }
 
-/* Drawer ya existente… solo añadimos estilos de ítems bonitos */
-
 /* Ítem */
 .trash-item{
   display: grid;
