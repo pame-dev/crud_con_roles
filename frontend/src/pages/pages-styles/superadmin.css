@@ -1,9 +1,3 @@
-:root{
-  /* 1 = opaco, 0 = totalmente transparente */
-  --filtros-alpha: .85;
-  --turnos-card-alpha: .78;   /* ← mueve este valor para más/menos transparencia */
-}
-
 /* ===== Hero ===== */
 .hero-section {
   background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
@@ -74,7 +68,7 @@
 
 /* ===== Panel de filtros / acciones (mismo look que Historial) ===== */
 .filtros-panel {
-  background: rgba(255,255,255,var(--filtros-alpha));
+  background: rgba(255, 255, 255, 0.85);
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0,0,0,.08);
   padding: 16px 18px;
