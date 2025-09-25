@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Zap } from "../iconos";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
-import { List, Grid } from "lucide-react"; // 👈 importamos los iconos
+import { List, Grid } from "lucide-react";
 import "./pages-styles/superadmin.css";
 
 const VistaSuperadministrador = () => {
@@ -13,7 +13,8 @@ const VistaSuperadministrador = () => {
   const [busqueda, setBusqueda] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
-  const [vistaLista, setVistaLista] = useState(false); // 👈 estado para lista/mosaico
+  const [vistaLista, setVistaLista] = useState(false);
+  const [trabajadores, setTrabajadores] = useState([]);
 
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
@@ -21,9 +22,26 @@ const VistaSuperadministrador = () => {
       navigate("/login", { replace: true });
       return;
     }
+
     // bloquear atrás
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = () => window.history.go(1);
+
+    // Traer todos los trabajadores (superadmin)
+    const fetchTrabajadores = async () => {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno`);
+        const data = await res.json();
+        setTrabajadores(data);
+      } catch (error) {
+        console.error("Error al obtener trabajadores:", error);
+        setTrabajadores([]);
+      }
+    };
+
+    fetchTrabajadores();
+    const interval = setInterval(fetchTrabajadores, 10000); // refrescar cada 10s
+    return () => clearInterval(interval);
   }, [navigate]);
 
   const toggleDia = () => {
@@ -55,7 +73,7 @@ const VistaSuperadministrador = () => {
 
       {/* CONTENIDO */}
       <div className="container main-content">
-        {/* Panel de filtros / acciones (estilo Historial) */}
+        {/* Panel de filtros / acciones */}
         <div className="filtros-panel mb-4">
           <div className="filtros-grid">
             {/* Buscar empleado */}
@@ -112,14 +130,16 @@ const VistaSuperadministrador = () => {
                 style={{ padding: "1rem" }}
               >
                 <WorkerTurnCard
+                  trabajadores={trabajadores} // 👈 enviamos todos los trabajadores
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
+                  modoLista={vistaLista}
                 />
               </div>
             </div>
           </div>
         </div>
-      </div> {/* /container main-content */}
+      </div>
 
       {/* MODAL Finalizar día */}
       {showModal && !diaFinalizado && (
@@ -165,8 +185,7 @@ const VistaSuperadministrador = () => {
           </div>
         </div>
       )}
-
-    </div> /* /full-width-container */
+    </div>
   );
 };
 
