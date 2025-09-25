@@ -103,13 +103,20 @@ class EmpleadoController extends Controller
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
 
-        $empleado->update([
-            'NOMBRE'     => $request->nombre,
-            'CORREO'     => $request->correo,
-            'CARGO'      => $request->cargo,
-            'ID_ROL'     => $request->id_rol,
-            'ESTADO'     => $request->estado,
-        ]);
+        $datosActualizados = [
+            'NOMBRE' => $request->nombre ?? $empleado->NOMBRE,
+            'CORREO' => $request->correo ?? $empleado->CORREO,
+            'CARGO'  => $request->cargo ?? $empleado->CARGO,
+            'ID_ROL' => $request->id_rol ?? $empleado->ID_ROL,
+            'ESTADO' => $request->estado ?? $empleado->ESTADO,
+        ];
+
+        // Actualizar la contraseña solo si viene en la request
+        if ($request->has('contrasena') && $request->contrasena) {
+            $datosActualizados['CONTRASENA'] = ($request->contrasena);
+        }
+
+        $empleado->update($datosActualizados);
 
         return response()->json([
             'message' => 'Empleado actualizado correctamente',
