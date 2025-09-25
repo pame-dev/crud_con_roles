@@ -22,13 +22,6 @@
         setError("");
         setSuccess("");
 
-          // Expresión regular para validar contraseña segura
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-
-        if (!passwordRegex.test(formData.contrasena)) {
-            alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
-            return;
-        }
         try {
         setSubmitting(true);
 
@@ -52,6 +45,13 @@
         e.preventDefault();
         setError("");
         setSuccess("");
+                  // Expresión regular para validar contraseña segura
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+        if (!passwordRegex.test(newPassword)) {
+            alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
+            return;
+        }
 
         if (!newPassword || newPassword !== confirmPassword) {
         setError("Las contraseñas no coinciden o están vacías");
@@ -103,7 +103,8 @@
         {step === "passwords" && (
             <form onSubmit={handleResetPassword}>
             {/* Nueva contraseña */}
-            <label className="input-group">
+            <div className="mb-3">
+                <label className="input-group">
                 <span className="icon"><i className="fa-solid fa-lock"></i></span>
                 <input
                 type={showPwd ? "text" : "password"}
@@ -120,9 +121,11 @@
                 <i className={`fa-solid ${showPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </button>
             </label>
+            </div>
 
             {/* Confirmar contraseña */}
-            <label className="input-group">
+            <div className="mb-3">
+                <label className="input-group">
                 <span className="icon"><i className="fa-solid fa-lock"></i></span>
                 <input
                 type={showConfirmPwd ? "text" : "password"}
@@ -139,6 +142,7 @@
                 <i className={`fa-solid ${showConfirmPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
                 </button>
             </label>
+            </div>
 
             <button type="submit" className="btn-primary" disabled={submitting}>
                 {submitting ? "Actualizando…" : "Actualizar contraseña"}
