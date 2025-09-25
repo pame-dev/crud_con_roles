@@ -2,26 +2,8 @@ import React, { useEffect, useState } from 'react';
 import './WorkerTurnCard.css';
 import { pasarTurno } from "../api/turnosApi";
 
-const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista = false }) => {
-  const [trabajadores, setTrabajadores] = useState([]);
+const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
-
-  const fetchTrabajadores = async () => {
-    try {
-      const response = await fetch('http://127.0.0.1:8000/api/trabajadores/con-turno');
-      const data = await response.json();
-      setTrabajadores(data);
-    } catch (error) {
-      console.error('Error al traer trabajadores:', error);
-      setTrabajadores([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchTrabajadores();
-    const interval = setInterval(fetchTrabajadores, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   const trabajadoresFiltrados = trabajadores.filter(t =>
     t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
@@ -136,7 +118,6 @@ const WorkerTurnCard = ({ filtroBusqueda = "", mostrarCargo = false, modoLista =
               </div>
             )}
           </div>
-
         );
       })}
     </>
