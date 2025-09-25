@@ -1,21 +1,17 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Wrench, Flag, Zap, Clock, ArrowLeft } from "../iconos";
-import CurrentTurnCard from '../components/CurrentTurnCard';
 import './pages-styles/admin.css';  
 import axios from 'axios';
 import { useEffect } from "react";
+import TurnoEmpleadoInd from "../components/TurnoEmpleadoInd";
 
 
 // Vista Administrador
 const VistaTrabajador = () => {
   const navigate = useNavigate();
-
-    const [turnos, setTurnos] = useState([]);
-    const [turnoActual, setTurnoActual] = useState(null);
-    const [filtro, setFiltro] = useState("");
-    const [historial, setHistorial] = useState([]);
-    const [nombreEmpleado, setNombreEmpleado] = useState("");
+  const [filtro, setFiltro] = useState("");
+  const [nombreEmpleado, setNombreEmpleado] = useState("");
 
     // Obtener empleado y bloquear botón atrás
     useEffect(() => {
@@ -33,46 +29,6 @@ const VistaTrabajador = () => {
         };
       }
     }, [navigate]);
-
-    useEffect(() => {
-      if (!filtro) return; // Evitar consulta si no hay filtro todavía
-
-      axios
-        .get(`http://127.0.0.1:8000/api/empleados/cargo/${filtro}`)
-        .then((res) => {
-          const turnosAPI = res.data.map((emp) => ({
-            id: emp.ID_EMPLEADO,
-            name: emp.NOMBRE,
-            reason: emp.CARGO.toLowerCase(),
-            status: "waiting",
-            priority: "baja",
-            turn_number: emp.ID_EMPLEADO, // Ejemplo, deberías poner el número real
-          }));
-          setTurnos(turnosAPI);
-        })
-        .catch((err) => console.error("Error al obtener turnos:", err));
-    }, [filtro]);
-
-
-
-    const siguienteTurno = () => {
-    const siguiente = turnos.find(
-      (t) => t.status === "waiting" && t.reason === filtro && t.priority === "baja"
-    );
-    if (siguiente) {
-      setTurnos(
-        turnos.map((t) =>
-          t.turn_number === siguiente.turn_number ? { ...t, status: "in_progress" } : t
-        )
-      );
-      if (turnoActual) {
-        setHistorial([...historial, { ...turnoActual, status: "completed" }]);
-      }
-      setTurnoActual(siguiente);
-    } else {
-      alert("No hay más turnos pendientes de baja prioridad en " + filtro);
-    }
-  };
 
     return (
       <div className="full-width-container"> {/* Contenedor de ancho completo */}
@@ -93,19 +49,16 @@ const VistaTrabajador = () => {
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
                   <Zap size={20} className="text-danger me-2" /> Turno en Atención
                 </h4>
-
-                {turnoActual ? (
-                  <CurrentTurnCard turno={turnoActual} siguienteTurno={siguienteTurno} />
-                ) : (
-                  <p>No hay turno en atención.</p>
-                )}
+                
+                <TurnoEmpleadoInd/>
+                
               </div>               
             </div>
           </div>
         </div>
       </div>
     );
-  };
+};
 
 export default VistaTrabajador;
 
