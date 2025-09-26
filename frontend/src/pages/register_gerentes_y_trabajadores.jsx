@@ -152,7 +152,7 @@ const RegisterGerentes = () => {
                 </div>
 
                 
-                 <div className="mb-3">
+                <div className="mb-3">
                   <label className="input-group">
                     <span className="icon"><i className="fa-solid fa-lock"></i></span>
                     <input
