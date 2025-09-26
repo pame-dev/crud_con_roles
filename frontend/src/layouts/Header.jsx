@@ -11,7 +11,7 @@ const Header = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
   const { empleado, setEmpleado, logout } = useContext(EmpleadoContext);
-
+  const [correoError, setCorreoError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -71,33 +71,67 @@ const Header = () => {
     };
 
 
-    if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-      alert("Por favor, completa todos los campos obligatorios.");
+        //  Validación de nombre (mínimo 3 caracteres)
+    if (datosActualizados.nombre.length < 3) {
+      alert("El nombre debe tener al menos 3 caracteres.");
       return;
     }
 
-    actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
-      .then(res => {
-        alert("Perfil actualizado correctamente");
-        setIsEditing(false);
-        setShowModal(false);
-
-        setEmpleado(res.empleado);
-        
-        localStorage.setItem("empleado", JSON.stringify(res.empleado));
-      })
-      .catch(err => {
-        if (err.errors) {
-          const mensajes = Object.values(err.errors).flat().join("\n");
-          alert("Error al actualizar perfil:\n" + mensajes);
-        } else if (err.message) {
-          alert("Error al actualizar perfil: " + err.message);
-        } else if (err.error) {
-          alert("Error al actualizar perfil: " + err.error);
-        } else {
-          alert("Error al actualizar perfil: Error desconocido");
+    //  Validación de correo (formato correcto)
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!correoRegex.test(datosActualizados.correo)) {
+      alert("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+      // ✅ Validar si el correo ya existe en la BD
+    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.existe) {
+          setCorreoError("El correo ya está registrado por otro empleado.");
+          return;
         }
-        console.error(err);
+
+            // Expresión regular para validar contraseña segura
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+
+      if (!passwordRegex.test(formData.contrasena)) {
+        alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
+        return;
+      }
+
+        if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
+          alert("Por favor, completa todos los campos obligatorios.");
+          return;
+        }
+
+        actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
+          .then(res => {
+            alert("Perfil actualizado correctamente");
+            setIsEditing(false);
+            setShowModal(false);
+
+            setEmpleado(res.empleado);
+
+            localStorage.setItem("empleado", JSON.stringify(res.empleado));
+          })
+          .catch(err => {
+            if (err.errors) {
+              const mensajes = Object.values(err.errors).flat().join("\n");
+              alert("Error al actualizar perfil:\n" + mensajes);
+            } else if (err.message) {
+              alert("Error al actualizar perfil: " + err.message);
+            } else if (err.error) {
+              alert("Error al actualizar perfil: " + err.error);
+            } else {
+              alert("Error al actualizar perfil: Error desconocido");
+            }
+            console.error(err);
+          });
       });
   };
 
@@ -167,9 +201,17 @@ const Header = () => {
                 <h5 className="profile-name">{empleado.NOMBRE}</h5>
                 <p className="profile-email">{empleado.CORREO}</p>
               </div>
-
+          
               {!isEditing ? (
-                <button className="edit-btn" onClick={() => setIsEditing(true)}><Pencil size={16} /></button>
+                <button 
+                  className="edit-btn" 
+                  onClick={() => { 
+                    setIsEditing(true); 
+                    setCorreoError(""); // ✅ limpia error al empezar a editar 
+                  }}
+                >
+                  <Pencil size={16} />
+                </button>
               ) : (
                 <div className="d-flex gap-2">
                   <button className="edit-btn" onClick={handleSave}><Save size={16} /></button>
@@ -191,11 +233,21 @@ const Header = () => {
               <span className="profile-label">Correo</span>
               <div className="content-profile-row">
                 {isEditing ? (
-                  <input type="email" name="CORREO" value={formData.CORREO} onChange={handleChange} className="profile-input" />
+                  <>
+                    <input 
+                      type="email" 
+                      name="CORREO" 
+                      value={formData.CORREO} 
+                      onChange={handleChange} 
+                      className="profile-input" 
+                    />
+                    {correoError && <div className="text-danger mt-1">{correoError}</div>}
+                  </>
                 ) : (
                   <div className="profile-row">{empleado.CORREO}</div>
                 )}
               </div>
+
 
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row d-flex align-items-center">

@@ -8,7 +8,7 @@ export default function EditarEmpleado() {
   const [empleado, setEmpleado] = useState(null);
   const [loading, setLoading] = useState(true);
   const [correoError, setCorreoError] = useState("");
-
+  const [nombreError, setNombreError] = useState(""); 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/empleados/${id}`)
       .then((res) => res.json())
@@ -30,6 +30,12 @@ export default function EditarEmpleado() {
   const handleSubmit = (e) => {
   e.preventDefault();
   setCorreoError("");
+
+      if (!empleado.NOMBRE || empleado.NOMBRE.trim().length < 3) {
+      setNombreError("El nombre debe tener al menos 3 caracteres.");
+      return;
+    }
+    setNombreError(""); 
 
   // Validar si el correo ya existe antes de enviar
   fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
@@ -93,7 +99,10 @@ export default function EditarEmpleado() {
             onChange={handleChange}
             className="form-control"
           />
-        </div>
+          {nombreError && (   // 🔹 Aquí mostramos el error
+              <div className="text-danger mt-2">{nombreError}</div>
+            )}
+          </div>
 
         <div className="form-group mb-3">
           <label className="form-label">Correo</label>
