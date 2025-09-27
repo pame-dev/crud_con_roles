@@ -227,6 +227,7 @@ class TurnController extends Controller
 
         if ($turnoActual) {
             $turnoActual->ESTATUS = 'Completado';
+            $turnoActual->ATENCION_FIN = now(); // registrar hora de finalización
             $turnoActual->save();
         }
 
