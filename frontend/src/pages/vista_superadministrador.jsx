@@ -39,8 +39,11 @@ const VistaSuperadministrador = () => {
       }
     };
 
+    // Primer fetch inmediato
     fetchTrabajadores();
-    const interval = setInterval(fetchTrabajadores, 10000); // refrescar cada 10s
+
+    // Polling cada 5 segundos
+    const interval = setInterval(fetchTrabajadores, 5000);
     return () => clearInterval(interval);
   }, [navigate]);
 
@@ -87,7 +90,6 @@ const VistaSuperadministrador = () => {
               />
             </div>
 
-            {/* Acciones */}
             <button className="filtro-btn" onClick={onFinalizarDia}>
               {diaFinalizado ? "Iniciar día" : "Finalizar día"}
             </button>
@@ -130,7 +132,7 @@ const VistaSuperadministrador = () => {
                 style={{ padding: "1rem" }}
               >
                 <WorkerTurnCard
-                  trabajadores={trabajadores} // 👈 enviamos todos los trabajadores
+                  trabajadores={trabajadores} 
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
                   modoLista={vistaLista}
@@ -169,10 +171,7 @@ const VistaSuperadministrador = () => {
               </div>
 
               <div className="modal-footer">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   <i className="bi bi-x-circle me-1"></i>
                   Cancelar
                 </button>
