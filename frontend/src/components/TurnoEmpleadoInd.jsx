@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { pasarTurno as apiPasarTurno } from "../api/turnosApi";
 
+
 const TurnoEmpleadoInd = () => {
   const [turno, setTurno] = useState(null);
   const [empleado, setEmpleado] = useState(null);
@@ -11,6 +12,7 @@ const TurnoEmpleadoInd = () => {
   const turnoPrevio = useRef(null);
   const pasandoPorTrabajador = useRef(false);
   const esPrimeraCarga = useRef(true);
+
 
   // Limpiar mensaje del gerente después de 4s
   useEffect(() => {
@@ -29,6 +31,7 @@ const TurnoEmpleadoInd = () => {
   useEffect(() => {
     if (mensajeGerente) {
       const timer = setTimeout(() => setMensajeGerente(""), 4000);
+
       return () => clearTimeout(timer);
     }
   }, [mensajeGerente]);
@@ -58,6 +61,7 @@ const TurnoEmpleadoInd = () => {
       }
 
       turnoPrevio.current = miTurno;
+
       setTurno(miTurno);
     } catch (err) {
       console.error("Error al obtener turno:", err);
@@ -67,7 +71,6 @@ const TurnoEmpleadoInd = () => {
     }
   };
 
-  // Formatear hora
   const formatHora = (hora) => {
     if (!hora) return "—";
     const date = new Date(hora);
@@ -149,6 +152,7 @@ const TurnoEmpleadoInd = () => {
           No tienes turno en atención.
         </p>
       )}
+
     </div>
   );
 };

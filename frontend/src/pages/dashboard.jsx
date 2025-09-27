@@ -7,7 +7,6 @@ import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
 
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [fila, setFila] = useState([]);
@@ -16,16 +15,33 @@ const Dashboard = () => {
 
   const [diaFinalizado] = useDiaFinalizado();
 
-  // Cargar la fila desde la API
+  // Función para cargar la fila desde la API
+  const fetchFila = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/api/turnos/fila");
+      if (!res.ok) throw new Error("Error al cargar la fila");
+      const data = await res.json();
+      setFila(data);
+      setErr("");
+    } catch (e) {
+      setErr(e.message || "Error al cargar la fila");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/turnos/fila")
-      .then(res => res.json())
-      .then(data => setFila(data))
-      .catch(e => setErr(e.message || "Error al cargar la fila"))
-      .finally(() => setLoading(false));
+    // Primer fetch al montar
+    fetchFila();
+
+    // Intervalo cada 5 segundos
+    const interval = setInterval(fetchFila, 5000);
+
+    // Limpiar el interval al desmontar
+    return () => clearInterval(interval);
   }, []);
 
-  // Función para agregar un nuevo turno (puede llamarse desde formulario_turno)
+  // Función para agregar un nuevo turno (si quieres usar desde otro componente)
   const addNewTurnToQueue = (newTurn) => {
     setFila(prevFila => [...prevFila, newTurn]);
   };
@@ -76,7 +92,6 @@ const Dashboard = () => {
                     </div>
 
                     <div className="col-md-6">
-                      {/* Aquí puedes pasar un turno actual si lo tienes */}
                       <CurrentTurnCard />
                     </div>
                   </div>
@@ -98,16 +113,14 @@ const Dashboard = () => {
                     {!loading && !err && fila.length === 0 && (
                       <p className="text-muted">No hay turnos pendientes</p>
                     )}
-                    {/* Mostramos solo los 3 turnos más antiguos */}
-                    {!loading && !err && fila.length > 0 && 
-                      [...fila]  // hacemos una copia para no mutar el estado
-                        .sort((a, b) => a.turn_number - b.turn_number) // ordenar de más antiguo a más reciente
-                        .slice(0, 3)  // tomar solo los 3 más antiguos
+                    {!loading && !err && fila.length > 0 &&
+                      [...fila]
+                        .sort((a, b) => a.turn_number - b.turn_number)
+                        .slice(0, 3)
                         .map(turn => (
                           <QueueItem key={turn.turn_number} turn={turn} />
                         ))
                     }
-
                   </div>
                 </div>
               </div>
