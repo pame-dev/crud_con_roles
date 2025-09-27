@@ -61,7 +61,7 @@ const VistaTrabajador = () => {
         </div>
       </div>
 
-      <div className="row g-3 justify-content-center">
+      <div className="row g-3 justify-content-center px-4 mb-3">
         <div className="col-md-8 mb-4 text-align-center">
           <div className="card shadow">
             <div className="card-body">
@@ -75,6 +75,7 @@ const VistaTrabajador = () => {
         </div>
 
         {/* Fila Actual */}
+        
         <div className="col-lg-4">
           <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
             <div className="card-body p-4">
