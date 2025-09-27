@@ -1,11 +1,8 @@
-// src/pages/admin.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flag, Zap, ArrowLeft } from "../iconos";
-import QueueItem from "../components/QueueItem";
-import StatusBadge from "../components/StatusBadge";
+import { Flag, Zap, List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
-import { List, Grid } from "lucide-react";
+import QueueItem from "../components/QueueItem";
 import "./pages-styles/admin.css";
 
 const VistaGerente = () => {
@@ -37,38 +34,44 @@ const VistaGerente = () => {
     return () => window.removeEventListener("popstate", blockBack);
   }, [navigate]);
 
-  // Traer trabajadores filtrados por cargo
-  useEffect(() => {
+  // Función para traer trabajadores
+  const fetchTrabajadores = async () => {
     if (!cargo) return;
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${cargo}`);
+      const data = await res.json();
+      setTrabajadores(data);
+    } catch (err) {
+      console.error(err);
+      setTrabajadores([]);
+    }
+  };
 
-    const fetchTrabajadores = async () => {
-      try {
-        const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${cargo}`);
-        const data = await res.json();
-        setTrabajadores(data);
-      } catch (err) {
-        console.error(err);
-        setTrabajadores([]);
-      }
-    };
-
+  // Polling rápido (opcional, pero se puede reducir el tiempo a 5s)
+  useEffect(() => {
     fetchTrabajadores();
-    const interval = setInterval(fetchTrabajadores, 10000); // refresco cada 10s
+    const interval = setInterval(fetchTrabajadores, 5000);
     return () => clearInterval(interval);
   }, [cargo]);
 
   // Traer turnos según cargo del gerente
-  useEffect(() => {
+  const fetchTurnos = async () => {
     if (!cargo) return;
-
     setLoading(true);
     setErr("");
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/turnos/fila?cargo=${cargo}`);
+      const data = await res.json();
+      setTurnos(data);
+    } catch (e) {
+      setErr(e.message || "Error al obtener turnos");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetch(`http://127.0.0.1:8000/api/turnos/fila?cargo=${cargo}`)
-      .then(res => res.json())
-      .then(data => setTurnos(data))
-      .catch(e => setErr(e.message || "Error al obtener turnos"))
-      .finally(() => setLoading(false));
+  useEffect(() => {
+    fetchTurnos();
   }, [cargo]);
 
   const finalizarDia = () => {
@@ -145,6 +148,7 @@ const VistaGerente = () => {
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
                   modoLista={vistaLista}
+                  onRefresh={fetchTrabajadores} // ✅ pasar función de refresh
                 />
               </div>
             </div>
@@ -174,6 +178,5 @@ const VistaGerente = () => {
     </div>
   );
 };
-
 
 export default VistaGerente;
