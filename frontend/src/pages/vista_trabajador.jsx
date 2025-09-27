@@ -48,32 +48,6 @@ const VistaTrabajador = () => {
       }
     }, [navigate]);
 
-      window.history.pushState(null, "", window.location.href);
-      window.onpopstate = () => window.history.go(1);
-    }
-  }, [navigate]);
-
-  // 👇 función para pasar turno
-  const pasarTurno = async () => {
-    const empleado = JSON.parse(localStorage.getItem("empleado"));
-    if (!empleado) return;
-
-    try {
-      await fetch("http://127.0.0.1:8000/api/turnos/pasar", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          empleado_id: empleado.ID_EMPLEADO,
-          cargo: empleado.CARGO.toLowerCase(),
-        }),
-      });
-
-      window.location.reload(); // refresca vista
-    } catch (error) {
-      console.error("Error al pasar turno:", error);
-    }
-  };
-
   return (
     <div className="full-width-container">
       <div className="hero-section">
@@ -96,44 +70,32 @@ const VistaTrabajador = () => {
               </h4>
               
               <TurnoEmpleadoInd />
-
-        <div className="row g-3 justify-content-center px-4 mb-4"> {/* Fila principal */}
-          {/* Turno en Atención */}
-          <div className="col-md-8 mb-4 text-align-center"> 
-            <div className="card shadow">
-              <div className="card-body">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Zap size={20} className="text-danger me-2" /> Turno en Atención
-                </h4>
-                
-                <TurnoEmpleadoInd/>
-                
-              </div>               
             </div>
-
           </div>
-          {/* Fila Actual */}
-          <div className="col-lg-4">
-            <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
-              <div className="card-body p-4">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({cargo})
-                </h4>
-                <div className="d-flex flex-column gap-3">
-                  {loading && <p className="text-muted">Cargando...</p>}
-                  {err && <p className="text-danger">{err}</p>}
-                  {!loading && !err && turnos.length === 0 && <p className="text-muted">No hay turnos pendientes</p>}
+        </div>
 
-                  {turnos.map((turn) => (
-                    <QueueItem key={turn.turn_number} turn={turn} />
-                  ))}
-                </div>
+        {/* Fila Actual */}
+        <div className="col-lg-4">
+          <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
+            <div className="card-body p-4">
+              <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
+                <Flag size={20} className="text-danger me-2" /> Fila Actual ({cargo})
+              </h4>
+              <div className="d-flex flex-column gap-3">
+                {loading && <p className="text-muted">Cargando...</p>}
+                {err && <p className="text-danger">{err}</p>}
+                {!loading && !err && turnos.length === 0 && <p className="text-muted">No hay turnos pendientes</p>}
+
+                {turnos.map((turn) => (
+                  <QueueItem key={turn.turn_number} turn={turn} />
+                ))}
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    
   );
 };
 
