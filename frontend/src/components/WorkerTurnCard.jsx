@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import './WorkerTurnCard.css';
+import React, { useState } from "react";
 import { pasarTurno } from "../api/turnosApi";
+import "./WorkerTurnCard.css";
 
-const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false }) => {
+const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false, onRefresh }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
 
-  const trabajadoresFiltrados = trabajadores.filter(t =>
-    t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
-    (t.CARGO && t.CARGO.toLowerCase().includes(filtroBusqueda.toLowerCase()))
+  const trabajadoresFiltrados = trabajadores.filter(
+    (t) =>
+      t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
+      (t.CARGO && t.CARGO.toLowerCase().includes(filtroBusqueda.toLowerCase()))
   );
 
   if (!trabajadoresFiltrados.length) return <p>No hay trabajadores que coincidan.</p>;
@@ -16,7 +17,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
     setTurnoEnProceso(idEmpleado);
     try {
       await pasarTurno(idEmpleado, cargo);
-      await fetchTrabajadores();
+      if (onRefresh) await onRefresh(); // ✅ refresca inmediatamente
     } catch (err) {
       console.error("Error al pasar turno:", err);
     } finally {
@@ -34,8 +35,6 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
     <>
       {trabajadoresFiltrados.map((t) => {
         const turno = t.turnos && t.turnos.length > 0 ? t.turnos[0] : null;
-        
-        // VERIFICACIÓN del estado 
         const estaAusente = t.ESTADO === 0;
 
         return (
@@ -45,75 +44,46 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
           >
             {modoLista ? (
               <div className="d-flex justify-content-between align-items-center">
-                {/* IZQUIERDA */}
                 <div>
                   <div className="fw-bold fs-5">
-                    <i className="bi bi-person-circle me-1"></i> {t.NOMBRE} {t.APELLIDOS}
+                    {t.NOMBRE} {t.APELLIDOS}
                     {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
                   </div>
-                  {mostrarCargo && <div className="text-muted"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
-                  {turno ? (
-                    <div><i className="me-1"></i>Turno: #{turno.ID_TURNO}</div>
-                  ) : (
-                    <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
-                  )}
+                  {mostrarCargo && <div className="text-muted">{t.CARGO}</div>}
+                  {turno ? <div>Turno: #{turno.ID_TURNO}</div> : <div className="turno-sin">Sin turno asignado</div>}
                 </div>
-                
-                {/* DERECHA */}
+
                 <div className="text-end">
-                  <div className="mb-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+                  <div className="mb-1">{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
                   <button
-                    className="btn btn-danger btn-sm d-flex align-items-center"
+                    className="btn btn-danger btn-sm"
                     onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
-                    disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente} 
+                    disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente}
                   >
-                    {turnoEnProceso === t.ID_EMPLEADO ? (
-                      <>
-                        <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                        Procesando...
-                      </>
-                    ) : (
-                      <>
-                        <i className="bi bi-arrow-right-circle me-1"></i>
-                        {estaAusente ? "Ausente" : "Pasar"}
-                      </>
-                    )}
+                    {turnoEnProceso === t.ID_EMPLEADO ? "Procesando..." : estaAusente ? "Ausente" : "Pasar turno"}
                   </button>
                 </div>
               </div>
             ) : (
-              // MODO MOSAICO
               <div className="text-center">
                 <div className="fw-bold fs-4">
-                  <i className="bi bi-person-circle me-1"></i>{t.NOMBRE} {t.APELLIDOS}
-                  {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
+                  {t.NOMBRE} {t.APELLIDOS} {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
                 </div>
-                {mostrarCargo && <div className="text-muted mb-1"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
+                {mostrarCargo && <div className="text-muted mb-1">{t.CARGO}</div>}
                 {turno ? (
                   <>
-                    <div><i className="bi bi-gear me-1"></i>{turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}</div>
-                    <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
-                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+                    <div>Atendiendo turno: #{turno.ID_TURNO}</div>
+                    <div className="mt-1">{formatHora(turno.ATENCION_EN)}</div>
                   </>
                 ) : (
-                  <div className="turno-sin"><i className="bi bi-x-circle me-1"></i>Sin turno asignado</div>
+                  <div className="turno-sin">Sin turno asignado</div>
                 )}
                 <button
-                  className="btn btn-danger mt-2 d-flex align-items-center justify-content-center"
+                  className="btn btn-danger mt-2"
                   onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO.toLowerCase())}
                   disabled={turnoEnProceso === t.ID_EMPLEADO || estaAusente}
                 >
-                  {turnoEnProceso === t.ID_EMPLEADO ? (
-                    <>
-                      <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                      Procesando...
-                    </>
-                  ) : (
-                    <>
-                      <i className="bi bi-arrow-right-circle me-1"></i>
-                      {estaAusente ? "Ausente" : "Pasar turno"}
-                    </>
-                  )}
+                  {turnoEnProceso === t.ID_EMPLEADO ? "Procesando..." : estaAusente ? "Ausente" : "Pasar turno"}
                 </button>
               </div>
             )}
