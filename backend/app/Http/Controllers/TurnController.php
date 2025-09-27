@@ -156,6 +156,7 @@ class TurnController extends Controller
                     'fecha_atencion' => $turno->FECHA,
                     'hora_atencion' => $turno->HORA,
                     'ATENCION_EN' => $turno->ATENCION_EN,
+                    'ATENCION_FIN' => $turno->ATENCION_FIN,
                     // 👇 extra opcional, no afecta al card si no lo usas
                     'empleado_nombre' => $empleadoNombre,
                 ]

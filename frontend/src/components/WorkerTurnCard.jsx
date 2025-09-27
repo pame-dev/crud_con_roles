@@ -4,6 +4,12 @@ import "./WorkerTurnCard.css";
 
 const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false, onRefresh }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
+  const [trabajadoresLocal, setTrabajadoresLocal] = useState(trabajadores);
+
+  // Sincroniza el estado local cuando cambian los props
+  useEffect(() => {
+    setTrabajadoresLocal(trabajadores);
+  }, [trabajadores]);
 
   const trabajadoresFiltrados = trabajadores.filter(
     (t) =>
@@ -15,11 +21,23 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
 
   const handlePasarTurno = async (idEmpleado, cargo) => {
     setTurnoEnProceso(idEmpleado);
+
+    // Guardamos estado anterior por si falla la API
+    const prevTrabajadores = [...trabajadoresLocal];
+
+    // Optimistic update: quitar el turno actual inmediatamente
+    setTrabajadoresLocal(trabajadoresLocal.map(t =>
+      t.ID_EMPLEADO === idEmpleado
+        ? { ...t, turnos: [] } 
+        : t
+    ));
+
     try {
-      await pasarTurno(idEmpleado, cargo);
-      if (onRefresh) await onRefresh(); // ✅ refresca inmediatamente
+      await pasarTurno(idEmpleado, cargo); // Llamada al backend
+
     } catch (err) {
       console.error("Error al pasar turno:", err);
+      setTrabajadoresLocal(prevTrabajadores); // Revertir si falla
     } finally {
       setTurnoEnProceso(null);
     }
@@ -72,8 +90,9 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
                 {mostrarCargo && <div className="text-muted mb-1">{t.CARGO}</div>}
                 {turno ? (
                   <>
-                    <div>Atendiendo turno: #{turno.ID_TURNO}</div>
-                    <div className="mt-1">{formatHora(turno.ATENCION_EN)}</div>
+                    <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
+                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+
                   </>
                 ) : (
                   <div className="turno-sin">Sin turno asignado</div>
