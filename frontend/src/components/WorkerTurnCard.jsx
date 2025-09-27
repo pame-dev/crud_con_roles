@@ -4,6 +4,12 @@ import { pasarTurno } from "../api/turnosApi";
 
 const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
+  const [trabajadoresLocal, setTrabajadoresLocal] = useState(trabajadores);
+
+  // Sincroniza el estado local cuando cambian los props
+  useEffect(() => {
+    setTrabajadoresLocal(trabajadores);
+  }, [trabajadores]);
 
   const trabajadoresFiltrados = trabajadores.filter(t =>
     t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
@@ -14,11 +20,22 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
 
   const handlePasarTurno = async (idEmpleado, cargo) => {
     setTurnoEnProceso(idEmpleado);
+
+    // Guardamos estado anterior por si falla la API
+    const prevTrabajadores = [...trabajadoresLocal];
+
+    // Optimistic update: quitar el turno actual inmediatamente
+    setTrabajadoresLocal(trabajadoresLocal.map(t =>
+      t.ID_EMPLEADO === idEmpleado
+        ? { ...t, turnos: [] } 
+        : t
+    ));
+
     try {
-      await pasarTurno(idEmpleado, cargo);
-      await fetchTrabajadores();
+      await pasarTurno(idEmpleado, cargo); // Llamada al backend
     } catch (err) {
       console.error("Error al pasar turno:", err);
+      setTrabajadoresLocal(prevTrabajadores); // Revertir si falla
     } finally {
       setTurnoEnProceso(null);
     }
@@ -91,7 +108,6 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
                 {mostrarCargo && <div className="text-muted mb-1"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
                 {turno ? (
                   <>
-                    <div><i className="bi bi-gear me-1"></i>{turno.ID_AREA === 1 ? 'Reparación' : 'Cotización'}</div>
                     <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
                     <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
                   </>
