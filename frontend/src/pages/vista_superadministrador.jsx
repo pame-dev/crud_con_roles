@@ -64,6 +64,12 @@ const VistaSuperadministrador = () => {
 
   const onFinalizarDia = toggleDia;
 
+  const handleRefresh = async () => {
+    // Recargar los datos de trabajadores desde la API
+    const nuevosDatos = await cargarTrabajadores();
+    setTrabajadores(nuevosDatos);
+  };
+
   return (
     <div className="full-width-container superadmin-page">
       {/* HERO */}
@@ -133,6 +139,7 @@ const VistaSuperadministrador = () => {
               >
                 <WorkerTurnCard
                   trabajadores={trabajadores} 
+                  onRefresh={handleRefresh}
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
                   modoLista={vistaLista}

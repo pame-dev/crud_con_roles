@@ -67,7 +67,6 @@ const TurnoEmpleadoInd = () => {
       console.error("Error al obtener turno:", err);
     } finally {
       setCargando(false);
-      setPasando(false);
     }
   };
 
@@ -84,23 +83,33 @@ const TurnoEmpleadoInd = () => {
       // IMPORTANTE: Marcar ANTES de hacer la llamada
       pasandoPorTrabajador.current = true;
       setPasando(true);
+
+      //Guarda el turno anterior para mostrarlo durante la transicion
+      const turnoAnterior = turno;
       
+      //Llamada a la api
       await apiPasarTurno(empleado.ID_EMPLEADO, empleado.CARGO.toLowerCase());
       
-      // Forzar un pequeño delay para asegurar que la flag esté activa
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Buscar inmediatamente el nuevo turno
+      const res = await axios.get(
+        `http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${empleado.CARGO}`
+      );
       
-      await fetchTurno(empleado);
+      const miNuevoTurno = res.data.find(t => t.ID_EMPLEADO === empleado.ID_EMPLEADO)?.turnos[0] || null;
+      
+      // Actualizar con el nuevo turno
+      setTurno(miNuevoTurno);
+      turnoPrevio.current = miNuevoTurno;
+    
     } catch (err) {
       console.error("Error al pasar turno:", err);
-      // En caso de error, resetear la flag
-      pasandoPorTrabajador.current = false;
+      
     } finally {
       setPasando(false);
       // Resetear la flag después de un tiempo para futuras detecciones
       setTimeout(() => {
         pasandoPorTrabajador.current = false;
-      }, 2000);
+      }, 6000);
     }
   };
 
@@ -127,33 +136,37 @@ const TurnoEmpleadoInd = () => {
           {empleado.ESTADO !== undefined && (
             <div>Estado: {empleado.ESTADO === 1 ? "Presente" : "Ausente"}</div>
           )}
-
-          
-          <button
-            className="btn btn-danger btn-sm mt-3 d-flex align-items-center justify-content-center"
-            onClick={pasarTurno}
-            disabled={pasando || estaAusente}
-          >
-            {pasando ? (
-              <>
-                <div className="spinner-border spinner-border-sm me-2" role="status"></div>
-                Procesando...
-              </>
-            ) : (
-              <>
-                <i className="bi bi-arrow-right-circle me-1"></i>
-                  {estaAusente ? "Ausente" : "Pasar"}
-              </>
-            )}
-          </button>
         </div>
       ) : (
         <p className="text-muted text-center">
           No tienes turno en atención.
-        </p>
+        </p> 
       )}
 
+      <div className="text-center">
+        <button
+          className="btn btn-danger btn-sm mt-2 d-flex align-items-center justify-content-center mx-auto"
+          onClick={pasarTurno}
+          disabled={pasando || estaAusente}
+        >
+          {pasando ? (
+            <>
+              <div className="spinner-border spinner-border-sm me-2" role="status"></div>
+              Procesando...
+            </>
+          ) : (
+            <>
+              <i className="bi bi-arrow-right-circle me-1"></i>
+              {estaAusente ? "Ausente" : "Pasar"}
+            </>
+          )}
+        </button>
+      </div>
+        
+      
+
     </div>
+    
   );
 };
 
