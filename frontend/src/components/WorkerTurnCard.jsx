@@ -5,10 +5,26 @@ import "./WorkerTurnCard.css";
 const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false, onRefresh }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
   const [trabajadoresLocal, setTrabajadoresLocal] = useState(trabajadores);
+  const [turnosProcesados, setTurnosProcesados] = useState(new Set());
 
   // Sincroniza el estado local cuando cambian los props
   useEffect(() => {
     setTrabajadoresLocal(trabajadores);
+
+    // Cuando llegan nuevos datos, quitamos el ID de procesamiento si está presente
+    if (turnoEnProceso && trabajadores.length > 0) {
+      const trabajadorActualizado = trabajadores.find(t => t.ID_EMPLEADO === turnoEnProceso);
+      if (trabajadorActualizado) {
+        // Verificar si el turno cambió (lo que indica que la operación terminó)
+        const turnoAnterior = trabajadoresLocal.find(t => t.ID_EMPLEADO === turnoEnProceso)?.turnos?.[0];
+        const turnoNuevo = trabajadorActualizado.turnos?.[0];
+        
+        // Si el turno cambió o si no hay turno (se terminaron los turnos)
+        if ((turnoAnterior?.ID_TURNO !== turnoNuevo?.ID_TURNO) || (!turnoAnterior && turnoNuevo) || (turnoAnterior && !turnoNuevo)) {
+          setTurnoEnProceso(null);
+        }
+      }
+    }
   }, [trabajadores]);
 
   const trabajadoresFiltrados = trabajadores.filter(
@@ -22,25 +38,20 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
   const handlePasarTurno = async (idEmpleado, cargo) => {
     setTurnoEnProceso(idEmpleado);
 
-    // Guardamos estado anterior por si falla la API
-    const prevTrabajadores = [...trabajadoresLocal];
-
-    // Optimistic update: quitar el turno actual inmediatamente
-    setTrabajadoresLocal(trabajadoresLocal.map(t =>
-      t.ID_EMPLEADO === idEmpleado
-        ? { ...t, turnos: [] } 
-        : t
-    ));
-
     try {
       await pasarTurno(idEmpleado, cargo); // Llamada al backend
 
+      // Esperar un poco antes de refrescar para dar tiempo a la base de datos
+      setTimeout(() => {
+        if (onRefresh) {
+          onRefresh();
+        }
+      }, 300);
+
     } catch (err) {
       console.error("Error al pasar turno:", err);
-      setTrabajadoresLocal(prevTrabajadores); // Revertir si falla
-    } finally {
-      setTurnoEnProceso(null);
-    }
+      setTurnoEnProceso(null); // Si hay error, quitar el estado de procesamiento
+    } 
   };
 
   const formatHora = (hora) => {
@@ -54,11 +65,12 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
       {trabajadoresFiltrados.map((t) => {
         const turno = t.turnos && t.turnos.length > 0 ? t.turnos[0] : null;
         const estaAusente = t.ESTADO === 0;
+         const estaProcesando = turnoEnProceso === t.ID_EMPLEADO;
 
         return (
           <div
             key={t.ID_EMPLEADO}
-            className={`current-turn-card mb-2 p-3 shadow-sm rounded ${turnoEnProceso === t.ID_EMPLEADO ? "turno-procesando" : ""}`}
+            className={`current-turn-card mb-2 p-3 shadow-sm rounded ${estaProcesando ? "turno-procesando" : ""}`}
           >
             {modoLista ? (
               <div className="d-flex justify-content-between align-items-center">
