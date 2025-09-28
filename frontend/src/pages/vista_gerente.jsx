@@ -74,9 +74,10 @@ const VistaGerente = () => {
     fetchTurnos();
   }, [cargo]);
 
-  const finalizarDia = () => {
-    setTurnos([]);
-    alert("Día finalizado, se limpiaron los turnos.");
+  const handleRefresh = async () => {
+    // Recargar los datos de trabajadores desde la API
+    const nuevosDatos = await cargarTrabajadores();
+    setTrabajadores(nuevosDatos);
   };
 
   return (
@@ -148,7 +149,7 @@ const VistaGerente = () => {
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
                   modoLista={vistaLista}
-                  onRefresh={fetchTrabajadores} // ✅ pasar función de refresh
+                  onRefresh={handleRefresh} 
                 />
               </div>
             </div>
