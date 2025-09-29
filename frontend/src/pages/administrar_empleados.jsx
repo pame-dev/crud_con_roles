@@ -191,64 +191,71 @@ export default function AdministrarEmpleados() {
 
   // Recuperar (intenta backend / fallback local)
   const recuperar = async (id) => {
-    const item = trashData.items.find((i) => i.ID_EMPLEADO === id);
+  const item = trashData.items.find((i) => i.ID_EMPLEADO === id);
 
-    try {
-      // Si tu API no tiene restore (DELETE duro), esto fallará y caerá al fallback
-      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/restore`, {
-        method: "PUT",
-      });
-      if (!res.ok) throw new Error("restore-no-ok");
+  try {
+    // Llamada al backend para recuperar el empleado (restaurar)
+    const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/recuperar`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      // Aquí no es necesario enviar el estado si se está trabajando con el campo ACTIVO
+    });
 
-      // Re-cargar empleados reales
-      const r2 = await fetch("http://127.0.0.1:8000/api/empleados");
-      if (!r2.ok) throw new Error("reload-no-ok");
-      const data = await r2.json();
-      const normalizados = data.map((e) => ({
-        id: e.ID_EMPLEADO,
-        ID_EMPLEADO: e.ID_EMPLEADO,
-        nombre: e.NOMBRE,
-        cargo: (e.CARGO || "").toLowerCase(),
-        tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
-        ID_ROL: e.ID_ROL,
-        estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1,
-      }));
-      setEmpleados(normalizados);
+    if (!res.ok) throw new Error("No se pudo restaurar el empleado");
 
-      // Quitar de papelera
+    // Si todo va bien, recargamos los empleados
+    const r2 = await fetch("http://127.0.0.1:8000/api/empleados");
+    if (!r2.ok) throw new Error("No se pudo recargar empleados");
+
+    const data = await r2.json();
+    const normalizados = data.map((e) => ({
+      id: e.ID_EMPLEADO,
+      ID_EMPLEADO: e.ID_EMPLEADO,
+      nombre: e.NOMBRE,
+      cargo: (e.CARGO || "").toLowerCase(),
+      tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
+      ID_ROL: e.ID_ROL,
+      estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1,  // Si es necesario, se puede actualizar aquí
+    }));
+    setEmpleados(normalizados);
+
+    // Eliminamos el empleado de la papelera local
+    setTrashData((s) => ({
+      ...s,
+      items: s.items.filter((i) => i.ID_EMPLEADO !== id),
+      total: Math.max(0, s.total - 1),
+    }));
+  } catch (err) {
+    console.warn("Error al restaurar el empleado:", err);
+
+    if (item) {
+      // Fallback local en caso de que el backend falle
+      setEmpleados((prev) => [
+        {
+          id: item.ID_EMPLEADO,
+          ID_EMPLEADO: item.ID_EMPLEADO,
+          nombre: item.NOMBRE,
+          cargo: (item.CARGO || "").toLowerCase(),
+          tipo: item.ID_ROL === 1 ? "Gerente" : "Empleado",
+          ID_ROL: item.ID_ROL,
+          estado: 1,  // Restauramos al estado activo
+        },
+        ...prev,
+      ]);
+
       setTrashData((s) => ({
         ...s,
         items: s.items.filter((i) => i.ID_EMPLEADO !== id),
         total: Math.max(0, s.total - 1),
       }));
-    } catch (err) {
-      // Fallback local: reinsertar en activos (no persiste en BD si tu DELETE es duro)
-      console.warn("Fallo restore en backend, usando restore local:", err);
-
-      if (item) {
-        setEmpleados((prev) => [
-          {
-            id: item.ID_EMPLEADO,
-            ID_EMPLEADO: item.ID_EMPLEADO,
-            nombre: item.NOMBRE,
-            cargo: (item.CARGO || "").toLowerCase(),
-            tipo: item.ID_ROL === 1 ? "Gerente" : "Empleado",
-            ID_ROL: item.ID_ROL,
-            estado: 1,
-          },
-          ...prev,
-        ]);
-
-        setTrashData((s) => ({
-          ...s,
-          items: s.items.filter((i) => i.ID_EMPLEADO !== id),
-          total: Math.max(0, s.total - 1),
-        }));
-      } else {
-        console.error("No se encontró el item en papelera para restaurar localmente");
-      }
+    } else {
+      console.error("No se encontró el item en papelera para restaurar localmente");
     }
-  };
+  }
+};
+
 
   // Toggle ausente/presente
   const toggleAusente = (emp) => {
@@ -477,7 +484,7 @@ export default function AdministrarEmpleados() {
                             className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
                             onClick={() => toggleAusente(emp)}
                           >
-                            {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                            {emp.estado === 1 ? "Ausente" : "Presente"}
                           </button>
                         </div>
                       </div>
@@ -512,7 +519,7 @@ export default function AdministrarEmpleados() {
                                 className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
                                 onClick={() => toggleAusente(emp)}
                               >
-                                {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                                {emp.estado === 1 ? "Ausente" : "Presente"}
                               </button>
                             </div>
                           </div>
@@ -543,7 +550,7 @@ export default function AdministrarEmpleados() {
                                 className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
                                 onClick={() => toggleAusente(emp)}
                               >
-                                {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                                {emp.estado === 1 ? "Ausente" : "Presente"}
                               </button>
                             </div>
                           </div>
@@ -583,7 +590,7 @@ export default function AdministrarEmpleados() {
                               className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
                               onClick={() => toggleAusente(emp)}
                             >
-                              {emp.estado === 1 ? "Marcar ausente" : "Marcar presente"}
+                              {emp.estado === 1 ? "Ausente" : "Presente"}
                             </button>
                           </div>
                         </div>
