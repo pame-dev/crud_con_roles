@@ -95,11 +95,14 @@ class EmpleadoController extends Controller
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
-        $empleado->ACTIVO = 1; // Marcar como activo
-        $empleado->save();
+
+        // Marcar como activo
+        $empleado->ACTIVO = 1;  // Cambia de 0 a 1
+        $empleado->save();  // Guarda el cambio
 
         return response()->json(['message' => 'Empleado recuperado correctamente']);
     }
+
 
     public function update(Request $request, $id)
     {
