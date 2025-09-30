@@ -1,12 +1,11 @@
 import React from "react";
-import { Clock, PlayCircle, CheckCircle, AlertTriangle } from '../iconos';
 import './QueueItem.css';
 import StatusBadge from './StatusBadge';
 
-
 // Componente para un ítem en la cola de turnos
+// solo muestra un turno individual, es decir solo es la presentacion de cada turno en la fila
 const QueueItem = ({ turn }) => (
-  <div className={`queue-item p-3 bg-light ${turn.priority === 'alta' ? 'priority-high' : 'priority-normal'}`}>
+  <div className={`queue-item px-3 py-0 bg-light ${turn.priority === 'alta' ? 'priority-high' : 'priority-normal'}`}>
     <div className="d-flex justify-content-between align-items-start mb-2">
       <div>
         <h6 className="fw-bold text-dark mb-1">#{turn.turn_number} - {turn.name}</h6>
