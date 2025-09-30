@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, Calendar, Clock, PlayCircle, CheckCircle, Flag, Zap, AlertTriangle } from '../iconos';
 import CurrentTurnCard from '../components/CurrentTurnCard';
-import QueueItem from '../components/QueueItem';
+import FilaTurnos from "../components/FilaTurnos";
 import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
@@ -100,31 +100,7 @@ const Dashboard = () => {
             </div>
 
             {/* Sección derecha: fila de turnos */}
-            <div className="col-lg-4">
-              <div className="card shadow-lg full-width-card">
-                <div className="card-body p-4">
-                  <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center">
-                    <Flag size={20} className="text-danger me-2" />
-                    Fila Actual
-                  </h3>
-                  <div className="d-flex flex-column gap-3">
-                    {loading && <p className="text-muted">Cargando...</p>}
-                    {err && <p className="text-danger">{err}</p>}
-                    {!loading && !err && fila.length === 0 && (
-                      <p className="text-muted">No hay turnos pendientes</p>
-                    )}
-                    {!loading && !err && fila.length > 0 &&
-                      [...fila]
-                        .sort((a, b) => a.turn_number - b.turn_number)
-                        .slice(0, 3)
-                        .map(turn => (
-                          <QueueItem key={turn.turn_number} turn={turn} />
-                        ))
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
+            <FilaTurnos cargo={null}/>
 
           </div>
         </div>
