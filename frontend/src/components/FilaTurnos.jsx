@@ -3,12 +3,14 @@ import { Clock, Flag } from '../iconos';
 import QueueItem from './QueueItem';
 import { fetchFilaActual } from "../api/turnosApi";
 
+//Componente de la Fila de turnos, maneja la logica de datos para la fila 
+//mapea el array de turnos y crea multiples componentes de QueueItem
 export class FilaTurnos extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      turnos: [],
-      loading: true,
+      turnos: [], //array de turnos, inicia vacio
+      loading: true, 
       err: null,
       ultimaActualizacion: null
     };
@@ -18,34 +20,35 @@ export class FilaTurnos extends React.Component {
   componentDidMount() {
     // Cargar inmediatamente sin delay
     this.cargarTurnos();
-    this.intervalId = setInterval(this.cargarTurnos, 3000);
+    this.intervalId = setInterval(this.cargarTurnos, 3000); //actualiza la carga cada 3 segundos
   }
 
   componentDidUpdate(prevProps) {
     if (prevProps.cargo !== this.props.cargo) {
-      this.cargarTurnos();
+      this.cargarTurnos(); //recarga si cambia el filtro de cargo
     }
   }
 
   componentWillUnmount() {
     if (this.intervalId) {
-      clearInterval(this.intervalId);
+      clearInterval(this.intervalId); // libera la memoria reservada para evitar que haya fugas de memoria(memory leaks)
     }
   }
 
   cargarTurnos = async () => {
     try {
       const { cargo } = this.props;
-      
+      //construye url con parametro de filtro
       const url = new URL("http://127.0.0.1:8000/api/turnos/fila");
       if (cargo) {
         url.searchParams.append('cargo', cargo);
       }
-      
+
       const res = await fetch(url);
       if (!res.ok) throw new Error("Error al obtener fila actual");
       const data = await res.json();
       
+      //actualiza el estado con nuevos datos
       this.setState({
         turnos: data,
         err: null,
@@ -53,6 +56,7 @@ export class FilaTurnos extends React.Component {
         loading: false
       });
     } catch (error) {
+      //manejo de errores
       this.setState({ 
         err: error.message,
         loading: false 
