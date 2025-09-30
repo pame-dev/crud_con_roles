@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Flag, Zap, List, Grid } from "lucide-react";
+import { Zap, List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
-import QueueItem from "../components/QueueItem";
+import FilaTurnos from "../components/FilaTurnos";
 import "./pages-styles/admin.css";
 
 const VistaGerente = () => {
@@ -156,24 +156,7 @@ const VistaGerente = () => {
           </div>
 
           {/* Cola de turnos */}
-          <div className="col-lg-4">
-            <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
-              <div className="card-body p-4">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
-                  <Flag size={20} className="text-danger me-2" /> Fila Actual ({cargo})
-                </h4>
-                <div className="d-flex flex-column gap-3">
-                  {loading && <p className="text-muted">Cargando...</p>}
-                  {err && <p className="text-danger">{err}</p>}
-                  {!loading && !err && turnos.length === 0 && <p className="text-muted">No hay turnos pendientes</p>}
-
-                  {turnos.map((turn) => (
-                    <QueueItem key={turn.turn_number} turn={turn} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+          {cargo && <FilaTurnos cargo={cargo} />}
         </div>
       </div>
     </div>
