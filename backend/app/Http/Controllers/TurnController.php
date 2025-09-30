@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\Turno;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TurnController extends Controller
 {
@@ -12,20 +13,28 @@ class TurnController extends Controller
         // Obtener el cargo desde query string (?cargo=reparacion o ?cargo=cotizacion)
         $cargo = strtolower($request->query('cargo'));
 
+        Log::info("API filaActual llamada con cargo: " . ($cargo ?: 'null')); // 👈 LOG CORREGIDO
+
         $query = Turno::select('ID_TURNO','NOMBRE','APELLIDOS','ID_AREA','FECHA','HORA','ESTATUS')
             ->where('ESTATUS', 'Pendiente');
 
-        // Filtrar según el cargo (ID_AREA = 1 -> reparación, ID_AREA = 2 -> cotización)
+        // Filtrar según el cargo SOLO si se proporciona
         if ($cargo === 'reparacion') {
             $query->where('ID_AREA', 1);
+            Log::info("Filtrando por reparación (ID_AREA = 1)");
         } elseif ($cargo === 'cotizacion') {
             $query->where('ID_AREA', 2);
+            Log::info("Filtrando por cotización (ID_AREA = 2)");
+        } else {
+            Log::info("Sin filtro - mostrando todos los turnos");
         }
 
         $turnos = $query->orderBy('FECHA', 'asc')
             ->orderBy('HORA', 'asc')
-            ->limit(4) // LIMITE DE TURNOS A MOSTRAR
+            ->limit(4) 
             ->get();
+
+        Log::info("Turnos encontrados: " . $turnos->count());
 
         $turnosFormatted = $turnos->map(function($t) {
             return [
