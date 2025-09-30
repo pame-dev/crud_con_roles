@@ -450,4 +450,13 @@
   }
 }
 
+button span {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Espacio entre el ícono y el texto */
+}
+
+button img {
+  margin-right: 5px; /* Ajustar margen según el diseño */
+}
 
