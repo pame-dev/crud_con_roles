@@ -1,49 +1,102 @@
+/* Estilos generales */
 .editar-empleado {
-  max-width: 700px;
-  margin: 0 auto;
+  padding: 50px 20px;
 }
 
 .editar-empleado-title {
-  font-weight: 700;
-  color: #b30000;
-}
-
-.editar-empleado-form {
-  background: #fff;
-  border: 1px solid #ddd;
-}
-
-.editar-empleado .form-label {
-  font-weight: 600;
-  color: #333;
-}
-
-.editar-empleado .form-control {
-  border-radius: 10px;
-  padding: 10px;
-  border: 1px solid #ccc;
-}
-
-.editar-empleado .form-control:focus {
-  border-color: #b30000;
-  box-shadow: 0 0 4px rgba(179, 0, 0, 0.4);
-}
-
-.editar-empleado .btn-success {
-  background-color: #28a745;
-  border: none;
-  border-radius: 10px;
+  font-size: 2rem;
   font-weight: bold;
-  transition: 0.2s;
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
 }
 
-.editar-empleado .btn-success:hover {
+/* Formulario */
+.editar-empleado-form {
+  background-color: #ffffff;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Etiquetas de los campos */
+.form-label {
+  font-size: 1rem;
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+/* Campos de entrada */
+.form-control {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #fafafa;
+}
+
+.form-control:focus {
+  border-color: #28a745;
+  outline: none;
+  background-color: #ffffff;
+}
+
+/* Estilos para los botones */
+/* Clases personalizadas para los botones */
+.bottn {
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 12px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+/* Estilo para el botón "Guardar Cambios" */
+.boton-cambios {
+  background-color: #28a745;
+  color: white;
+}
+
+.boton-cambios:hover {
   background-color: #218838;
 }
 
-.editar-empleado-loading,
-.editar-empleado-error {
-  text-align: center;
-  font-size: 1.2rem;
-  margin-top: 2rem;
+/* Estilo para el botón "Cancelar" */
+.boton-cancelar {
+  background-color: #dc3545;
+  color: white;
+}
+
+.boton-cancelar:hover {
+  background-color: #c82333;
+}
+
+/* Asegura que los botones estén bien alineados */
+.d-flex {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+
+/* Mensajes de error */
+.text-danger {
+  font-size: 0.9rem;
+  color: #dc3545;
+}
+
+/* Mejorar el layout en dispositivos pequeños */
+@media (max-width: 768px) {
+  .editar-empleado-form {
+    padding: 20px;
+    width: 100%;
+  }
 }
