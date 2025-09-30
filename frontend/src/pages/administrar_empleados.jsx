@@ -6,9 +6,8 @@ import { getCurrentUserRole } from "../hooks/auth";
 import "./pages-styles/administrar_empleados.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEmpleados } from "../layouts/EmpleadoContext";
-import deleteUserIcon from '../assets/delete-user.png';  // Imagen para "ausente"
-import userCheckIcon from '../assets/user-check-white.png';  // Imagen para "presente"
-
+import deleteUserIcon from '../assets/delete-user.png';
+import userCheckIcon from '../assets/user-check-white.png';
 
 export default function AdministrarEmpleados() {
   const navigate = useNavigate();
@@ -18,6 +17,8 @@ export default function AdministrarEmpleados() {
   // =========================
   const [empleados, setEmpleados] = useState([]);
   const [openTrash, setOpenTrash] = useState(false);
+  const [empleadoToDelete, setEmpleadoToDelete] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false); // estado para controlar el modal
 
   const [trashData, setTrashData] = useState({
     items: [],
@@ -29,10 +30,10 @@ export default function AdministrarEmpleados() {
   // Persistencia papelera
   const TRASH_LS_KEY = "pitline_papelera_v1";
   const TRASH_RETENTION_DAYS = 30;
-  const [trashHydrated, setTrashHydrated] = useState(false); // 👈 clave
+  const [trashHydrated, setTrashHydrated] = useState(false);
 
   // Tabs/paginación del drawer
-  const [trashTab, setTrashTab] = useState("empleados"); // 'empleados' | 'gerentes'
+  const [trashTab, setTrashTab] = useState("empleados");
   const [trashPage, setTrashPage] = useState(1);
   const PAGE_SIZE = 5;
 
@@ -56,7 +57,7 @@ export default function AdministrarEmpleados() {
     return () => window.removeEventListener("popstate", handlePopState);
   }, [navigate]);
 
-  const role = getCurrentUserRole(); // "superadmin" | "gerente"
+  const role = getCurrentUserRole();
   const isSuper = role === "superadmin";
   const storedEmpleado = JSON.parse(localStorage.getItem("empleado") || "null");
 
@@ -72,7 +73,7 @@ export default function AdministrarEmpleados() {
   };
 
   // =========================
-  // Hidratar papelera desde localStorage (y purgar antiguos)
+  // Hidratar papelera desde localStorage
   // =========================
   useEffect(() => {
     try {
@@ -100,7 +101,6 @@ export default function AdministrarEmpleados() {
     } catch (e) {
       console.error("Error leyendo papelera local:", e);
     } finally {
-      // MUY IMPORTANTE: marcar hidratado para no pisar el storage con []
       setTrashHydrated(true);
     }
   }, []);
@@ -156,109 +156,138 @@ export default function AdministrarEmpleados() {
     };
   }, [openTrash]);
 
+  // Bloquear scroll cuando el modal está abierto
+  useEffect(() => {
+    if (showDeleteModal) {
+      document.body.style.overflowY = "hidden";
+    } else {
+      document.body.style.overflowY = "";
+    }
+  }, [showDeleteModal]);
+
   // =========================
   // Helpers
   // =========================
   const capital = (s = "") => s.charAt(0).toUpperCase() + s.slice(1);
   const editar = (id) => navigate(`/editar_empleado/${id}`);
 
-  const eliminar = (emp) => {
-    if (!window.confirm("¿Seguro que quieres eliminar este empleado?")) return;
+  // Función para abrir el modal de confirmación
+  const solicitarEliminacion = (emp) => {
+    setEmpleadoToDelete(emp);
+    setShowDeleteModal(true);
+  };
 
-    fetch(`http://127.0.0.1:8000/api/empleados/${emp.id}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Error al eliminar");
-        // quitar de activos
-        setEmpleados((prev) => prev.filter((e) => e.id !== emp.id));
-        // push a papelera (evitar duplicados)
-        setTrashData((s) => {
-          const exists = s.items.some((i) => i.ID_EMPLEADO === emp.id);
-          const entry = {
-            ID_EMPLEADO: emp.id,
-            NOMBRE: emp.nombre,
-            CARGO: emp.cargo,    // "cotizacion" | "reparacion"
-            ID_ROL: emp.ID_ROL,  // 1=Gerente, 2=Empleado
-            FECHA_ELIMINADO: new Date().toISOString(),
-          };
-          const items = exists ? s.items : [entry, ...s.items];
-          return { ...s, items, total: items.length };
-        });
+  // Función para confirmar la eliminación
+  const confirmarEliminacion = async () => {
+    if (!empleadoToDelete) return;
 
-        // UX: abrir papelera en la pestaña correcta y a la página 1
-        setOpenTrash(true);
-        setTrashTab(emp.ID_ROL === 1 ? "gerentes" : "empleados");
-        setTrashPage(1);
-      })
-      .catch(console.error);
+    const emp = empleadoToDelete;
+    
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${emp.id}`, { 
+        method: "DELETE" 
+      });
+      
+      if (!res.ok) throw new Error("Error al eliminar");
+      
+      // quitar de activos
+      setEmpleados((prev) => prev.filter((e) => e.id !== emp.id));
+      
+      // push a papelera (evitar duplicados)
+      setTrashData((s) => {
+        const exists = s.items.some((i) => i.ID_EMPLEADO === emp.id);
+        const entry = {
+          ID_EMPLEADO: emp.id,
+          NOMBRE: emp.nombre,
+          CARGO: emp.cargo,
+          ID_ROL: emp.ID_ROL,
+          FECHA_ELIMINADO: new Date().toISOString(),
+        };
+        const items = exists ? s.items : [entry, ...s.items];
+        return { ...s, items, total: items.length };
+      });
+
+      // UX: abrir papelera en la pestaña correcta y a la página 1
+      setOpenTrash(true);
+      setTrashTab(emp.ID_ROL === 1 ? "gerentes" : "empleados");
+      setTrashPage(1);
+      
+    } catch (error) {
+      console.error("Error al eliminar empleado:", error);
+    } finally {
+      // Cerrar modal y limpiar estado
+      setShowDeleteModal(false);
+      setEmpleadoToDelete(null);
+    }
+  };
+
+  // Función para cancelar eliminación
+  const cancelarEliminacion = () => {
+    setShowDeleteModal(false);
+    setEmpleadoToDelete(null);
   };
 
   // Recuperar (intenta backend / fallback local)
   const recuperar = async (id) => {
-  const item = trashData.items.find((i) => i.ID_EMPLEADO === id);
+    const item = trashData.items.find((i) => i.ID_EMPLEADO === id);
 
-  try {
-    // Llamada al backend para recuperar el empleado (restaurar)
-    const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/recuperar`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // Aquí no es necesario enviar el estado si se está trabajando con el campo ACTIVO
-    });
-
-    if (!res.ok) throw new Error("No se pudo restaurar el empleado");
-
-    // Si todo va bien, recargamos los empleados
-    const r2 = await fetch("http://127.0.0.1:8000/api/empleados");
-    if (!r2.ok) throw new Error("No se pudo recargar empleados");
-
-    const data = await r2.json();
-    const normalizados = data.map((e) => ({
-      id: e.ID_EMPLEADO,
-      ID_EMPLEADO: e.ID_EMPLEADO,
-      nombre: e.NOMBRE,
-      cargo: (e.CARGO || "").toLowerCase(),
-      tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
-      ID_ROL: e.ID_ROL,
-      estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1,  // Si es necesario, se puede actualizar aquí
-    }));
-    setEmpleados(normalizados);
-
-    // Eliminamos el empleado de la papelera local
-    setTrashData((s) => ({
-      ...s,
-      items: s.items.filter((i) => i.ID_EMPLEADO !== id),
-      total: Math.max(0, s.total - 1),
-    }));
-  } catch (err) {
-    console.warn("Error al restaurar el empleado:", err);
-
-    if (item) {
-      // Fallback local en caso de que el backend falle
-      setEmpleados((prev) => [
-        {
-          id: item.ID_EMPLEADO,
-          ID_EMPLEADO: item.ID_EMPLEADO,
-          nombre: item.NOMBRE,
-          cargo: (item.CARGO || "").toLowerCase(),
-          tipo: item.ID_ROL === 1 ? "Gerente" : "Empleado",
-          ID_ROL: item.ID_ROL,
-          estado: 1,  // Restauramos al estado activo
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/recuperar`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
         },
-        ...prev,
-      ]);
+      });
+
+      if (!res.ok) throw new Error("No se pudo restaurar el empleado");
+
+      const r2 = await fetch("http://127.0.0.1:8000/api/empleados");
+      if (!r2.ok) throw new Error("No se pudo recargar empleados");
+
+      const data = await r2.json();
+      const normalizados = data.map((e) => ({
+        id: e.ID_EMPLEADO,
+        ID_EMPLEADO: e.ID_EMPLEADO,
+        nombre: e.NOMBRE,
+        cargo: (e.CARGO || "").toLowerCase(),
+        tipo: e.ID_ROL === 0 ? "Administrador" : e.ID_ROL === 1 ? "Gerente" : "Empleado",
+        ID_ROL: e.ID_ROL,
+        estado: typeof e.ESTADO !== "undefined" ? Number(e.ESTADO) : 1,
+      }));
+      setEmpleados(normalizados);
 
       setTrashData((s) => ({
         ...s,
         items: s.items.filter((i) => i.ID_EMPLEADO !== id),
         total: Math.max(0, s.total - 1),
       }));
-    } else {
-      console.error("No se encontró el item en papelera para restaurar localmente");
-    }
-  }
-};
+    } catch (err) {
+      console.warn("Error al restaurar el empleado:", err);
 
+      if (item) {
+        setEmpleados((prev) => [
+          {
+            id: item.ID_EMPLEADO,
+            ID_EMPLEADO: item.ID_EMPLEADO,
+            nombre: item.NOMBRE,
+            cargo: (item.CARGO || "").toLowerCase(),
+            tipo: item.ID_ROL === 1 ? "Gerente" : "Empleado",
+            ID_ROL: item.ID_ROL,
+            estado: 1,
+          },
+          ...prev,
+        ]);
+
+        setTrashData((s) => ({
+          ...s,
+          items: s.items.filter((i) => i.ID_EMPLEADO !== id),
+          total: Math.max(0, s.total - 1),
+        }));
+      } else {
+        console.error("No se encontró el item en papelera para restaurar localmente");
+      }
+    }
+  };
 
   // Toggle ausente/presente
   const toggleAusente = (emp) => {
@@ -325,7 +354,6 @@ export default function AdministrarEmpleados() {
       <AnimatePresence>
         {openTrash && (
           <>
-            {/* Overlay */}
             <motion.div
               className="trash-overlay"
               initial={{ opacity: 0 }}
@@ -333,7 +361,6 @@ export default function AdministrarEmpleados() {
               exit={{ opacity: 0 }}
               onClick={() => setOpenTrash(false)}
             />
-            {/* Panel */}
             <motion.aside
               className="trash-drawer"
               initial={{ x: "110%" }}
@@ -429,6 +456,76 @@ export default function AdministrarEmpleados() {
         )}
       </AnimatePresence>
 
+      {/* Modal de Confirmación - Controlado por React */}
+      <AnimatePresence>
+        {showDeleteModal && (
+          <>
+            {/* Overlay */}
+            <motion.div
+              className="modal-backdrop show"
+              style={{ zIndex: 1050 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.5 }}
+              exit={{ opacity: 0 }}
+              onClick={cancelarEliminacion}
+            />
+            
+            {/* Modal */}
+            <motion.div
+              className="modal show d-block"
+              style={{ zIndex: 1051 }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ type: "spring", duration: 0.3 }}
+            >
+              <div className="modal-dialog modal-dialog-centered">
+                <div className="modal-content">
+                  <div className="modal-header">
+                    <h5 className="modal-title w-100 text-center">Confirmar eliminación</h5>
+                    <button 
+                      type="button" 
+                      className="btn-close" 
+                      onClick={cancelarEliminacion}
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div className="modal-body text-center">
+                    <p className="mb-3">¿Seguro que quieres eliminar este empleado?</p>
+                    {empleadoToDelete && (
+                      <div className="alert alert-warning mx-auto" style={{ maxWidth: '300px' }}>
+                        <strong>{empleadoToDelete.nombre}</strong>
+                        <br />
+                        <small>{capital(empleadoToDelete.cargo)}</small>
+                      </div>
+                    )}
+                    <p className="text-muted small mt-3">
+                      Esta acción moverá el empleado a la papelera donde podrás recuperarlo si es necesario.
+                    </p>
+                  </div>
+                  <div className="modal-footer justify-content-center">
+                    <button 
+                      type="button" 
+                      className="btn btn-secondary px-4" 
+                      onClick={cancelarEliminacion}
+                    >
+                      Cancelar
+                    </button>
+                    <button 
+                      type="button" 
+                      className="btn btn-danger px-4" 
+                      onClick={confirmarEliminacion}
+                    >
+                      Sí, eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
       {/* Página principal */}
       <motion.div
         className="full-width-container administrar-page"
@@ -444,7 +541,7 @@ export default function AdministrarEmpleados() {
               <button className="btn_volver hero-back" onClick={goBack} title="Regresar">
                 <ArrowLeft size={22} />
               </button>
-              <div className="hero-copy text-center">
+              <div className="hero-copy text-center mt-4">
                 <h3 className="display-3 fw-bold mb-1">Administración de Empleados</h3>
                 <p className="lead opacity-75">Gestiona gerentes y trabajadores de manera rápida y sencilla.</p>
               </div>
@@ -480,7 +577,7 @@ export default function AdministrarEmpleados() {
                           <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
                             <Edit size={18} />
                           </button>
-                          <button className="btn btn-light btn-sm" onClick={() => eliminar(emp)}>
+                          <button className="btn btn-light btn-sm" onClick={() => solicitarEliminacion(emp)}>
                             <Trash2 size={18} />
                           </button>
                           <button
@@ -525,7 +622,7 @@ export default function AdministrarEmpleados() {
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
                                 <Edit size={18} />
                               </button>
-                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp)}>
+                              <button className="btn btn-light btn-sm" onClick={() => solicitarEliminacion(emp)}>
                                 <Trash2 size={18} />
                               </button>
                               <button
@@ -566,7 +663,7 @@ export default function AdministrarEmpleados() {
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
                                 <Edit size={18} />
                               </button>
-                              <button className="btn btn-light btn-sm" onClick={() => eliminar(emp)}>
+                              <button className="btn btn-light btn-sm" onClick={() => solicitarEliminacion(emp)}>
                                 <Trash2 size={18} />
                               </button>
                               <button
@@ -616,7 +713,7 @@ export default function AdministrarEmpleados() {
                             <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
                               <Edit size={18} />
                             </button>
-                            <button className="btn btn-light btn-sm" onClick={() => eliminar(emp)}>
+                            <button className="btn btn-light btn-sm" onClick={() => solicitarEliminacion(emp)}>
                               <Trash2 size={18} />
                             </button>
                             <button
