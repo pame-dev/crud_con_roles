@@ -8,6 +8,7 @@ import Header from './layouts/Header';
 import Footer from './layouts/Footer';
 import './styles/custom.css';
 import './i18n/i18n';
+import Equipo from "./pages/equipo";
 
 import { useLocation } from 'react-router-dom';
 
@@ -60,6 +61,7 @@ const PitLineApp = () => {
       <Router>
         <AppLayout>
           <Routes>
+            <Route path="/equipo" element={<Equipo />} />
             <Route path="/" element={<Dashboard />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/pantalla_completa" element={<PantallaCompleta />} />
