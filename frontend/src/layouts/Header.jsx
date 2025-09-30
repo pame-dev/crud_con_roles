@@ -31,7 +31,8 @@ const Header = () => {
     "/register_gerentes_y_trabajadores",
     "/register_trabajadores"
   ];
-  const mostrarSoloUsuario = soloUsuario.includes(location.pathname);
+  const mostrarSoloUsuario = soloUsuario.includes(location.pathname) || location.pathname.startsWith("/editar_empleado");
+
 
   const { t, i18n } = useTranslation();
   const toggleLanguage = () => i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
@@ -83,7 +84,7 @@ const Header = () => {
       alert("Por favor, ingresa un correo electrónico válido.");
       return;
     }
-      // ✅ Validar si el correo ya existe en la BD
+      //  Validar si el correo ya existe en la BD
     fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -207,7 +208,7 @@ const Header = () => {
                   className="edit-btn" 
                   onClick={() => { 
                     setIsEditing(true); 
-                    setCorreoError(""); // ✅ limpia error al empezar a editar 
+                    setCorreoError(""); //  limpia error al empezar a editar 
                   }}
                 >
                   <Pencil size={16} />
