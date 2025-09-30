@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import './pages-styles/pantalla_completa.css';
 import CurrentTurnCard from '../components/CurrentTurnCard';
-import QueueItem from '../components/QueueItem';
+import FilaTurnos from "../components/FilaTurnos";
 
 const PantallaCompleta = () => {
   const navigate = useNavigate();
@@ -78,31 +78,7 @@ const PantallaCompleta = () => {
               </div>
 
               {/* Fila actual */}
-              <div className="col-lg-4">
-                <div className="card shadow-lg full-width-card">
-                  <div className="card-body p-4">
-                    <h3 className="card-title fw-bold text-dark mb-3 d-flex align-items-center">
-                      <Flag size={20} className="text-danger me-3" />
-                      Fila Actual
-                    </h3>
-                    <div className="d-flex flex-column gap-1">
-                      {loading && <p className="text-muted">Cargando...</p>}
-                      {err && <p className="text-danger">{err}</p>}
-                      {!loading && !err && fila.length === 0 && (
-                        <p className="text-muted">No hay turnos pendientes</p>
-                      )}
-                      {!loading && !err && fila.length > 0 && 
-                        [...fila] // copia para no mutar el estado
-                          .sort((a, b) => a.turn_number - b.turn_number) // ordenar de más antiguo a más reciente
-                          .slice(0, 3) // mostrar solo los 3 turnos más antiguos
-                          .map(turn => (
-                            <QueueItem key={turn.turn_number} turn={turn} />
-                          ))
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <FilaTurnos cargo={null}/>
 
             </div>
           </div>
