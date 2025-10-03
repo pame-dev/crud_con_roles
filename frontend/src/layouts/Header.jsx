@@ -33,7 +33,6 @@ const Header = () => {
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname) || location.pathname.startsWith("/editar_empleado");
 
-
   const { t, i18n } = useTranslation();
   const toggleLanguage = () => i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
 
@@ -71,20 +70,20 @@ const Header = () => {
       ...(formData.CONTRASENA ? { contrasena: formData.CONTRASENA } : {}),
     };
 
-
-        //  Validación de nombre (mínimo 3 caracteres)
+    //  Validación de nombre (mínimo 3 caracteres)
     if (datosActualizados.nombre.length < 3) {
-      alert("El nombre debe tener al menos 3 caracteres.");
+      alert(t("errorNombre"));
       return;
     }
 
     //  Validación de correo (formato correcto)
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!correoRegex.test(datosActualizados.correo)) {
-      alert("Por favor, ingresa un correo electrónico válido.");
+      alert(t("errorCorreo"));
       return;
     }
-      //  Validar si el correo ya existe en la BD
+
+    //  Validar si el correo ya existe en la BD
     fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -93,26 +92,26 @@ const Header = () => {
       .then((res) => res.json())
       .then((data) => {
         if (data.existe) {
-          setCorreoError("El correo ya está registrado por otro empleado.");
+          setCorreoError(t("correoDuplicado"));
           return;
         }
 
-            // Expresión regular para validar contraseña segura
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+        // Expresión regular para validar contraseña segura
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
 
-      if (!passwordRegex.test(formData.contrasena)) {
-        alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
-        return;
-      }
+        if (formData.CONTRASENA && !passwordRegex.test(formData.CONTRASENA)) {
+          alert(t("errorContrasena"));
+          return;
+        }
 
         if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-          alert("Por favor, completa todos los campos obligatorios.");
+          alert(t("errorCampos"));
           return;
         }
 
         actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
           .then(res => {
-            alert("Perfil actualizado correctamente");
+            alert(t("perfilActualizado"));
             setIsEditing(false);
             setShowModal(false);
 
@@ -123,13 +122,13 @@ const Header = () => {
           .catch(err => {
             if (err.errors) {
               const mensajes = Object.values(err.errors).flat().join("\n");
-              alert("Error al actualizar perfil:\n" + mensajes);
+              alert(t("errorActualizar") + ":\n" + mensajes);
             } else if (err.message) {
-              alert("Error al actualizar perfil: " + err.message);
+              alert(t("errorActualizar") + ": " + err.message);
             } else if (err.error) {
-              alert("Error al actualizar perfil: " + err.error);
+              alert(t("errorActualizar") + ": " + err.error);
             } else {
-              alert("Error al actualizar perfil: Error desconocido");
+              alert(t("errorActualizar") + ": " + t("errorDesconocido"));
             }
             console.error(err);
           });
@@ -167,12 +166,12 @@ const Header = () => {
               <ul className="navbar-nav mx-auto">
                 <li className="nav-item">
                   <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
-                    <TrendingUp size={20} className="me-2" /> Dashboard
+                    <TrendingUp size={20} className="me-2" /> {t("dashboard")}
                   </Link>
                 </li>
                 <li className="nav-item">
                   <Link to="/pantalla_completa" className={`nav-link d-flex align-items-center ${location.pathname === "/pantalla_completa" ? "active" : ""}`}>
-                    <Tv size={20} className="me-2" /> Pantalla Completa
+                    <Tv size={20} className="me-2" /> {t("pantallaCompleta")}
                   </Link>
                 </li>
                 <li className="nav-item">
@@ -187,7 +186,7 @@ const Header = () => {
                 if (location.pathname === "/" || location.pathname === "/login") navigate("/login");
                 else setShowModal(true);
               }}>
-                <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
+                <User size={16} className="me-2" /> {!mostrarSoloUsuario && t("iniciarSesion")}
               </button>
             </div>
           </div>
@@ -208,7 +207,7 @@ const Header = () => {
                   className="edit-btn" 
                   onClick={() => { 
                     setIsEditing(true); 
-                    setCorreoError(""); //  limpia error al empezar a editar 
+                    setCorreoError(""); 
                   }}
                 >
                   <Pencil size={16} />
@@ -222,7 +221,7 @@ const Header = () => {
             </div>
 
             <div className="modal-options">
-              <span className="profile-label">Nombre</span>
+              <span className="profile-label">{t("nombre")}</span>
               <div className="content-profile-row">
                 {isEditing ? (
                   <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
@@ -231,7 +230,7 @@ const Header = () => {
                 )}
               </div>
 
-              <span className="profile-label">Correo</span>
+              <span className="profile-label">{t("correo")}</span>
               <div className="content-profile-row">
                 {isEditing ? (
                   <>
@@ -249,8 +248,7 @@ const Header = () => {
                 )}
               </div>
 
-
-              <span className="profile-label">Contraseña</span>
+              <span className="profile-label">{t("contrasena")}</span>
               <div className="content-profile-row d-flex align-items-center">
                 {isEditing ? (
                   <>
@@ -262,7 +260,7 @@ const Header = () => {
                 ) : <div className="profile-row">********</div>}
               </div>
 
-              <span className="profile-label">Área</span>
+              <span className="profile-label">{t("area")}</span>
               <div className="content-profile-row">
                 <div className="profile-row">{empleado.CARGO}</div>
               </div>
@@ -270,7 +268,7 @@ const Header = () => {
 
             <div className="modal-footer-profile">
               <button className="logout-btn" onClick={() => { logout(); setShowModal(false); navigate("/"); }}>
-                Cerrar Sesión
+                {t("cerrarSesion")}
               </button>
             </div>
           </div>
