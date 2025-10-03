@@ -1,4 +1,3 @@
-// src/pages/login.jsx
 import React, { useState, useMemo, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -23,7 +22,6 @@ const Login = () => {
     setForm((f) => ({ ...f, [name]: type === "checkbox" ? checked : value }));
   };
 
-  // Validación: usuario >=6, pass >=8 y términos aceptados
   const isValid = useMemo(() => {
     return (
       form.user.trim().length >= 6 &&
@@ -33,54 +31,40 @@ const Login = () => {
   }, [form]);
 
   const onSubmit = async (e) => {
-  e.preventDefault();
-  setError("");
-
-  if (!form.termsAccepted) {
-    setError("Debes aceptar los términos y condiciones para continuar.");
-    return;
-  }
-
-  if (!isValid || submitting) return;
-
-  try {
-    setSubmitting(true);
-
-
-    // 🔹 Petición real al backend
-    const response = await axios.post("http://127.0.0.1:8000/api/login", {
-      user: form.user,
-      pass: form.pass
-    });
-
-    console.log("Respuesta del backend:", response.data);
-
-    // Guardar datos en localStorage para usarlos en otras vistas
-    localStorage.setItem("empleado", JSON.stringify(response.data));
-    setEmpleado(response.data); // Actualiza el contexto global
-    const { ID_ROL } = response.data;
-
-    // 🔹 Redirección según ID_ROL
-    switch (ID_ROL) {
-      case 0:
-        navigate("/vista_superadministrador");
-        break;
-      case 1:
-        // Aquí pasas el cargo como filtro a la vista de gerente
-        navigate("/vista_gerente");
-        break;
-      case 2:
-        navigate("/vista_trabajador");
-        break;
-      default:
-        navigate("/"); 
-        break;
+    e.preventDefault();
+    setError("");
+    if (!form.termsAccepted) {
+      setError("Debes aceptar los términos y condiciones para continuar.");
+      return;
     }
+    if (!isValid || submitting) return;
 
+    try {
+      setSubmitting(true);
+      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+        user: form.user,
+        pass: form.pass,
+      });
+
+      localStorage.setItem("empleado", JSON.stringify(response.data));
+      setEmpleado(response.data);
+
+      const { ID_ROL } = response.data;
+      switch (ID_ROL) {
+        case 0:
+          navigate("/vista_superadministrador");
+          break;
+        case 1:
+          navigate("/vista_gerente");
+          break;
+        case 2:
+          navigate("/vista_trabajador");
+          break;
+        default:
+          navigate("/");
+          break;
+      }
     } catch (err) {
-      console.error("Error completo al iniciar sesión:", err);
-      
-      // 🔹 Captura el error del backend
       if (err.response?.status === 404) {
         setError("El correo no existe en el sistema.");
       } else if (err.response?.status === 401) {
@@ -88,37 +72,33 @@ const Login = () => {
       } else {
         setError("No se pudo iniciar sesión. Intenta de nuevo.");
       }
-
     } finally {
       setSubmitting(false);
     }
   };
 
-
-
   return (
     <AnimatePresence>
       <motion.div
-        className="full-width-container"
-        initial={{ opacity: 0, x: 50 }}     // entra desde derecha
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -50 }}       // sale hacia izquierda
-        transition={{ duration: 0.5 }}
+        className="login-page one-column"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -16 }}
+        transition={{ duration: 0.35 }}
       >
-
-        <div className="login-wrap">
-
-      {/* ===== TARJETA CENTRAL ===== */}
-      
-      <main className="login-main">
-        <section className="login-card">
-          <div className="avatar"><i className="fa-regular fa-user"></i></div>
-          <h1 className="title">Inicio de Sesión</h1>
+        {/* Solo la tarjeta del formulario (una columna) */}
+        <main className="login-card glass">
+          <div className="login-card-header">
+            <div className="login-avatar">
+              <i className="fa-regular fa-user"></i>
+            </div>
+            <h1>Inicio de sesión</h1>
+            <p className="login-subtitle">Ingresa tus datos para continuar</p>
+          </div>
 
           <form onSubmit={onSubmit} className="login-form" noValidate>
-
             {/* Usuario */}
-            <label className="input-group"> 
+            <label className="login-input-group">
               <span className="icon"><i className="fa-solid fa-envelope"></i></span>
               <input
                 type="text"
@@ -133,7 +113,7 @@ const Login = () => {
             </label>
 
             {/* Contraseña */}
-            <label className="input-group">
+            <label className="login-input-group">
               <span className="icon"><i className="fa-solid fa-lock"></i></span>
               <input
                 type={showPwd ? "text" : "password"}
@@ -150,27 +130,35 @@ const Login = () => {
                 className="eye"
                 onClick={() => setShowPwd((s) => !s)}
                 aria-label={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+                title={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 <i className={`fa-solid ${showPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
               </button>
             </label>
 
             {/* Términos + link */}
-            <div className="aux-line">
-              <label className="check">
+            <div className="login-aux">
+              <label className="login-check">
                 <input
                   type="checkbox"
                   name="termsAccepted"
                   checked={form.termsAccepted}
                   onChange={handleChange}
                 />
-                <span>Acepto los <a className="linkk" href="/terminos_y_condiciones">Terminos y Condiciones</a></span>
+                <span>
+                  Acepto los{" "}
+                  <a className="login-link-terms" href="/terminos_y_condiciones">
+                    Términos y Condiciones
+                  </a>
+                </span>
               </label>
-              <a className="link" href="/olvide_mi_contrasena">Olvidé mi contraseña</a>
+              <a className="login-link" href="/olvide_mi_contrasena">
+                Olvidé mi contraseña
+              </a>
             </div>
 
             <button
-              className="btn-primary"
+              className="login-btn"
               type="submit"
               disabled={!isValid || submitting}
             >
@@ -180,18 +168,31 @@ const Login = () => {
                 </>
               ) : (
                 <>
-                  <i className="fa-solid fa-right-to-bracket"></i> Iniciar Sesión
+                  <i className="fa-solid fa-right-to-bracket"></i> Iniciar sesión
                 </>
               )}
             </button>
 
-            {error && <p className="error-msg">{error}</p>}
+            <AnimatePresence>
+              {error && (
+                <motion.p
+                  className="login-error"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                >
+                  {error}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </form>
-        </section>
-      </main>
-    </div>
+
+          <footer className="login-footer">
+            <small>© {new Date().getFullYear()} – PitLine</small>
+          </footer>
+        </main>
       </motion.div>
-    </AnimatePresence>  
+    </AnimatePresence>
   );
 };
 
