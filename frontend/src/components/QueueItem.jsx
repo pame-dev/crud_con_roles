@@ -9,7 +9,8 @@ const QueueItem = ({ turn }) => (
     <div className="d-flex justify-content-between align-items-start mb-2">
       <div>
         <h6 className="fw-bold text-dark mb-1">#{turn.turn_number} - {turn.name}</h6>
-        <small className="text-muted">{turn.reason === 'cotizacion' ? 'Cotización' : 'Reparación'}</small>
+        <small className="text-muted">{turn.reason}</small> {/*  ya viene traducido */}
+
       </div>
       <StatusBadge status={turn.status} priority={turn.priority} />
     </div>
