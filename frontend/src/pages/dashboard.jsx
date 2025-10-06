@@ -6,37 +6,42 @@ import FilaTurnos from "../components/FilaTurnos";
 import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
-import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [fila, setFila] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+
   const [diaFinalizado] = useDiaFinalizado();
-  const { t } = useTranslation();
 
   // Función para cargar la fila desde la API
   const fetchFila = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/api/turnos/fila");
-      if (!res.ok) throw new Error(t("errorCargarFila"));
+      if (!res.ok) throw new Error("Error al cargar la fila");
       const data = await res.json();
       setFila(data);
       setErr("");
     } catch (e) {
-      setErr(e.message || t("errorCargarFila"));
+      setErr(e.message || "Error al cargar la fila");
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    // Primer fetch al montar
     fetchFila();
+
+    // Intervalo cada 5 segundos
     const interval = setInterval(fetchFila, 5000);
+
+    // Limpiar el interval al desmontar
     return () => clearInterval(interval);
   }, []);
 
+  // Función para agregar un nuevo turno (si quieres usar desde otro componente)
   const addNewTurnToQueue = (newTurn) => {
     setFila(prevFila => [...prevFila, newTurn]);
   };
@@ -52,34 +57,36 @@ const Dashboard = () => {
       >
         <div className="hero-section">
           <div className="text-center mt-3">
-            <h3 className="display-3 fw-bold mb-1">{t("bienvenida")}</h3>
-            <p className="lead opacity-75">{t("descripcionBienvenida")}</p>
+            <h3 className="display-3 fw-bold mb-1">PitLine les da la Bienvenida</h3>
+            <p className="lead opacity-75">
+              Tu taller mecánico de confianza en Manzanillo. Sistema de turnos rápido y eficiente.
+            </p>
           </div>
         </div>
 
         <div className="container" style={{ marginTop: '-5rem', padding: '0', marginBottom: '2rem' }}>
           <div className="row full-width-row g-3">
 
-            {/* Sección izquierda */}
+            {/* Sección izquierda: acciones y CurrentTurnCard */}
             <div className="col-lg-8">
               <div className="card shadow-lg full-width-card">
                 <div className="card-body p-5">
                   <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center" style={{ marginTop: '-2rem'}}>
                     <Wrench size={24} className="text-danger me-3" />
-                    {t("accionesRapidas")}
+                    Acciones Rápidas
                   </h3>
                   <div className="row g-4">
                     <div className="col-md-6">
                       <div className="action-card p-4 text-center">
                         <Calendar size={60} color="#52130c" className="text-primary mb-3" />
-                        <h4 className="fw-bold text-dark">{t("solicitarTurno")}</h4>
-                        <p className="text-muted">{t("descripcionSolicitarTurno")}</p>
+                         <h4 className="fw-bold text-dark">Solicitar Turno</h4>
+                        <p className="text-muted">Agenda tu cita de forma rápida y sencilla</p>
                         <button
                           className="btn btn-primary w-100"
                           onClick={() => navigate('/formulario_turno')}
                           disabled={diaFinalizado}
                         >
-                          {t("agendarAhora")}
+                          Agendar Ahora
                         </button>
                       </div>
                     </div>
@@ -92,8 +99,8 @@ const Dashboard = () => {
               </div>
             </div>
 
-            {/* Sección derecha */}
-            <FilaTurnos cargo={null} />
+            {/* Sección derecha: fila de turnos */}
+            <FilaTurnos cargo={null}/>
 
           </div>
         </div>
