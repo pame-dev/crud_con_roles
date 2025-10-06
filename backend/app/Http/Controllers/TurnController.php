@@ -31,7 +31,7 @@ class TurnController extends Controller
 
         $turnos = $query->orderBy('FECHA', 'asc')
             ->orderBy('HORA', 'asc')
-            ->limit(4) 
+            ->limit(3) 
             ->get();
 
         Log::info("Turnos encontrados: " . $turnos->count());
