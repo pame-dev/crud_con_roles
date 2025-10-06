@@ -1,101 +1,112 @@
 import React from "react";
-import { Flag, Wrench } from '../iconos';
+import { Clock, Flag } from '../iconos';
 import QueueItem from './QueueItem';
-import { useTranslation } from "react-i18next";
+import { fetchFilaActual } from "../api/turnosApi";
 
-// Componente principal de la fila de turnos (class component)
+//Componente de la Fila de turnos, maneja la logica de datos para la fila 
+//mapea el array de turnos y crea multiples componentes de QueueItem
 export class FilaTurnos extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      turnos: [],
-      loading: true,
+      turnos: [], //array de turnos, inicia vacio
+      loading: true, 
       err: null,
+      ultimaActualizacion: null
     };
     this.intervalId = null;
   }
 
   componentDidMount() {
+    // Cargar inmediatamente sin delay
     this.cargarTurnos();
-    this.intervalId = setInterval(this.cargarTurnos, 3000);
-  }
+    this.intervalId = setInterval(this.cargarTurnos, 3000); //actualiza la carga cada 3 segundos
+     }
 
   componentDidUpdate(prevProps) {
     if (prevProps.cargo !== this.props.cargo) {
-      this.cargarTurnos();
-    }
+      this.cargarTurnos(); //recarga si cambia el filtro de cargo
+      }
   }
 
   componentWillUnmount() {
-    if (this.intervalId) clearInterval(this.intervalId);
-  }
+    if (this.intervalId) {
+      clearInterval(this.intervalId); // libera la memoria reservada para evitar que haya fugas de memoria(memory leaks)
+    }
+    }
 
   cargarTurnos = async () => {
     try {
       const { cargo } = this.props;
+      //construye url con parametro de filtro
       const url = new URL("http://127.0.0.1:8000/api/turnos/fila");
-      if (cargo) url.searchParams.append('cargo', cargo);
+      if (cargo) {
+        url.searchParams.append('cargo', cargo);
+      }
 
       const res = await fetch(url);
       if (!res.ok) throw new Error("Error al obtener fila actual");
       const data = await res.json();
 
-      // Guardamos datos crudos
-      this.setState({ turnos: data, err: null, loading: false });
-    } catch (error) {
-      this.setState({ err: error.message, loading: false });
-    }
+      //actualiza el estado con nuevos datos
+      this.setState({
+        turnos: data,
+        err: null,
+        ultimaActualizacion: new Date(),
+        loading: false
+      });
+      } catch (error) {
+      //manejo de errores
+      this.setState({ 
+        err: error.message,
+        loading: false 
+      });
+      }
+  }
+
+  formatearHora = (fecha) => {
+    return fecha ? fecha.toLocaleTimeString() : '';
   }
 
   render() {
-    const { turnos, loading, err } = this.state;
-    const { cargo, t } = this.props; // t viene del wrapper
+    const { turnos, loading, err, ultimaActualizacion } = this.state;
+    const { cargo } = this.props;
 
     const mensajeVacio = cargo 
-      ? t("noTurnosPendientesCargo", { cargo })
-      : t("noTurnosPendientes");
+      ? `No hay turnos pendientes en ${cargo}`
+      : 'No hay turnos pendientes';
 
-    return (
+      return (
       <div className="col-lg-4 mb-3">
         <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
           <div className="card-body p-4">
-            <div className="d-flex justify-content-between align-items-center" style={{ margin: 0, padding: 0 }}>
-              <h4
-                className="d-flex align-items-center text-dark fw-bold"
-                style={{ margin: 0, padding: 0, lineHeight: '1.5' }}
-              >
-                <Flag size={20} className="text-danger me-2" /> {t("filaActual")}
-              </h4>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0 mt-0">
+                <Flag size={20} className="text-danger me-2" />Fila Actual
+                </h4>
+
             </div>
 
-
-
-            <div className="d-flex flex-column gap-2 mt-2">
+            <div className="d-flex flex-column gap-3">
               {loading && (
                 <div className="text-center py-4">
                   <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">{t("cargando")}</span>
+                    <span className="visually-hidden">Cargando...</span>
+                    </div>
+                  <p className="text-muted mt-2">Cargando turnos...</p>
                   </div>
-                  <p className="text-muted mt-2">{t("cargandoTurnos")}</p>
-                </div>
               )}
-
+              
               {err && <p className="text-danger">{err}</p>}
-
+              
               {!loading && !err && turnos.length === 0 && (
                 <p className="text-muted text-center py-3">{mensajeVacio}</p>
               )}
 
-              {!loading && turnos.slice(0, 3).map((turn) => {
-                // Traducción dinámica de la razón
-                const reason = turn.ID_AREA === 1 
-                  ? t('reparacion') 
-                  : t('cotizacion'); // o t('pasarAlModulo', { modulo: turn.ID_EMPLEADO }) si aplica
-
-                return <QueueItem key={turn.turn_number} turn={{ ...turn, reason }} />;
-              })}
-
-            </div>
+              {!loading && turnos.map((turn) => (
+                <QueueItem key={turn.turn_number} turn={turn} />
+              ))}
+              </div>
           </div>
         </div>
       </div>
@@ -103,8 +114,4 @@ export class FilaTurnos extends React.Component {
   }
 }
 
-// Wrapper para usar useTranslation en class component
-export default function FilaTurnosWrapper(props) {
-  const { t } = useTranslation();
-  return <FilaTurnos {...props} t={t} />;
-}
+export default FilaTurnos;
