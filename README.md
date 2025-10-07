@@ -2,7 +2,8 @@
 
 ![Laravel](https://img.shields.io/badge/Laravel-8.x-red) ![PHP](https://img.shields.io/badge/PHP-7.4%2B-blue) ![MySQL](https://img.shields.io/badge/MySQL-5.7%2B-orange) ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-purple) ![MIT License](https://img.shields.io/badge/License-MIT-green)
 
-![CRUD con Roles](https://github.com/pame-dev/crud_con_roles/raw/main/frontend/src/assets/logo-fondo-negro.jpeg)
+<img src="https://github.com/pame-dev/crud_con_roles/blob/main/frontend/src/assets/logo-fondo-negro.png" alt="CRUD con Roles" width="100">
+
 
 ## 🔹 Descripción
 
