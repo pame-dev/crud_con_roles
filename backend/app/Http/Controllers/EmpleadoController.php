@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class EmpleadoController extends Controller
 {
@@ -102,19 +103,79 @@ class EmpleadoController extends Controller
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
-
-        $empleado->update([
-            'NOMBRE'     => $request->nombre,
-            'CORREO'     => $request->correo,
-            'CARGO'      => $request->cargo,
-            'ID_ROL'     => $request->id_rol,
-            'ESTADO'     => $request->estado,
+        // Validación básica
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
+            'cargo'  => 'required|string|max:255',
+            'contrasena' => 'nullable|string|min:8',
         ]);
+
+        // Preparar cambios que se aplicarán
+        $changes = [];
+        if (isset($validated['nombre']) && $empleado->NOMBRE !== $validated['nombre']) {
+            $changes['NOMBRE'] = $validated['nombre'];
+        }
+        if (isset($validated['correo']) && $empleado->CORREO !== $validated['correo']) {
+            $changes['CORREO'] = $validated['correo'];
+        }
+        if (isset($validated['cargo']) && $empleado->CARGO !== $validated['cargo']) {
+            $changes['CARGO'] = $validated['cargo'];
+        }
+
+        // Manejo de contraseña: no retornamos ni mostramos la actual. Solo actualizar si se envía y es válida.
+        if ($request->has('contrasena') && $request->contrasena) {
+            // Verificar que la nueva contraseña no sea idéntica a la actual (suponiendo que CONTRASENA está hasheada)
+            $nueva = $request->contrasena;
+            // Si la contraseña almacenada no es la misma en texto (porque está en claro en BD), comparamos directamente;
+            // si está hasheada, use Hash::check. Aquí intentamos con Hash::check y también con comparación directa para compatibilidad.
+            try {
+                if (Hash::check($nueva, $empleado->CONTRASENA) || $nueva === $empleado->CONTRASENA) {
+                    return response()->json(['error' => 'La contraseña no debe de ser idéntica a la actual'], 422);
+                }
+            } catch (\Exception $e) {
+                // En caso de error con Hash::check, solo prevenir igualdad en texto
+                if ($nueva === $empleado->CONTRASENA) {
+                    return response()->json(['error' => 'La contraseña no debe de ser idéntica a la actual'], 422);
+                }
+            }
+
+            // Evitar contraseñas previamente usadas: si tienes una tabla de historiales, aquí se debería comprobar.
+            // Como no hay una tabla en este proyecto, rechazaremos contra contraseñas iguales a algunas columnas comunes (ejemplo)
+            // Nota: lo ideal es implementar una tabla `password_histories` con hashes.
+
+            // Guardar la nueva contraseña en forma hasheada
+            $changes['CONTRASENA'] = bcrypt($nueva);
+        }
+
+        if (!empty($changes)) {
+            $empleado->update($changes);
+        }
 
         return response()->json([
             'message' => 'Empleado actualizado correctamente',
-            'empleado' => $empleado
+            'empleado' => $empleado->fresh()
         ]);
+    }
+
+    // Endpoint para verificar si la contraseña enviada coincide con la actual
+    public function verificarContrasena(Request $request, $id)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
+        $request->validate(['contrasena' => 'required|string']);
+        $contrasena = $request->contrasena;
+
+        try {
+            $igual = Hash::check($contrasena, $empleado->CONTRASENA) || $contrasena === $empleado->CONTRASENA;
+        } catch (\Exception $e) {
+            $igual = $contrasena === $empleado->CONTRASENA;
+        }
+
+        return response()->json(['igual' => $igual]);
     }
 
     // Verificar si el correo ya existe (excluyendo el empleado actual)

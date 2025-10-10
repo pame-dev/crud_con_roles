@@ -7,7 +7,6 @@ import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
 import './pages-styles/dashboard.css';
 import { motion, AnimatePresence } from "framer-motion";
 
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [fila, setFila] = useState([]);

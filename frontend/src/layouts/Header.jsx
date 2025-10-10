@@ -4,7 +4,7 @@ import { User, TrendingUp, Tv, Pencil, Globe, Save, X } from "lucide-react"; // 
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
-import { actualizarEmpleado } from "../api/empleadosApi";
+import { actualizarEmpleado, verificarContrasena } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
 
 // import React from "react"; // ya no es necesario importar React en versiones recientes si solo usas JSX, importar dos veces react genera errores (ya esta declarado en la linea 1)
@@ -16,6 +16,12 @@ const Header = () => {
   const [showModal, setShowModal] = useState(false); //valor predeterminado para el modal (oculto) se pasara a true cuando se presione 
   const [isEditing, setIsEditing] = useState(false); // Estado para editar perfil(modal)
   const [formData, setFormData] = useState({...empleado}); // Estado para los datos del formulario
+  const [passwordRules, setPasswordRules] = useState({
+    length: false,
+    uppercase: false,
+    number: false
+  });
+  const [passwordUsed, setPasswordUsed] = useState(false);
 
 //RECORDATORIO: terminar el editar y modificar el cancelar
 //colocar en los inputs el "isEditing"
@@ -56,6 +62,16 @@ const Header = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({...formData, [name]: value });
+
+    if (name === 'CONTRASENA') {
+      // Validaciones en tiempo real
+      setPasswordRules({
+        length: value.length >= 8,
+        uppercase: /[A-Z]/.test(value),
+        number: /[0-9]/.test(value)
+      });
+      setPasswordUsed(false); // reset
+    }
   };
 
 // ╔═══════════════════════════════╗
@@ -63,31 +79,85 @@ const Header = () => {
 // ╚═══════════════════════════════╝
 // Esta función se llamará cuando el usuario haga clic en "Guardar" en el modal (vaya, esto guarda los datos editados)
   const handleSave = () => {
-    // Validar datos antes de enviar
-    const datosActualizados = {
-      nombre: formData.NOMBRE.trim(),      // 🔹 convertimos a minúsculas
-      correo: formData.CORREO.trim(),      // Hacer lo mismo para correo
-      cargo: formData.CARGO.trim(),
-      ...(formData.CONTRASENA ? { contrasena: formData.CONTRASENA } : {}),
-    };
+    // Preparar mensaje de confirmación personalizado
+    const cambios = [];
+    if (formData.NOMBRE && formData.NOMBRE.trim() !== empleado.NOMBRE) cambios.push(`tu nuevo nombre será ${formData.NOMBRE.trim()}`);
+    if (formData.CORREO && formData.CORREO.trim() !== empleado.CORREO) cambios.push(`tu nuevo correo será ${formData.CORREO.trim()}`);
+    let cambiandoPass = false;
+    if (formData.CONTRASENA && formData.CONTRASENA.trim() !== '') {
+      cambiandoPass = true;
+      cambios.push("nueva contraseña actualizada, no la compartas con nadie.");
+    }
 
-    // Verificar que los datos no estén vacíos
-    if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
+    if (!formData.NOMBRE || !formData.CORREO || !formData.CARGO) {
       alert("Por favor, completa todos los campos obligatorios.");
       return;
     }
 
+    // Si se está editando la contraseña validar reglas
+    if (cambiandoPass) {
+      const { length, uppercase, number } = passwordRules;
+      if (!length || !uppercase || !number) {
+        alert('La contraseña no cumple las reglas requeridas.');
+        return;
+      }
+      // Verificar si la contraseña es igual a la actual usando la API
+      verificarContrasena(empleado.ID_EMPLEADO, formData.CONTRASENA)
+        .then(res => {
+          if (res.igual) {
+            alert('la contraseña no debe de ser idéntica a la actual');
+            setPasswordUsed(true);
+            return;
+          }
+
+          // Mostrar confirmación personalizada
+          const confirmMsg = `¿Estás seguro que quieres actualizar tus datos?\n${cambios.join('\n')}`;
+          if (!window.confirm(confirmMsg)) return;
+
+          // Enviar la petición
+          const datosActualizados = {
+            nombre: formData.NOMBRE.trim(),
+            correo: formData.CORREO.trim(),
+            cargo: formData.CARGO.trim(),
+            contrasena: formData.CONTRASENA
+          };
+
+          actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
+            .then((res) => {
+              alert('Perfil actualizado correctamente');
+              setIsEditing(false);
+              setShowModal(false);
+              localStorage.setItem('empleado', JSON.stringify(res.empleado));
+            })
+            .catch((err) => {
+              alert('Error al actualizar perfil: ' + (err?.error || 'Error desconocido'));
+            });
+        })
+        .catch(err => {
+          alert('Error al verificar contraseña: ' + (err?.error || 'Error desconocido'));
+        });
+      return; // ya manejado el flujo async
+    }
+
+    // No se cambia contraseña
+    const confirmMsg = `¿Estás seguro que quieres actualizar tus datos?\n${cambios.join('\n')}`;
+    if (!window.confirm(confirmMsg)) return;
+
+    const datosActualizados = {
+      nombre: formData.NOMBRE.trim(),
+      correo: formData.CORREO.trim(),
+      cargo: formData.CARGO.trim()
+    };
+
     actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
       .then((res) => {
-        alert("Perfil actualizado correctamente");
+        alert('Perfil actualizado correctamente');
         setIsEditing(false);
         setShowModal(false);
-        // Actualizar localStorage y contexto si es necesario
-        localStorage.setItem("empleado", JSON.stringify(res.empleado));
-        // Si tienes setEmpleado en el contexto, actualízalo aquí
+        localStorage.setItem('empleado', JSON.stringify(res.empleado));
       })
       .catch((err) => {
-        alert("Error al actualizar perfil: " + (err?.error || "Error desconocido"));
+        alert('Error al actualizar perfil: ' + (err?.error || 'Error desconocido'));
       });
   };
 
@@ -263,13 +333,22 @@ const Header = () => {
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row">
                 {isEditing ? (
-                  <input
-                    type="password"
-                    name="CONTRASENA"
-                    value={formData.CONTRASENA}
-                    onChange={handleChange}
-                    className="profile-input"
-                  />
+                  <div style={{width: '100%'}}>
+                    <input
+                      type="password"
+                      name="CONTRASENA"
+                      value={formData.CONTRASENA || ''}
+                      onChange={handleChange}
+                      className="profile-input"
+                      placeholder="Ingresa nueva contraseña (no se muestra la actual)"
+                    />
+                    <div className="password-rules mt-2">
+                      <div style={{color: passwordRules.length ? 'green' : 'red'}}> - la contraseña debe contener mínimo 8 dígitos</div>
+                      <div style={{color: passwordRules.uppercase ? 'green' : 'red'}}> - la contraseña debe tener una letra mayúscula</div>
+                      <div style={{color: passwordRules.number ? 'green' : 'red'}}> - la contraseña debe tener mínimo 1 número</div>
+                      {passwordUsed && <div style={{color: 'red'}}>esta contraseña ya ha sido utilizada, utiliza una diferente</div>}
+                    </div>
+                  </div>
                 ) : (
                   <div className="profile-row">{empleado.CONTRASENA}</div>
                 )}
