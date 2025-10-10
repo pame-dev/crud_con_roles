@@ -24,6 +24,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy']);
     Route::put('empleados/{id}/recuperar', [EmpleadoController::class, 'recuperar']);
     Route::put('/empleados/{id}', [EmpleadoController::class, 'update']);
+    Route::post('/empleados/{id}/verificar-contrasena', [EmpleadoController::class, 'verificarContrasena']);
     Route::post('/turnos', [TurnController::class, 'store']);
     Route::get('/turnos/ultimo', [TurnController::class, 'ultimo']);
     Route::get('/turnos/historial', [TurnController::class, 'historial']);
