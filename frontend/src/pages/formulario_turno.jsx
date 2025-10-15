@@ -130,7 +130,7 @@ const FormularioTurno = () => {
   const handleCancel = () => navigate("/");
 
   return (
-    <div className="formulario-compact-container">
+    <div className="formulario-compact-container mb-4">
       {/* Overlay de carga */}
       {loading && (
         <div className="loading-overlay">

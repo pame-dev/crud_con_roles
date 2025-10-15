@@ -82,7 +82,7 @@ const Dashboard = () => {
                          <h4 className="fw-bold text-dark">Solicitar Turno</h4>
                         <p className="text-muted">Agenda tu cita de forma rápida y sencilla</p>
                         <button
-                          className="btn btn-primary w-100"
+                          className="turno-btn text-white fw-bold mt-3 w-100 btn-primary"
                           onClick={() => navigate('/formulario_turno')}
                           disabled={diaFinalizado}
                         >
