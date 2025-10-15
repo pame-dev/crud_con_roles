@@ -65,3 +65,12 @@
     transform: translateY(-2px);
 }
 
+.turno-btn {
+    height: 3rem;
+    font-size: large;
+}
+
+.turno-btn:disabled {
+  cursor: not-allowed !important;
+  opacity: 0.65; /* opcional, para reforzar el efecto visual */
+}
