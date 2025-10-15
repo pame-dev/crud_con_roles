@@ -31,7 +31,6 @@ const TurnoEmpleadoInd = () => {
   useEffect(() => {
     if (mensajeGerente) {
       const timer = setTimeout(() => setMensajeGerente(""), 4000);
-
       return () => clearTimeout(timer);
     }
   }, [mensajeGerente]);
@@ -51,17 +50,22 @@ const TurnoEmpleadoInd = () => {
         return;
       }
 
-      // Mostrar mensaje solo si cambió turno y NO fue por trabajador
-      if (
-        turnoPrevio.current &&
-        miTurno?.ID_TURNO !== turnoPrevio.current?.ID_TURNO &&
-        !pasandoPorTrabajador.current
-      ) {
+      // Detectar cuando el gerente asigna un turno
+      const turnoAnterior = turnoPrevio.current;
+      const turnoNuevo = miTurno;
+      
+      // Caso 1: De no tener turno a tener turno (primer asignación)
+      const casoPrimerTurno = !turnoPrevio.current && miTurno;
+      
+      // Caso 2: Cambio de turno (de un turno a otro diferente)
+      const casoCambioTurno = turnoPrevio.current && miTurno && turnoPrevio.current.ID_TURNO !== miTurno.ID_TURNO;
+
+      // Mostrar mensaje solo si cambió el turno y NO fue por acción del trabajador
+      if ((casoPrimerTurno || casoCambioTurno) && !pasandoPorTrabajador.current) {
         setMensajeGerente("El gerente te ha asignado un nuevo turno");
       }
 
       turnoPrevio.current = miTurno;
-
       setTurno(miTurno);
     } catch (err) {
       console.error("Error al obtener turno:", err);
