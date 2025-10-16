@@ -80,6 +80,22 @@ const TurnoEmpleadoInd = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const formatDuracion = (duracion) => {
+    if (!duracion) return "—";
+    
+    // Si ya viene en formato HH:MM desde la base de datos
+    if (duracion.includes(':')) {
+        const [horas, minutos] = duracion.split(':').map(Number);
+        if (horas > 0) {
+            return `${horas}h ${minutos}m`;
+        } else {
+            return `${minutos}m`;
+        }
+    }
+    
+    return duracion;
+  };
+
   // Pasar turno
   const pasarTurno = async () => {
     if (!empleado) return;
