@@ -73,6 +73,7 @@ class TurnController extends Controller
                 'TURNOS.HORA',
                 'TURNOS.ESTATUS as estado',
                 'TURNOS.TELEFONO as cliente_telefono',
+                'TURNOS.DURACION',
                 'EMPLEADO.NOMBRE as NOMBRE_EMPLEADO',
                 'EMPLEADO.ID_EMPLEADO as ID_EMPLEADO_EMPLEADO',
                 'EMPLEADO.CORREO as CORREO_EMPLEADO'
@@ -116,6 +117,7 @@ class TurnController extends Controller
                 'NOMBRE_EMPLEADO' => $t->NOMBRE_EMPLEADO ?? null, // el nombre del empleado
                 'ID_EMPLEADO' => $t->ID_EMPLEADO_EMPLEADO ?? null, // id del empleado que atendió
                 'CORREO_EMPLEADO' => $t->CORREO_EMPLEADO ?? null,
+                'duracion' => $t->DURACION ?? null, // duración del turno
             ];
         });
 
@@ -168,6 +170,7 @@ class TurnController extends Controller
                     'ATENCION_FIN' => $turno->ATENCION_FIN,
                     // 👇 extra opcional, no afecta al card si no lo usas
                     'empleado_nombre' => $empleadoNombre,
+                    'DURACION' => $turno->DURACION,
                 ]
             ], 200);
         } else {
@@ -238,6 +241,18 @@ class TurnController extends Controller
         if ($turnoActual) {
             $turnoActual->ESTATUS = 'Completado';
             $turnoActual->ATENCION_FIN = now(); // registrar hora de finalización
+            // Calcular y guardar la duración
+            if ($turnoActual->ATENCION_EN) {
+                $inicio = \Carbon\Carbon::parse($turnoActual->ATENCION_EN);
+                $fin = \Carbon\Carbon::parse($turnoActual->ATENCION_FIN);
+                $duracionMinutos = $inicio->diffInMinutes($fin);
+                
+                // Convertir a formato horas:minutos
+                $horas = floor($duracionMinutos / 60);
+                $minutos = $duracionMinutos % 60;
+                $turnoActual->DURACION = sprintf("%02d:%02d", $horas, $minutos);
+            }
+            
             $turnoActual->save();
         }
 
