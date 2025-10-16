@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import './pages-styles/formulario_turno.css';
 import { jsPDF } from "jspdf";
 import logoImg from "../assets/logo-fondo-negro.png";
+import ModalAlert from "../components/ModalAlert"; 
 
 const FormularioTurno = () => {
   const navigate = useNavigate();
@@ -15,6 +16,18 @@ const FormularioTurno = () => {
     area: ''
   });
 
+          const [modal, setModal] = useState({
+        show: false,
+        title: "",
+        message: "",
+        type: "info"
+      });
+    
+        const showModal = (title, message, type = "info") => {
+        setModal({ show: true, title, message, type });
+      };
+    
+      const closeModal = () => setModal({ ...modal, show: false });
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prevState => ({
@@ -27,12 +40,12 @@ const FormularioTurno = () => {
     e.preventDefault();
 
     if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.area) {
-      alert("Por favor completa todos los campos obligatorios.");
+      showModal("Campos incompletos", "Por favor, complete todos los campos.", "error");
       return;
     }
 
     if (formData.telefono.length < 10) {
-      alert("El número de teléfono debe tener exactamente 10 dígitos.");
+      showModal("Número de teléfono inválido", "El número de teléfono debe tener exactamente 10 dígitos.", "error");
       return;
     }
 
@@ -110,27 +123,28 @@ const FormularioTurno = () => {
 
           doc.save(`Turno_${data.turno}.pdf`);
 
-          setLoading(false); // desactivar animación
-          navigate("/");
-        };
-
-        alert(`Turno solicitado con éxito. Tu turno es: ${data.turno}`);
-      } else {
-        setLoading(false);
-        alert("Error al solicitar turno: " + (data.message || "Intenta de nuevo."));
-      }
-
-    } catch (error) {
       setLoading(false);
-      console.error("Error:", error);
-      alert("Hubo un error de conexión con el servidor.");
+      showModal("Turno Solicitado", `Tu turno es el #${data.turno}. Se ha descargado un comprobante en PDF.`, "success");
+
+      setTimeout(() => navigate("/"), 1200); // redirige después de mostrar modal
+    };
+
+    } else {
+      setLoading(false);
+      showModal("Error al solicitar turno", data.message || "Intenta de nuevo.", "error");
     }
-  };
+
+        } catch (error) {
+          setLoading(false);
+          console.error("Error:", error);
+          showModal("Error al solicitar turno", "Ocurrió un error. Intenta de nuevo.", "error");
+        }
+      };
 
   const handleCancel = () => navigate("/");
 
   return (
-    <div className="formulario-compact-container mb-4">
+    <><div className="formulario-compact-container mb-4">
       {/* Overlay de carga */}
       {loading && (
         <div className="loading-overlay">
@@ -152,37 +166,35 @@ const FormularioTurno = () => {
           <div className="form-compact-row">
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-user"></i> Nombre *</label>
-              <input 
-                type="text" 
-                className="form-compact-control" 
+              <input
+                type="text"
+                className="form-compact-control"
                 name="nombre"
                 value={formData.nombre}
                 onChange={handleChange}
-                placeholder="Nombre" 
-                required
-              />
+                placeholder="Nombre"
+                required />
             </div>
 
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-id-card"></i> Apellido *</label>
-              <input 
-                type="text" 
-                className="form-compact-control" 
+              <input
+                type="text"
+                className="form-compact-control"
                 name="apellidos"
                 value={formData.apellidos}
                 onChange={handleChange}
-                placeholder="Apellidos" 
-                required
-              />
+                placeholder="Apellidos"
+                required />
             </div>
           </div>
 
           <div className="form-compact-row">
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-phone"></i> Teléfono *</label>
-              <input 
-                type="tel" 
-                className="form-compact-control" 
+              <input
+                type="tel"
+                className="form-compact-control"
                 name="telefono"
                 value={formData.telefono}
                 onChange={(e) => {
@@ -190,16 +202,15 @@ const FormularioTurno = () => {
                   if (value.length <= 10) {
                     setFormData(prev => ({ ...prev, telefono: value }));
                   }
-                }}
-                placeholder="Número de teléfono" 
-                required
-              />
+                } }
+                placeholder="Número de teléfono"
+                required />
             </div>
 
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-wrench"></i> Área *</label>
-              <select 
-                className="form-compact-select" 
+              <select
+                className="form-compact-select"
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
@@ -211,7 +222,7 @@ const FormularioTurno = () => {
               </select>
             </div>
           </div>
-          
+
           <div className="form-compact-footer">
             <p className="required-compact-note">* Campos obligatorios</p>
             <div className="botones-compact-container">
@@ -229,7 +240,13 @@ const FormularioTurno = () => {
           </div>
         </form>
       </div>
-    </div>
+    </div><ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal} /></>
+
   );
 };
 
