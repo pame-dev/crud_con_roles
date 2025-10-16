@@ -6,13 +6,14 @@ import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
 import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
+import ModalAlert from "../components/ModalAlert"; 
 
 const Header = () => {
   const location = useLocation();
   const navigate = useNavigate(); 
   const { empleado, setEmpleado, logout } = useContext(EmpleadoContext);
   const [correoError, setCorreoError] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     NOMBRE: "",
@@ -21,6 +22,19 @@ const Header = () => {
     CONTRASENA: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+
+        const [modal, setModal] = useState({
+      show: false,
+      title: "",
+      message: "",
+      type: "info"
+    });
+  
+      const showModal = (title, message, type = "info") => {
+      setModal({ show: true, title, message, type });
+    };
+  
+    const closeModal = () => setModal({ ...modal, show: false });
 
   const soloUsuario = [
     "/vista_gerente",
@@ -74,14 +88,14 @@ const Header = () => {
     
       //  Validación de nombre (mínimo 3 caracteres)
       if (datosActualizados.nombre.length < 3) {
-        alert("El nombre debe tener al menos 3 caracteres.");
+        showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
       return;
     }
 
     //  Validación de correo (formato correcto)
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!correoRegex.test(datosActualizados.correo)) {
-      alert("Por favor, ingresa un correo electrónico válido.");
+      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
       return;
     }
     //  Validar si el correo ya existe en la BD
@@ -101,18 +115,18 @@ const Header = () => {
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
 
         if (!passwordRegex.test(formData.contrasena)) {
-          alert("La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.");
+          showModal("Contraseña inválida", "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.", "error");
           return;
         }
 
         if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-          alert("Por favor, completa todos los campos obligatorios.");
+          showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
           return;
         }
 
         actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
           .then(res => {
-            alert("Perfil actualizado correctamente");
+            showModal("Éxito", "Perfil actualizado correctamente", "success");
             setIsEditing(false);
             setShowModal(false);
 
@@ -123,13 +137,13 @@ const Header = () => {
           .catch(err => {
             if (err.errors) {
               const mensajes = Object.values(err.errors).flat().join("\n");
-              alert("Error al actualizar perfil:\n" + mensajes);
+              showModal("Error al actualizar perfil", mensajes);
             } else if (err.message) {
-              alert("Error al actualizar perfil: " + err.message);
+              showModal("Error al actualizar perfil", err.message);
             } else if (err.error) {
-              alert("Error al actualizar perfil: " + err.error);
+              showModal("Error al actualizar perfil", err.error);
             } else {
-              alert("Error al actualizar perfil: Error desconocido");
+              showModal("Error al actualizar perfil", "Error desconocido");
             }
             console.error(err);
           });
@@ -185,7 +199,7 @@ const Header = () => {
             <div className="ms-auto">
               <button className="btn btn-danger d-flex align-items-center btn-login" onClick={() => {
                 if (location.pathname === "/" || location.pathname === "/login") navigate("/login");
-                else setShowModal(true);
+                else setShowProfileModal(true);
               }}>
                 <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
               </button>
@@ -194,8 +208,8 @@ const Header = () => {
         </div>
       </nav>
 
-      {showModal && empleado && (
-        <div className="custom-modal-overlay" onClick={() => setShowModal(false)}>
+      {showProfileModal && empleado && (
+        <div className="custom-modal-overlay" onClick={() => setShowProfileModal(false)}>
           <div className="custom-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header-profile">
               <div>
@@ -269,13 +283,20 @@ const Header = () => {
             </div>
 
             <div className="modal-footer-profile">
-              <button className="logout-btn" onClick={() => { logout(); setShowModal(false); navigate("/"); }}>
-                Cerrar Sesión
-              </button>
-            </div>
-          </div>
+          <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
+            Cerrar Sesión
+          </button>
         </div>
-      )}
+      </div>
+    </div>
+  )}
+      <ModalAlert
+      show={modal.show}
+      title={modal.title}
+      message={modal.message}
+      type={modal.type}
+      onClose={closeModal}
+    />
     </>
   );
 };
