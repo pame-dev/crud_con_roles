@@ -13,7 +13,7 @@ class Turno extends Model
     
     protected $fillable = [
         'ID_TURNO', 'ID_AREA', 'ID_EMPLEADO', 'FECHA', 'HORA',
-        'ESTATUS', 'NOMBRE', 'APELLIDOS', 'TELEFONO'
+        'ESTATUS', 'NOMBRE', 'APELLIDOS', 'TELEFONO', 'ATENCION_EN', 'ATENCION_FIN', 'DURACION'
     ];
 
     public function empleado()
