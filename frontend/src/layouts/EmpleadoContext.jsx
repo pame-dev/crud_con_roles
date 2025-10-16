@@ -3,6 +3,7 @@
 // También incluye una función para cerrar sesión que limpia el estado y el almacenamiento local.
 
 import { createContext, useState, useEffect, useContext } from "react";
+import ModalAlert from "../components/ModalAlert"; 
 
 export const EmpleadoContext = createContext();
 
@@ -21,6 +22,18 @@ export const EmpleadoProvider = ({ children }) => {
     cargarAusentes();
   }, []);
 
+      const [modal, setModal] = useState({
+      show: false,
+      title: "",
+      message: "",
+      type: "info"
+    });
+  
+      const showModal = (title, message, type = "info") => {
+      setModal({ show: true, title, message, type });
+    };
+  
+    const closeModal = () => setModal({ ...modal, show: false });
   const cargarAusentes = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/api/empleados/ausentes");
@@ -54,7 +67,7 @@ export const EmpleadoProvider = ({ children }) => {
       await actualizarEstadoEmpleado(id, false);
       setEmpleadosAusentes(prev => new Set(prev).add(id));
     } catch (err) {
-      alert("Error al marcar como ausente");
+      showModal("Error", "Error al marcar como ausente", "error");
     }
   };
 
@@ -68,7 +81,7 @@ export const EmpleadoProvider = ({ children }) => {
         return copy;
       });
     } catch (err) {
-      alert("Error al marcar como presente");
+      showModal("Error", "Error al marcar como presente", "error");
     }
   };
 
@@ -91,7 +104,14 @@ export const EmpleadoProvider = ({ children }) => {
       }}
     >
       {children}
-    </EmpleadoContext.Provider>
+          <ModalAlert
+      show={modal.show}
+      title={modal.title}
+      message={modal.message}
+      type={modal.type}
+      onClose={closeModal}
+    />
+  </EmpleadoContext.Provider>
   );
 };
 
