@@ -51,40 +51,64 @@ const RegisterTrabajadores = () => {
     e.preventDefault();
     if (submitting) return;
 
-    // Validaciones básicas
-    if (!formData.nombre || formData.nombre.trim().length < 3) {
-      showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+ // Validaciones básicas
+
+// 1. Validar nombre
+if (!formData.nombre || formData.nombre.trim().length < 3) {
+  showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+  return;
+}
+
+  // 2. Validar correo (formato correcto)
+  const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!formData.correo || !correoRegex.test(formData.correo)) {
+    showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+    return;
+  }
+
+  try {
+    setSubmitting(true);
+
+    // 3. Verificar si el correo ya existe en la base de datos
+    const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: formData.correo }),
+    }).then((r) => r.json());
+
+    if (v.existe) {
+      setCorreoError("El correo ya está registrado por otro empleado.");
+      setSubmitting(false);
       return;
     }
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      showModal("Contraseñas no coinciden", "Las contraseñas no coinciden.", "error");
-      return;
-    }
+
+    // 4. Validar contraseña (seguridad)
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
     if (!passwordRegex.test(formData.contrasena)) {
       showModal(
         "Contraseña inválida",
-        "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
+        "Debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
         "error"
       );
+      setSubmitting(false);
       return;
     }
 
+    // 5. Validar que las contraseñas coincidan
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      showModal("Contraseñas no coinciden", "Las contraseñas no coinciden.", "error");
+      setSubmitting(false);
+      return;
+    }
+
+    // Aquí seguiría el resto del proceso de registro...
+  } catch (err) {
+    console.error(err);
+    showModal("Error", "Ocurrió un error al verificar el correo.", "error");
+  } finally {
+    setSubmitting(false);
+  }
     try {
-      setSubmitting(true);
-
-      // Verificar correo único
-      const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo: formData.correo }),
-      }).then((r) => r.json());
-
-      if (v.existe) {
-        setCorreoError("El correo ya está registrado por otro empleado.");
-        setSubmitting(false);
-        return;
-      }
 
       // Construir payload: cargo heredado del gerente e id_rol = 2
       const cargoGerente = normalizaCargo(empleadoLogueado?.CARGO);
