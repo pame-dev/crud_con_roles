@@ -2,10 +2,35 @@ import React, { useEffect, useState } from "react";
 import { pasarTurno } from "../api/turnosApi";
 import "./WorkerTurnCard.css";
 
-const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoLista = false, onRefresh }) => {
+const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoMosaico = false, onRefresh }) => {
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
   const [trabajadoresLocal, setTrabajadoresLocal] = useState(trabajadores);
   const [turnosProcesados, setTurnosProcesados] = useState(new Set());
+  const [now, setNow] = useState(new Date());
+
+  // Actualizar el reloj cada segundo que aparece en la tarjeta
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const getTiempoTranscurrido = (horaInicio) => {
+    if (!horaInicio) return "—";
+    const inicio = new Date(horaInicio);
+    const diffMs = now - inicio;
+
+    if (diffMs < 0) return "—"; // Por si ATENCION_EN es futuro
+
+    const horas = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutos = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    const segundos = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+    const formato = (n) => String(n).padStart(2, "0");
+    return `${formato(horas)}:${formato(minutos)}:${formato(segundos)}`;
+  };
+ // Fin de lo de actualizar reloj
+
+
 
   // Sincroniza el estado local cuando cambian los props
   useEffect(() => {
@@ -60,21 +85,6 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
-  const formatDuracion = (duracion) => {
-    if (!duracion) return "—";
-    
-    // Si ya viene en formato HH:MM desde la base de datos
-    if (duracion.includes(':')) {
-        const [horas, minutos] = duracion.split(':').map(Number);
-        if (horas > 0) {
-            return `${horas}h ${minutos}m`;
-        } else {
-            return `${minutos}m`;
-        }
-    }
-    
-    return duracion;
-  };
 
   return (
     <>
@@ -88,7 +98,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
             key={t.ID_EMPLEADO}
             className={`current-turn-card mb-2 p-3 shadow-sm rounded ${estaProcesando ? "turno-procesando" : ""}`}
           >
-            {modoLista ? (
+            {modoMosaico ? (
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <div className="fw-bold fs-5">
@@ -104,7 +114,15 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
                   {/* Reloj y hora en la misma línea */}
                   <div className="d-flex align-items-center mb-1 justify-content-end">
                     <i className="bi bi-clock me-1"></i>
-                    <div>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
+                    {turno && turno.ATENCION_EN ? (
+                      <>
+                        <div>{formatHora(turno.ATENCION_EN)}</div>
+                        <i className="bi bi-hourglass-split spin ms-2 me-1"></i>
+                        <div>{getTiempoTranscurrido(turno.ATENCION_EN)}</div>
+                      </>
+                    ) : (
+                      <div>—</div>
+                    )}
                   </div>
 
                   {/* Botón debajo */}
@@ -132,8 +150,10 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
                 {turno ? (
                   <>
                     <div><i className="me-1"></i>Atendiendo turno: #{turno.ID_TURNO}</div>
-                    <div className="mt-1"><i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}</div>
-
+                    <div className="mt-1">
+                      <i className="bi bi-clock me-1"></i>{turno ? formatHora(turno.ATENCION_EN) : "—"}
+                      <i className="bi bi-hourglass-split spin me-1 ms-3"></i> {getTiempoTranscurrido(turno.ATENCION_EN)}
+                    </div>
                   </>
                 ) : (
                   <div className="turno-sin">Sin turno asignado</div>
