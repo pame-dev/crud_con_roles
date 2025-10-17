@@ -86,49 +86,58 @@ const Header = () => {
     };
 
     
-      //  Validación de nombre (mínimo 3 caracteres)
-      if (datosActualizados.nombre.length < 3) {
-        showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+// Validación de nombre
+if (datosActualizados.nombre.length < 3) {
+  showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+  return;
+}
+
+// Validación de correo (formato correcto)
+const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+if (!correoRegex.test(datosActualizados.correo)) {
+  showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+  return;
+}
+
+// Validar si el correo ya existe en la BD
+fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
+})
+  .then((res) => res.json())
+  .then((data) => {
+    if (data.existe) {
+      setCorreoError("El correo ya está registrado por otro empleado.");
       return;
     }
 
-    //  Validación de correo (formato correcto)
-    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!correoRegex.test(datosActualizados.correo)) {
-      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+    // Validación de contraseña segura
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+    if (!passwordRegex.test(formData.contrasena)) {
+      showModal(
+        "Contraseña inválida",
+        "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
+        "error"
+      );
       return;
     }
-    //  Validar si el correo ya existe en la BD
-    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.existe) {
-          setCorreoError("El correo ya está registrado por otro empleado.");
-          return;
-        }
 
-      // Expresión regular para validar contraseña segura
-      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+    // Validación de campos incompletos
+    if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
+      showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
+      return;
+    }
 
-        if (!passwordRegex.test(formData.contrasena)) {
-          showModal("Contraseña inválida", "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.", "error");
-          return;
-        }
+    // 👉 Aquí va el resto del código si todas las validaciones pasan
+  })
+  .then(() => {
+    actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
+      .then(res => {
+        showModal("Éxito", "Perfil actualizado correctamente", "success");
+        setIsEditing(false);
+            setShowProfileModal(false);
 
-        if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-          showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
-          return;
-        }
-
-        actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
-          .then(res => {
-            showModal("Éxito", "Perfil actualizado correctamente", "success");
-            setIsEditing(false);
-            setShowModal(false);
 
             setEmpleado(res.empleado);
 
@@ -209,7 +218,15 @@ const Header = () => {
       </nav>
 
       {showProfileModal && empleado && (
-        <div className="custom-modal-overlay" onClick={() => setShowProfileModal(false)}>
+        <div
+          className="custom-modal-overlay"
+          onClick={() => {
+            if (!modal.show) setShowProfileModal(false); // 👈 solo cierra si no hay alerta abierta
+          }}
+          style={{
+            pointerEvents: modal.show ? "none" : "auto" // 👈 evita que bloquee clicks del ModalAlert
+          }}
+        >
           <div className="custom-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header-profile">
               <div>
