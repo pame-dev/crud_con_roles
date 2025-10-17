@@ -39,15 +39,25 @@ const FormularioTurno = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.area) {
-      showModal("Campos incompletos", "Por favor, complete todos los campos.", "error");
-      return;
-    }
+  if (!formData.nombre || !formData.apellidos || !formData.telefono || !formData.area) {
+    showModal("Campos incompletos", "Por favor, complete todos los campos.", "error");
+    return;
+  }
 
-    if (formData.telefono.length < 10) {
-      showModal("Número de teléfono inválido", "El número de teléfono debe tener exactamente 10 dígitos.", "error");
-      return;
-    }
+  if (formData.nombre.length < 3) {
+    showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+    return;
+  }
+
+  if (formData.apellidos.length < 3) {
+    showModal("Apellido inválido", "El apellido debe tener al menos 3 caracteres.", "error");
+    return;
+  }
+
+  if (formData.telefono.length < 10) {
+    showModal("Número de teléfono inválido", "El número de teléfono debe tener exactamente 10 dígitos.", "error");
+    return;
+  }
 
     try {
       setLoading(true); // activar animación
