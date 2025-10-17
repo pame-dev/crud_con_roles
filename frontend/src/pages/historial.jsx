@@ -12,6 +12,23 @@ const ESTADO_BADGE = {
   completado: "success",
 };
 
+// Función para formatear la duración
+const formatDuracion = (duracion) => {
+  if (!duracion) return "—";
+  
+  // Si ya viene en formato HH:MM desde la base de datos
+  if (duracion.includes(':')) {
+    const [horas, minutos] = duracion.split(':').map(Number);
+    if (horas > 0) {
+      return `${horas}h ${minutos}m`;
+    } else {
+      return `${minutos}m`;
+    }
+  }
+  
+  return duracion;
+};
+
 function EstadoBadge({ estado }) {
   const color = ESTADO_BADGE[estado] || "secondary";
   const text = (estado || "desconocido").replaceAll("_", " ");
@@ -54,13 +71,15 @@ function TurnoCard({ turno }) {
             <Calendar size={16} />
             <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
           </div>
+
         </div>
 
         {turno.estado?.toLowerCase() === "completado" && turno.NOMBRE_EMPLEADO && (
           <div className="tooltip-empleado">
             <strong>Atendido por:</strong> {turno.NOMBRE_EMPLEADO} <br />
             <strong>ID:</strong> {turno.ID_EMPLEADO} <br />
-            <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"}
+            <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"} <br />
+            <strong>Duración:</strong> {formatDuracion(turno.duracion) || "—"} <br />
           </div>
         )}
       </div>

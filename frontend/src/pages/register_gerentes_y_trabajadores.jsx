@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "./pages-styles/register_gerentes_y_trabajadores.css";
+import ModalAlert from "../components/ModalAlert"; 
 
 const RegisterGerentes = () => {
   const navigate = useNavigate();
@@ -14,6 +15,19 @@ const RegisterGerentes = () => {
     confirmarContrasena: "",
     id_rol: "",
   });
+
+    const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+    const showModal = (title, message, type = "info") => {
+    setModal({ show: true, title, message, type });
+  };
+
+  const closeModal = () => setModal({ ...modal, show: false });
 
   const [correoError, setCorreoError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,69 +45,84 @@ const RegisterGerentes = () => {
 
     setCorreoError("");
 
-    // Nombre mínimo
-    if (!formData.nombre || formData.nombre.trim().length < 3) {
-      alert("El nombre debe tener al menos 3 caracteres.");
+  // Validaciones en orden correcto
+  if (!formData.nombre || formData.nombre.trim().length < 3) {
+    showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+    return;
+  }
+
+  // Validar correo (formato correcto)
+  const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!formData.correo || !correoRegex.test(formData.correo)) {
+    showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+    return;
+  }
+
+  // Validar que el correo no exista en la base de datos
+  try {
+    setSubmitting(true);
+    const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: formData.correo }),
+    }).then((r) => r.json());
+
+    if (v.existe) {
+      setCorreoError("El correo ya está registrado por otro empleado.");
+      setSubmitting(false);
       return;
     }
 
-    // Passwords iguales
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      alert("Las contraseñas no coinciden.");
+    // Validar selección de cargo
+    if (!formData.cargo || formData.cargo.trim() === "") {
+      showModal("Cargo inválido", "Por favor, selecciona un cargo.", "error");
+      setSubmitting(false);
       return;
     }
 
-    // Contraseña fuerte
+    // Validar selección de rol
+    if (!formData.id_rol || isNaN(formData.id_rol)) {
+      showModal("Rol inválido", "Por favor, selecciona un rol válido.", "error");
+      setSubmitting(false);
+      return;
+    }
+
+    // Validar seguridad de contraseña
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
     if (!passwordRegex.test(formData.contrasena)) {
-      alert(
-        "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial."
+      showModal(
+        "Contraseña débil",
+        "Debe tener 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial.",
+        "error"
       );
+      setSubmitting(false);
       return;
     }
 
-    try {
-      setSubmitting(true);
-
-      // Validar correo único
-      const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ correo: formData.correo }),
-      }).then((r) => r.json());
-
-      if (v.existe) {
-        setCorreoError("El correo ya está registrado por otro empleado.");
-        setSubmitting(false);
-        return;
-      }
-
-      // Enviar alta
-      const payload = {
-        ...formData,
-        // Usa valores sin acento para consistencia con tu backend
-        cargo:
-          formData.cargo === "Reparación"
-            ? "Reparacion"
-            : formData.cargo === "Cotización"
-            ? "Cotizacion"
-            : formData.cargo,
-        id_rol: Number(formData.id_rol),
-      };
-
-      await axios.post("http://127.0.0.1:8000/api/empleados", payload);
-      alert("Empleado registrado correctamente");
-      navigate("/administrar_empleados");
-    } catch (err) {
-      console.error(err);
-      alert("Error al registrar empleado");
-    } finally {
+    // Validar coincidencia de contraseñas
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      showModal("Contraseñas diferentes", "Las contraseñas no coinciden.", "error");
       setSubmitting(false);
+      return;
     }
-  };
+
+    // Si todo está bien → enviar los datos
+    const payload = { ...formData, id_rol: Number(formData.id_rol) };
+    await axios.post("http://127.0.0.1:8000/api/empleados", payload);
+
+    showModal("Registro exitoso", "Empleado registrado correctamente.", "success");
+    setTimeout(() => navigate("/administrar_empleados"), 1500);
+
+  } catch (err) {
+    console.error(err);
+    showModal("Error", "Error al registrar empleado.", "error");
+  } finally {
+    setSubmitting(false);
+  }
+    };
 
   return (
-    <AnimatePresence>
+    <><AnimatePresence>
       <motion.div
         className="reg-page one-column"
         initial={{ opacity: 0, x: 50 }}
@@ -123,8 +152,7 @@ const RegisterGerentes = () => {
                 value={formData.nombre}
                 onChange={handleChange}
                 required
-                minLength={3}
-              />
+                minLength={3} />
             </label>
 
             {/* Correo */}
@@ -139,8 +167,7 @@ const RegisterGerentes = () => {
                 value={formData.correo}
                 onChange={handleChange}
                 required
-                autoComplete="email"
-              />
+                autoComplete="email" />
             </label>
             {correoError && <p className="reg-error">{correoError}</p>}
 
@@ -190,8 +217,7 @@ const RegisterGerentes = () => {
                 onChange={handleChange}
                 required
                 minLength={8}
-                autoComplete="new-password"
-              />
+                autoComplete="new-password" />
               <button
                 type="button"
                 className="eye"
@@ -215,15 +241,12 @@ const RegisterGerentes = () => {
                 onChange={handleChange}
                 required
                 minLength={8}
-                autoComplete="new-password"
-              />
+                autoComplete="new-password" />
               <button
                 type="button"
                 className="eye"
                 onClick={() => setShowConfirmPwd((s) => !s)}
-                aria-label={
-                  showConfirmPwd ? "Ocultar contraseña" : "Mostrar contraseña"
-                }
+                aria-label={showConfirmPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
               >
                 <i
                   className={`fa-solid ${showConfirmPwd ? "fa-eye-slash" : "fa-eye"}`}
@@ -256,7 +279,12 @@ const RegisterGerentes = () => {
           </form>
         </section>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence><ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal} /></>
   );
 };
 

@@ -6,15 +6,44 @@ import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
 import { List, Grid } from "lucide-react";
 import "./pages-styles/superadmin.css";
+import ModalAlert from "../components/ModalAlert"; 
 
 const VistaSuperadministrador = () => {
   const navigate = useNavigate();
 
   const [busqueda, setBusqueda] = useState("");
-  const [showModal, setShowModal] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
   const [vistaLista, setVistaLista] = useState(false);
   const [trabajadores, setTrabajadores] = useState([]);
+  
+  const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  const showAlert = (title, message, type = "info") => {
+    setModal({ show: true, title, message, type });
+  };
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, show: false }));
+  };
+
+  const cargarTrabajadores = async () => {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno`);
+      const data = await res.json();
+      setTrabajadores(data);
+      return data;
+    } catch (error) {
+      console.error("Error al obtener trabajadores:", error);
+      setTrabajadores([]);
+      return [];
+    }
+  };
 
   useEffect(() => {
     const empleado = JSON.parse(localStorage.getItem("empleado"));
@@ -27,39 +56,27 @@ const VistaSuperadministrador = () => {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = () => window.history.go(1);
 
-    // Traer todos los trabajadores (superadmin)
-    const fetchTrabajadores = async () => {
-      try {
-        const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno`);
-        const data = await res.json();
-        setTrabajadores(data);
-      } catch (error) {
-        console.error("Error al obtener trabajadores:", error);
-        setTrabajadores([]);
-      }
-    };
-
     // Primer fetch inmediato
-    fetchTrabajadores();
+    cargarTrabajadores();
 
     // Polling cada 5 segundos
-    const interval = setInterval(fetchTrabajadores, 5000);
+    const interval = setInterval(cargarTrabajadores, 5000);
     return () => clearInterval(interval);
   }, [navigate]);
 
   const toggleDia = () => {
     if (diaFinalizado) {
       setDiaFinalizado(false);
-      alert("Se inició un nuevo día. Ahora se pueden agendar turnos.");
+      showAlert("Día iniciado", "Se inició un nuevo día. Ahora se pueden agendar turnos.", "info");
     } else {
-      setShowModal(true);
+      setShowConfirmModal(true);
     }
   };
 
   const confirmarFinalizar = () => {
     setDiaFinalizado(true);
-    setShowModal(false);
-    alert("Día finalizado");
+    setShowConfirmModal(false);
+    showAlert("Día finalizado", "El día ha sido finalizado. No se pueden agendar nuevos turnos.", "info");
   };
 
   const onFinalizarDia = toggleDia;
@@ -71,6 +88,7 @@ const VistaSuperadministrador = () => {
   };
 
   return (
+    <>
     <div className="full-width-container superadmin-page">
       {/* HERO */}
       <div className="hero-section">
@@ -151,7 +169,7 @@ const VistaSuperadministrador = () => {
       </div>
 
       {/* MODAL Finalizar día */}
-      {showModal && !diaFinalizado && (
+      {showConfirmModal && !diaFinalizado && (
         <div
           className="modal fade show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
@@ -166,7 +184,7 @@ const VistaSuperadministrador = () => {
                 <button
                   type="button"
                   className="btn-close position-absolute top-0 end-0 m-3"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowConfirmModal(false)}
                 />
               </div>
 
@@ -178,7 +196,7 @@ const VistaSuperadministrador = () => {
               </div>
 
               <div className="modal-footer">
-                <button className="btn btn-secondary" onClick={() => setShowModal(false)}>
+                <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>
                   <i className="bi bi-x-circle me-1"></i>
                   Cancelar
                 </button>
@@ -192,6 +210,14 @@ const VistaSuperadministrador = () => {
         </div>
       )}
     </div>
+    <ModalAlert
+      show={modal.show}
+      title={modal.title}
+      message={modal.message}
+      type={modal.type}
+      onClose={closeModal}
+    />
+    </>
   );
 };
 
