@@ -78,7 +78,7 @@ export class FilaTurnos extends React.Component {
 
       return (
       <div className="col-lg-4 mb-3">
-        <div className="card shadow-lg full-width-card" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
+        <div className="card shadow-lg full-width-card darkable" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
           <div className="card-body p-4">
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0 mt-0">

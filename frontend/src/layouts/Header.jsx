@@ -1,16 +1,18 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff } from "lucide-react"; 
+import { User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff, Sun, Moon } from "lucide-react"; 
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
 import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
 import ModalAlert from "../components/ModalAlert"; 
+import { useDarkMode } from "./DarkModeContext";
 
 const Header = () => {
   const location = useLocation();
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
+  const { darkMode, setDarkMode } = useDarkMode();
   const { empleado, setEmpleado, logout } = useContext(EmpleadoContext);
   const [correoError, setCorreoError] = useState("");
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -23,18 +25,18 @@ const Header = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
 
-        const [modal, setModal] = useState({
-      show: false,
-      title: "",
-      message: "",
-      type: "info"
-    });
+  const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  const showModal = (title, message, type = "info") => {
+    setModal({ show: true, title, message, type });
+  };
   
-      const showModal = (title, message, type = "info") => {
-      setModal({ show: true, title, message, type });
-    };
-  
-    const closeModal = () => setModal({ ...modal, show: false });
+  const closeModal = () => setModal({ ...modal, show: false });
 
   const soloUsuario = [
     "/vista_gerente",
@@ -47,11 +49,9 @@ const Header = () => {
   ];
   const mostrarSoloUsuario = soloUsuario.includes(location.pathname) || location.pathname.startsWith("/editar_empleado");
 
-
   const { t, i18n } = useTranslation();
   const toggleLanguage = () => i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
 
-  // Sincronizar formData con empleado cuando cambie
   useEffect(() => {
     if (empleado) {
       setFormData({
@@ -63,7 +63,14 @@ const Header = () => {
     }
   }, [empleado]);
 
-  // Colapsar navbar al cambiar ruta
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add("dark-mode");
+    } else {
+      document.body.classList.remove("dark-mode");
+    }
+  }, [darkMode]);
+
   useEffect(() => {
     const navbar = document.getElementById("navbarNav");
     if (navbar && navbar.classList.contains("show")) {
@@ -85,62 +92,51 @@ const Header = () => {
       ...(formData.CONTRASENA ? { contrasena: formData.CONTRASENA } : {}),
     };
 
-    
-// Validación de nombre
-if (datosActualizados.nombre.length < 3) {
-  showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
-  return;
-}
-
-// Validación de correo (formato correcto)
-const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-if (!correoRegex.test(datosActualizados.correo)) {
-  showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
-  return;
-}
-
-// Validar si el correo ya existe en la BD
-fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
-})
-  .then((res) => res.json())
-  .then((data) => {
-    if (data.existe) {
-      setCorreoError("El correo ya está registrado por otro empleado.");
+    if (datosActualizados.nombre.length < 3) {
+      showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
       return;
     }
 
-    // Validación de contraseña segura
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    if (!passwordRegex.test(formData.contrasena)) {
-      showModal(
-        "Contraseña inválida",
-        "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
-        "error"
-      );
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!correoRegex.test(datosActualizados.correo)) {
+      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
       return;
     }
 
-    // Validación de campos incompletos
-    if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-      showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
-      return;
-    }
+    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.existe) {
+          setCorreoError("El correo ya está registrado por otro empleado.");
+          return;
+        }
 
-    // 👉 Aquí va el resto del código si todas las validaciones pasan
-  })
-  .then(() => {
-    actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
-      .then(res => {
-        showModal("Éxito", "Perfil actualizado correctamente", "success");
-        setIsEditing(false);
+        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+        if (!passwordRegex.test(formData.contrasena)) {
+          showModal(
+            "Contraseña inválida",
+            "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
+            "error"
+          );
+          return;
+        }
+
+        if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
+          showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
+          return;
+        }
+      })
+      .then(() => {
+        actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
+          .then(res => {
+            showModal("Éxito", "Perfil actualizado correctamente", "success");
+            setIsEditing(false);
             setShowProfileModal(false);
-
-
             setEmpleado(res.empleado);
-
             localStorage.setItem("empleado", JSON.stringify(res.empleado));
           })
           .catch(err => {
@@ -205,13 +201,25 @@ fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
                 </li>
               </ul>
             )}
-            <div className="ms-auto">
+            <div className="ms-auto d-flex align-items-center gap-2">
               <button className="btn btn-danger d-flex align-items-center btn-login" onClick={() => {
                 if (location.pathname === "/" || location.pathname === "/login") navigate("/login");
                 else setShowProfileModal(true);
               }}>
                 <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
               </button>
+
+              {empleado && (
+                <button
+                  className={`btn d-flex align-items-center ${
+                    darkMode ? "btn-light" : "btn-dark"
+                  }`}
+                  onClick={() => setDarkMode(!darkMode)}
+                  title={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                >
+                  {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -221,10 +229,10 @@ fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
         <div
           className="custom-modal-overlay"
           onClick={() => {
-            if (!modal.show) setShowProfileModal(false); // 👈 solo cierra si no hay alerta abierta
+            if (!modal.show) setShowProfileModal(false); //  solo cierra si no hay alerta abierta
           }}
           style={{
-            pointerEvents: modal.show ? "none" : "auto" // 👈 evita que bloquee clicks del ModalAlert
+            pointerEvents: modal.show ? "none" : "auto" //  evita que bloquee clicks del ModalAlert
           }}
         >
           <div className="custom-modal" onClick={e => e.stopPropagation()}>
@@ -279,7 +287,6 @@ fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
                   <div className="profile-row">{empleado.CORREO}</div>
                 )}
               </div>
-
               
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row d-flex align-items-center">
@@ -300,20 +307,21 @@ fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
             </div>
 
             <div className="modal-footer-profile">
-          <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
-            Cerrar Sesión
-          </button>
+              <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
+                Cerrar Sesión
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  )}
+      )}
+
       <ModalAlert
-      show={modal.show}
-      title={modal.title}
-      message={modal.message}
-      type={modal.type}
-      onClose={closeModal}
-    />
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal}
+      />
     </>
   );
 };

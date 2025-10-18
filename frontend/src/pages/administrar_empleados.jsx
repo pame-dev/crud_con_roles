@@ -567,7 +567,7 @@ export default function AdministrarEmpleados() {
                 <div className="grupo-cards">
                   {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
                   {gerentes.map((emp) => (
-                    <article className="card empleado-card" key={emp.id}>
+                    <article className="card empleado-card darkable" key={emp.id}>
                       <div className="card-body d-flex justify-content-between align-items-center">
                         <div>
                           <div className="fw-bold">{emp.nombre}</div>
@@ -612,7 +612,7 @@ export default function AdministrarEmpleados() {
                     <div className="grupo-cards">
                       {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
                       {cotizacion.map((emp) => (
-                        <article className="card empleado-card" key={emp.id}>
+                        <article className="card empleado-card darkable" key={emp.id}>
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
@@ -653,7 +653,7 @@ export default function AdministrarEmpleados() {
                     <div className="grupo-cards">
                       {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
                       {reparacion.map((emp) => (
-                        <article className="card empleado-card" key={emp.id}>
+                        <article className="card empleado-card darkable" key={emp.id}>
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
