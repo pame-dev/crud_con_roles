@@ -239,7 +239,7 @@ const Historial = () => {
 
         {/* CONTENIDO PRINCIPAL */}
         <div className="container px-3 px-md-5" style={{ marginTop: "-2rem", paddingBottom: "3rem" }}>
-          <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
+          <div className="card shadow mb-4 darkable" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
             <div className="card-body">
               <div className="row g-3 align-items-end">
                 <div className="col-12 col-md-4">
@@ -252,10 +252,10 @@ const Historial = () => {
                     style={{ borderRadius: "10px" }}
                   />
                 </div>
-                <div className="col-6 col-md-2">
+                <div className="col-6 col-md-2 ">
                   <label className="form-label fw-semibold text-dark">Estado</label>
                   <select
-                    className="form-select"
+                    className="form-select darkable"
                     value={estado}
                     onChange={(e) => { setEstado(e.target.value); setPage(1); }}
                     style={{ borderRadius: "10px" }}

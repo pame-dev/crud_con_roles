@@ -87,7 +87,7 @@ const Login = () => {
         transition={{ duration: 0.35 }}
       >
         {/* Solo la tarjeta del formulario (una columna) */}
-        <main className="login-card glass">
+        <main className="login-card glass darkable">
           <div className="login-card-header">
             <div className="login-avatar">
               <i className="fa-regular fa-user"></i>
