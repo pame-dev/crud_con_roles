@@ -100,6 +100,22 @@
     flex-direction: column;
 }
 
+.darkmode-toggle-btn {
+  position: fixed;           /* siempre visible en pantalla */
+  top: 10%;                  /* centrado verticalmente */
+  right: calc(20% - 40px);  /* ajusta para colocarlo justo al lado derecho del modal */
+  transform: translateY(-50%);
+  background: var(--bs-dark);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 2001;             /* asegúrate que esté encima del modal overlay */
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+
 .profile-label {
     display: block;
     font-size: 0.7rem; /* más pequeño */
