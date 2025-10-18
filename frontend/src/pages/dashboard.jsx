@@ -69,7 +69,7 @@ const Dashboard = () => {
 
             {/* Sección izquierda: acciones y CurrentTurnCard */}
             <div className="col-lg-8">
-              <div className="card shadow-lg full-width-card">
+              <div className="card shadow-lg full-width-card darkable">
                 <div className="card-body p-5">
                   <h3 className="card-title fw-bold text-dark mb-4 d-flex align-items-center" style={{ marginTop: '-2rem'}}>
                     <Wrench size={24} className="text-danger me-3" />

@@ -115,8 +115,8 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
           </div>
 
           <div className="mb-3">
-            <span className="badge bg-light text-dark fs-6">
-              <Wrench size={14} className="me-1" />
+            <span className="badge bg-light text-dark fs-6 keep-light-text">
+              <Wrench size={14} className="me-1 keep-light-text" />
               <span style={{ fontSize: '12px' }}>
                 {turno.isReparacion ? 'Reparación' : 'Cotización'}
               </span>
