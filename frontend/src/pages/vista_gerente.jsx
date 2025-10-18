@@ -97,7 +97,7 @@ const VistaGerente = () => {
       {/* CONTENIDO */}
       <div className="container main-content">
         {/* Panel de filtros */}
-        <div className="filtros-panel mb-4">
+        <div className="filtros-panel mb-4 darkable">
           <div className="filtros-grid">
             <div>
               <label className="filtro-label">Buscar empleado</label>
@@ -124,7 +124,7 @@ const VistaGerente = () => {
         <div className="row g-4 full-width-row">
           {/* Turnos en atención */}
           <div className="col-md-8 mb-4">
-            <div className="card shadow turnos-card">
+            <div className="card shadow turnos-card darkable">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
                   <Zap size={20} className="text-danger me-2" /> Turnos en Atención

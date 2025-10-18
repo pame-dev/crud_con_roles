@@ -30,7 +30,7 @@ import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
 import EditarEmpleado from './pages/editar_empleado';
 import TerminosYCondiciones from './pages/terminos_y_condiciones';
-
+import { DarkModeProvider, useDarkMode } from "./layouts/DarkModeContext";
 
 // Layout condicional
 const AppLayout = ({ children }) => {
@@ -58,32 +58,35 @@ const AppLayout = ({ children }) => {
 const PitLineApp = () => {
   return (
     <EmpleadoProvider>
-      <Router>
-        <AppLayout>
-          <Routes>
-            <Route path="/equipo" element={<Equipo />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/pantalla_completa" element={<PantallaCompleta />} />
-            <Route path="/formulario_turno" element={<FormularioTurno />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/vista_gerente" element={<VistaGerente />} />
-            <Route path="/vista_trabajador" element={<VistaTrabajador />} />
-            <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
-            <Route path="/historial" element={<Historial />} />
-            <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
-            <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
-            <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
-            <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
-            <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
-            <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
-            <Route path='/editar_empleado' element={<EditarEmpleado />} />
-            <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
-            <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
+      <DarkModeProvider>
+        <Router>
+          <AppLayout>
+            <Routes>
+              <Route path="/equipo" element={<Equipo />} />
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/pantalla_completa" element={<PantallaCompleta />} />
+              <Route path="/formulario_turno" element={<FormularioTurno />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/vista_gerente" element={<VistaGerente />} />
+              <Route path="/vista_trabajador" element={<VistaTrabajador />} />
+              <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
+              <Route path="/historial" element={<Historial />} />
+              <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
+              <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
+              <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
+              <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
+              <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
+              <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
+              <Route path='/editar_empleado' element={<EditarEmpleado />} />
+              <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
+              <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
 
-          </Routes>
-        </AppLayout>
-      </Router>
+            </Routes>
+          </AppLayout>
+        </Router>
+      </DarkModeProvider>
+      
     </EmpleadoProvider>
   );
 };
