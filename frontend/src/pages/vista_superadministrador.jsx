@@ -101,7 +101,7 @@ const VistaSuperadministrador = () => {
       {/* CONTENIDO */}
       <div className="container main-content">
         {/* Panel de filtros / acciones */}
-        <div className="filtros-panel mb-4">
+        <div className="filtros-panel mb-4 darkable">
           <div className="filtros-grid">
             {/* Buscar empleado */}
             <div>
@@ -131,7 +131,7 @@ const VistaSuperadministrador = () => {
         {/* Card de Turnos */}
         <div className="row g-4">
           <div className="col-12 mb-4">
-            <div className="card shadow" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
+            <div className="card shadow darkable" style={{ backgroundColor: "rgba(255, 255, 255, 0.88)" }}>
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
                   <Zap size={20} className="text-danger me-2" />
