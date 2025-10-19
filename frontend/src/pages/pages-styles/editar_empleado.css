@@ -191,6 +191,89 @@
 
 @keyframes spin { to { transform: rotate(360deg); } } /*significa: “desde el estado inicial (from/0%, implícito) hasta el final (to/100%) rota 360 grados”.*/
 
+/* Codigo para que cuando cargue la pagina se muestre un efecto de carga */
+
+.skeleton {
+  animation: pulse 1.5s infinite;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(50, 50, 93, 0.1), 0 3px 10px rgba(0, 0, 0, 0.07);
+  padding: 20px;
+  height: 430px;
+}
+
+.skeleton-line {
+  height: 18px;
+  margin: 12px 0;
+  background-color: #e9ecef;
+  border-radius: 6px;
+}
+
+.skeleton-box {
+  width: 40px;
+  height: 40px;
+  background-color: #dee2e6; 
+  border-radius: 8px;
+  margin: 0 auto 10px;
+}
+
+.skeleton-header {
+  background: linear-gradient(135deg, #d80808 0%, #b20606 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.skeleton-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 70px;
+  justify-content: center;
+}
+
+.skeleton-button {
+  flex: 1 1 120px;
+  height: 40px;
+  background-color: #ebe5e5;
+  border-radius: 8px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.skeleton-body {
+  padding: 20px;
+}
+
+/* Fila con dos “inputs” falsos */
+.skeleton-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+/* Cada input falso */
+.skeleton-input {
+  flex: 1 1 300px;
+  height: 42px;
+  background-color: #dbdbdb;
+  border-radius: 8px;
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 600px) {
+  .skeleton-input {
+    flex: 1 1 100%;
+  }
+}
+
+/* Fin del efecto del codigo de efecto carga */
 
 /* Responsive */
 @media (max-width: 576px){

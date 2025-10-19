@@ -94,9 +94,36 @@ export default function EditarEmpleado() {
     navigate("/administrar_empleados");
   };
 
-  if (loading) 
-    return 
-    <p className="editar-empleado-loading">Cargando...</p>;
+  // Mostrar estado de carga mientras se obtienen los datos
+  if (loading) {
+  return (
+    <div className="editar-empleado-page">
+      <div className="editar-empleado-card skeleton">
+        <div className="skeleton-header">
+          <div className="skeleton-box"></div>
+          <div className="skeleton-line" style={{ width: "50%", margin: "10px auto" }}></div>
+        </div>
+
+        <div className="skeleton-body">
+          <div className="skeleton-row">
+            <div className="skeleton-input"></div>
+            <div className="skeleton-input"></div>
+          </div>
+
+          <div className="skeleton-row">
+            <div className="skeleton-input"></div>
+            <div className="skeleton-input"></div>
+          </div>
+          
+          <div className="skeleton-buttons">
+            <div className="skeleton-button"></div>
+            <div className="skeleton-button"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    );
+  }
   
     if (!empleado) 
     return 
