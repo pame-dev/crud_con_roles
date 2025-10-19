@@ -311,7 +311,7 @@ const Historial = () => {
                   </div>
                 </>
               ) : (
-                <div className="card shadow-sm mt-4" style={{ borderRadius: "12px" }}>
+                <div className="card shadow-sm mt-4 darkable" style={{ borderRadius: "12px" }}>
                   <div className="card-body text-center py-5">
                     <CheckCircle size={32} className="text-muted mb-2" />
                     <h5 className="mb-1">Sin turnos coincidentes</h5>

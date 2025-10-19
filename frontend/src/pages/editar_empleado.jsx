@@ -157,7 +157,7 @@ export default function EditarEmpleado() {
                 </label>
                 <select
                   name="CARGO"
-                  className="editar-empleado-select"
+                  className="editar-empleado-select darkable"
                   value={empleado.CARGO || ""}
                   onChange={handleChange}
                   required
@@ -176,7 +176,7 @@ export default function EditarEmpleado() {
                 </label>
                 <select
                   name="ID_ROL"
-                  className="editar-empleado-select"
+                  className="editar-empleado-select darkable"
                   value={empleado.ID_ROL ?? ""}
                   onChange={handleChange}
                   required
