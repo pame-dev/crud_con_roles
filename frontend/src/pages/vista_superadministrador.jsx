@@ -176,7 +176,7 @@ const VistaSuperadministrador = () => {
         >
           <div className="modal-dialog modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header flex-column text-center border-0 pb-0">
+              <div className="modal-header flex-column text-center border-0 pb-0 darkable">
                 <div className="d-flex align-items-center justify-content-center gap-2">
                   <i className="bi bi-exclamation-triangle-fill text-warning fs-3"></i>
                   <h5 className="modal-title mb-0 fw-bold">Confirmar acción</h5>
@@ -188,14 +188,14 @@ const VistaSuperadministrador = () => {
                 />
               </div>
 
-              <div className="modal-body text-center">
+              <div className="modal-body text-center darkable">
                 <div className="d-flex justify-content-center align-items-center gap-2">
                   <i className="bi bi-question-circle-fill text-primary fs-4"></i>
                   <p className="mb-0 fs-5 fw-medium">¿Seguro que deseas finalizar el día?</p>
                 </div>
               </div>
 
-              <div className="modal-footer">
+              <div className="modal-footer darkable">
                 <button className="btn btn-secondary" onClick={() => setShowConfirmModal(false)}>
                   <i className="bi bi-x-circle me-1"></i>
                   Cancelar
