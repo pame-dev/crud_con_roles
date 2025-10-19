@@ -2,10 +2,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Wrench, Clock } from '../iconos';
 import { motion, AnimatePresence } from 'framer-motion';
 import './CurrentTurnCard.css';
+import { useAudio } from "../components/AudioContext";
 
 const CurrentTurnCard = ({ variant, onPasarTurno }) => {
   const [turno, setTurno] = useState(null);
-  const [audioEnabled, setAudioEnabled] = useState(false); // ✅ si el usuario activó el audio
+  const { audioEnabled } = useAudio();
   const previousTurnoRef = useRef(null);
   const soundRef = useRef(null);
 
@@ -76,23 +77,12 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
     return (
       <div className="current-turn-card h-100 position-relative flex-fill text-center">
         <p>No hay turno en atención.</p>
-        {!audioEnabled && (
-          <button className="btn btn-primary mt-2" onClick={handleEnableAudio}>
-            Activar sonido
-          </button>
-        )}
       </div>
     );
 
   return (
     <div className="current-turn-card h-100 position-relative flex-fill text-center">
       <audio ref={soundRef} src="/sounds/turno-notificacion.mp3" preload="auto" />
-
-      {!audioEnabled && (
-        <button className="btn btn-primary mt-2" onClick={handleEnableAudio}>
-          Activar sonido
-        </button>
-      )}
 
       <AnimatePresence mode="wait">
         <motion.div
