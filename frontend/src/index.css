@@ -100,6 +100,40 @@ h1 {
   color: #212529 !important; /* mismo que text-dark de bootstrap */
 }
 
+/* ICONOS (Lucide React) en modo oscuro */
+.dark-mode .darkable svg,
+.dark-mode .darkable .lucide {
+  stroke: #ffffff !important; /* hace blancos los trazos */
+  color: #ffffff !important;  /* por si usan color */
+}
+
+/* Modo claro (restaurar) */
+.light-mode .darkable svg,
+.light-mode .darkable .lucide {
+  stroke: #000000 !important;
+  color: #000000 !important;
+}
+
+/* 🔥 Afecta también los contenedores internos dentro de darkable */
+.dark-mode .darkable .card,
+.dark-mode .darkable .grupo-col,
+.dark-mode .darkable .trabajadores-col,
+.dark-mode .darkable .empleado-card,
+.dark-mode .darkable .card-body {
+  background-color: #1a1a1a54 !important; /* gris oscuro */
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+/* 🔹 Textos internos dentro de esas tarjetas */
+.dark-mode .darkable .card h4,
+.dark-mode .darkable .card h5,
+.dark-mode .darkable .card p,
+.dark-mode .darkable .card span {
+  color: #ffffff !important;
+}
+
+
 
 
 button {
