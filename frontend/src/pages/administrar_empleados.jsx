@@ -370,7 +370,7 @@ export default function AdministrarEmpleados() {
               role="dialog"
               aria-modal="true"
             >
-              <header className="trash-header">
+              <header className="trash-header darkable">
                 <h3 className="trash-title">Papelera</h3>
                 <p className="trash-subtitle">
                   {isSuper ? "Empleados y gerentes eliminados" : "Empleados eliminados de tu área"}
@@ -382,13 +382,13 @@ export default function AdministrarEmpleados() {
                 {isSuper && (
                   <div className="trash-tabs">
                     <button
-                      className={`trash-tab ${trashTab === "empleados" ? "active" : ""}`}
+                      className={`trash-tab darkable ${trashTab === "empleados" ? "active" : ""}`}
                       onClick={() => changeTrashTab("empleados")}
                     >
                       Empleados
                     </button>
                     <button
-                      className={`trash-tab ${trashTab === "gerentes" ? "active" : ""}`}
+                      className={`trash-tab darkable ${trashTab === "gerentes" ? "active" : ""}`}
                       onClick={() => changeTrashTab("gerentes")}
                     >
                       Gerentes
@@ -397,7 +397,7 @@ export default function AdministrarEmpleados() {
                 )}
               </header>
 
-              <div className="trash-list">
+              <div className="trash-list darkable">
                 {pagedTrash.length === 0 ? (
                   <p className="trash-empty">No hay elementos eliminados.</p>
                 ) : (
@@ -434,7 +434,7 @@ export default function AdministrarEmpleados() {
                 )}
               </div>
 
-              <footer className="trash-footer">
+              <footer className="trash-footer darkable">
                 <div className="trash-page-info">
                   Página {safePage} de {totalPagesTrash} • {filteredTrash.length} resultados
                 </div>
@@ -562,16 +562,16 @@ export default function AdministrarEmpleados() {
           {isSuper ? (
             <div className="grilla-grupos">
               {/* Gerentes */}
-              <section className="grupo-col">
+              <section className="grupo-col darkable">
                 <h3 className="grupo-title">Gerentes</h3>
                 <div className="grupo-cards">
                   {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
                   {gerentes.map((emp) => (
-                    <article className="card empleado-card darkable" key={emp.id}>
+                    <article className="card empleado-card" key={emp.id}>
                       <div className="card-body d-flex justify-content-between align-items-center">
                         <div>
                           <div className="fw-bold">{emp.nombre}</div>
-                          <div className="text-muted small">{capital(emp.cargo)}</div>
+                          <div className="text-muted small darkable">{capital(emp.cargo)}</div>
                         </div>
                         <div className="d-flex gap-2">
                           <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
@@ -604,7 +604,7 @@ export default function AdministrarEmpleados() {
               </section>
 
               {/* Trabajadores */}
-              <section className="grupo-col trabajadores-col">
+              <section className="grupo-col trabajadores-col darkable">
                 <h3 className="grupo-title">{isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}</h3>
                 <div className="subgrilla">
                   <div className="subcol">
@@ -612,11 +612,11 @@ export default function AdministrarEmpleados() {
                     <div className="grupo-cards">
                       {cotizacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
                       {cotizacion.map((emp) => (
-                        <article className="card empleado-card darkable" key={emp.id}>
+                        <article className="card empleado-card" key={emp.id}>
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small">Empleado de Cotización</div>
+                              <div className="text-muted small darkable">Empleado de Cotización</div>
                             </div>
                             <div className="d-flex gap-2">
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
@@ -653,11 +653,11 @@ export default function AdministrarEmpleados() {
                     <div className="grupo-cards">
                       {reparacion.length === 0 && <p className="grupo-empty">Cargando...</p>}
                       {reparacion.map((emp) => (
-                        <article className="card empleado-card darkable" key={emp.id}>
+                        <article className="card empleado-card" key={emp.id}>
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small">Empleado de Reparación</div>
+                              <div className="text-muted small darkable">Empleado de Reparación</div>
                             </div>
                             <div className="d-flex gap-2">
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
