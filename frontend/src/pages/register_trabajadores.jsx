@@ -146,7 +146,7 @@ if (!formData.nombre || formData.nombre.trim().length < 3) {
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-        <section className="reg-card glass">
+        <section className="reg-card glass darkable">
           <header className="reg-header">
             <div className="reg-avatar">
               <i className="fa-solid fa-user-plus"></i>
@@ -154,7 +154,7 @@ if (!formData.nombre || formData.nombre.trim().length < 3) {
             <h1>Nuevo trabajador</h1>
             <p className="reg-subtitle">El trabajador se registrará en tu área</p>
             {areaUI && (
-              <div className="reg-badge">
+              <div className="reg-badge darkable">
                 <i className="fa-solid fa-wrench"></i> Área: {areaUI}
               </div>
             )}
@@ -257,7 +257,7 @@ if (!formData.nombre || formData.nombre.trim().length < 3) {
               </button>
               <button
                 type="button"
-                className="reg-btn outline"
+                className="reg-btn outline darkable"
                 onClick={() => navigate(-1)}
                 disabled={submitting}
               >
