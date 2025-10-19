@@ -74,15 +74,15 @@ const Equipo = () => {
         }}
       >
         {equipo.map((persona, index) => (
-          <div
+          <div className="team-card darkable"
             key={index}
             onClick={() => window.open(persona.linkedin, "_blank")}
             style={{
-              background: "linear-gradient(135deg, #c9c9c9ff, #ffffffd6)", // 🔹 Más claro
+              
               padding: "2rem 1.5rem",
               borderRadius: "16px",
-              color: "#1a1a1a",
-              boxShadow: "0 6px 16px rgba(0,0,0,0.3)",
+              color: "#1a1a1a76",
+              boxShadow: "0 6px 16px rgba(0, 0, 0, 0.59)",
               cursor: "pointer",
               transition: "transform 0.3s ease, box-shadow 0.3s ease",
             }}
@@ -107,7 +107,7 @@ const Equipo = () => {
                 marginBottom: "1rem",
               }}
             />
-            <h3 style={{ margin: "0.5rem 0", fontSize: "1.2rem", color: "#dc3545" }}>
+            <h3 style={{ margin: "0.5rem 0", fontSize: "1.2rem", color: "#4b1a1fff" }}>
               {persona.nombre}
             </h3>
             <p style={{ margin: 0, fontSize: "0.95rem", color: "#333" }}>
