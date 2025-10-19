@@ -8,6 +8,8 @@ import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
 import ModalAlert from "../components/ModalAlert"; 
 import { useDarkMode } from "./DarkModeContext";
+import { Volume2, VolumeX } from "lucide-react";
+import { useAudio } from "../components/AudioContext";
 
 const Header = () => {
   const location = useLocation();
@@ -165,6 +167,8 @@ const Header = () => {
     });
   };
 
+  const { audioEnabled, toggleAudio } = useAudio();
+
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top full-width-container">
@@ -210,16 +214,29 @@ const Header = () => {
               </button>
 
               {empleado && (
-                <button
-                  className={`btn d-flex align-items-center ${
-                    darkMode ? "btn-light" : "btn-dark"
-                  }`}
-                  onClick={() => setDarkMode(!darkMode)}
-                  title={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
-                >
-                  {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-                </button>
+                <>
+                  <button
+                    className={`btn d-flex align-items-center ${
+                      audioEnabled ? "btn-success" : "btn-secondary"
+                    }`}
+                    onClick={toggleAudio}
+                    title={audioEnabled ? "Desactivar sonido" : "Activar sonido"}
+                  >
+                    {audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
+                  </button>
+                  
+                  <button
+                    className={`btn d-flex align-items-center ${
+                      darkMode ? "btn-light" : "btn-dark"
+                    }`}
+                    onClick={() => setDarkMode(!darkMode)}
+                    title={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                  >
+                    {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+                  </button>
+                </>
               )}
+
             </div>
           </div>
         </div>
