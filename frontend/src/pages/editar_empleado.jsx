@@ -112,7 +112,7 @@ export default function EditarEmpleado() {
           <h2>Editar empleado</h2>
         </div>
 
-        <form onSubmit={handleSubmit} className="editar-empleado-form">
+        <form onSubmit={handleSubmit} className="editar-empleado-form darkable">
           {/* Fila 1: Nombre + Correo */}
           <div className="editar-empleado-row">
             <div className="editar-empleado-group">
@@ -210,7 +210,7 @@ export default function EditarEmpleado() {
 
               <button
                 type="button"
-                className="cancel-compact-button"
+                className="cancel-compact-button darkable"
                 onClick={handleCancel}
                 disabled={loading}
               >
