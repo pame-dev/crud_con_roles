@@ -172,7 +172,7 @@ const FormularioTurno = () => {
           <p>Complete los campos para solicitar su turno</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="compact-form">
+        <form onSubmit={handleSubmit} className="compact-form darkable">
           <div className="form-compact-row">
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-user"></i> Nombre *</label>
@@ -220,7 +220,7 @@ const FormularioTurno = () => {
             <div className="form-compact-group">
               <label className="form-compact-label"><i className="fas fa-wrench"></i> Área *</label>
               <select
-                className="form-compact-select"
+                className="form-compact-select darkable"
                 name="area"
                 value={formData.area}
                 onChange={handleChange}
@@ -243,7 +243,7 @@ const FormularioTurno = () => {
                   <><i className="fas fa-check-circle"></i> Solicitar Turno</>
                 )}
               </button>
-              <button type="button" className="cancel-compact-button" onClick={handleCancel} disabled={loading}>
+              <button type="button" className="cancel-compact-button darkable" onClick={handleCancel} disabled={loading}>
                 <i className="fas fa-times-circle"></i> Cancelar
               </button>
             </div>

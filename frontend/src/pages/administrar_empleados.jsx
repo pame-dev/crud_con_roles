@@ -694,7 +694,7 @@ export default function AdministrarEmpleados() {
           ) : (
             // Panel: para el gerente
             <div className="grilla-grupos-para-gerente">
-              <section className="grupo-col trabajadores-col">
+              <section className="grupo-col trabajadores-col darkable">
                 <h3 className="grupo-title">{isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}</h3>
                 <div className="subcol">
                   <h4 className="sub-title">{capital(gerenteCargo)}</h4>
@@ -707,7 +707,7 @@ export default function AdministrarEmpleados() {
                         <div className="card-body d-flex justify-content-between align-items-center">
                           <div>
                             <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small">Empleado de {capital(gerenteCargo)}</div>
+                            <div className="text-muted small darkable">Empleado de {capital(gerenteCargo)}</div>
                           </div>
                           <div className="d-flex gap-2">
                             <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
