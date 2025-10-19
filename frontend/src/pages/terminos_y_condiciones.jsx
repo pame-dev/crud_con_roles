@@ -28,7 +28,7 @@ const TerminosYCondiciones = () => {
           </h2>
 
           {/* CONTENIDO */}
-          <div className="terminos-content p-4 shadow-card">
+          <div className="terminos-content p-4 shadow-card darkable">
             <p>
               Bienvenido a nuestra plataforma. Al utilizar nuestros servicios, aceptas cumplir con los siguientes términos y condiciones:
             </p>

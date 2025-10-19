@@ -130,7 +130,7 @@ const RegisterGerentes = () => {
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-        <section className="reg-card glass">
+        <section className="reg-card glass darkable">
           <header className="reg-header">
             <div className="reg-avatar">
               <i className="fa-solid fa-user-plus"></i>
@@ -176,7 +176,7 @@ const RegisterGerentes = () => {
               <div className="reg-select-wrap">
                 <label className="reg-label">Cargo</label>
                 <select
-                  className="reg-select"
+                  className="reg-select darkable"
                   name="cargo"
                   value={formData.cargo}
                   onChange={handleChange}
@@ -191,7 +191,7 @@ const RegisterGerentes = () => {
               <div className="reg-select-wrap">
                 <label className="reg-label">Rol</label>
                 <select
-                  className="reg-select"
+                  className="reg-select darkable"
                   name="id_rol"
                   value={formData.id_rol}
                   onChange={handleChange}
@@ -269,7 +269,7 @@ const RegisterGerentes = () => {
               </button>
               <button
                 type="button"
-                className="reg-btn outline"
+                className="reg-btn outline darkable"
                 onClick={() => navigate(-1)}
                 disabled={submitting}
               >

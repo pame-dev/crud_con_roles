@@ -46,7 +46,7 @@ function TurnoCard({ turno }) {
   return (
     <div className="col">
       <div
-        className="card shadow-sm historial-card position-relative"
+        className="card shadow-sm historial-card position-relative darkable"
         style={{ borderRadius: "15px", transition: "transform 0.2s", cursor: "pointer" }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-5px)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
@@ -58,17 +58,17 @@ function TurnoCard({ turno }) {
           </div>
 
           <div className="d-flex align-items-center mb-2 gap-2">
-            <User size={16} className="text-dark" />
+            <User size={16} className="text-dark darkable" />
             <span className="fw-semibold">{turno.cliente}</span>
           </div>
 
           <div className="d-flex align-items-center mb-2 gap-2">
-            <Wrench size={16} className="text-muted" />
+            <Wrench size={16} className="text-muted darkable" />
             <span>{turno.servicio || "—"}</span>
           </div>
 
           <div className="d-flex align-items-center gap-2 text-muted">
-            <Calendar size={16} />
+            <Calendar size={16} className="darkable"/>
             <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
           </div>
 
