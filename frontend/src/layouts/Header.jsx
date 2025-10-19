@@ -260,13 +260,13 @@ const Header = () => {
               )}
             </div>
 
-            <div className="modal-options">
+            <div className="modal-options darkable">
               <span className="profile-label">Nombre</span>
               <div className="content-profile-row">
                 {isEditing ? (
                   <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
                 ) : (
-                  <div className="profile-row">{empleado.NOMBRE}</div>
+                  <div className="profile-row darkable">{empleado.NOMBRE}</div>
                 )}
               </div>
 
@@ -284,7 +284,7 @@ const Header = () => {
                     {correoError && <div className="text-danger mt-1">{correoError}</div>}
                   </>
                 ) : (
-                  <div className="profile-row">{empleado.CORREO}</div>
+                  <div className="profile-row darkable">{empleado.CORREO}</div>
                 )}
               </div>
               
@@ -297,16 +297,16 @@ const Header = () => {
                       {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
                     </button>
                   </>
-                ) : <div className="profile-row">********</div>}
+                ) : <div className="profile-row darkable">********</div>}
               </div>
 
               <span className="profile-label">Área</span>
               <div className="content-profile-row">
-                <div className="profile-row">{empleado.CARGO}</div>
+                <div className="profile-row darkable">{empleado.CARGO}</div>
               </div>
             </div>
 
-            <div className="modal-footer-profile">
+            <div className="modal-footer-profile darkable">
               <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
                 Cerrar Sesión
               </button>
