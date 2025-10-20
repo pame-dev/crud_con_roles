@@ -172,6 +172,13 @@ const Login = () => {
                 </>
               )}
             </button>
+            <button
+              className="login-btn-secondary"
+              type="button" // cambia a "button" para no enviar formularios
+              onClick={() => navigate(-1)} // esto regresa una página atrás
+            >
+              <i className="fa-solid fa-arrow-left me-2"></i> Regresar
+            </button>
 
             <AnimatePresence>
               {error && (
