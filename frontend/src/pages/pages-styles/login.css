@@ -40,6 +40,11 @@
   display: grid;
   align-content: start;
 }
+/* Desplaza suavemente la tarjeta un poco hacia abajo */
+.login-card.glass {
+  transform: translateY(60px); /* 👈 puedes cambiar el 60px por 40, 80, etc. */
+}
+
 
 /* Header */
 .login-card-header {
@@ -146,6 +151,21 @@
   flex-wrap: wrap; 
   margin-top: 2px;
 }
+
+.login-btn-secondary {
+  background-color: transparent;
+  border: 1px solid #fff;
+  color: white;
+  margin-top: 8px;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 .login-check { 
   display: flex; 
   align-items: center; 
