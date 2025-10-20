@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Empleado;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\NotificacionCambioContrasenaMail;
 
 class EmpleadoController extends Controller
 {
@@ -124,6 +127,7 @@ class EmpleadoController extends Controller
         }
 
         // Manejo de contraseña: no retornamos ni mostramos la actual. Solo actualizar si se envía y es válida.
+        $cambioContrasena = false;
         if ($request->has('contrasena') && $request->contrasena) {
             $nueva = $request->contrasena;
             // Comparar en texto plano y evitar la misma contraseña actual
@@ -132,10 +136,29 @@ class EmpleadoController extends Controller
             }
             // Guardar la nueva contraseña SIN encriptar (según requisito)
             $changes['CONTRASENA'] = $nueva;
+            $cambioContrasena = true;
         }
+
 
         if (!empty($changes)) {
             $empleado->update($changes);
+            // Enviar correo si se cambió la contraseña
+            if ($cambioContrasena) {
+                $fecha = now()->format('d/m/Y H:i:s');
+                $ip = request()->ip();
+                $userAgent = request()->header('User-Agent');
+                try {
+                    Mail::to($empleado->CORREO)->send(new NotificacionCambioContrasenaMail(
+                        $empleado->NOMBRE,
+                        $empleado->CORREO,
+                        $fecha,
+                        $ip,
+                        $userAgent
+                    ));
+                } catch (\Exception $e) {
+                    Log::error('Error enviando correo de cambio de contraseña: ' . $e->getMessage());
+                }
+            }
         }
 
         return response()->json([
