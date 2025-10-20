@@ -88,6 +88,16 @@ const Login = () => {
       >
         {/* Solo la tarjeta del formulario (una columna) */}
         <main className="login-card glass darkable">
+          {/* Botón de regresar (solo flecha) */}
+          <button
+            className="back-btn"
+            type="button"
+            onClick={() => navigate(-1)}
+            aria-label="Regresar"
+            title="Regresar"
+          >
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
           <div className="login-card-header">
             <div className="login-avatar">
               <i className="fa-regular fa-user"></i>
@@ -172,14 +182,7 @@ const Login = () => {
                 </>
               )}
             </button>
-            <button
-              className="login-btn-secondary"
-              type="button" // cambia a "button" para no enviar formularios
-              onClick={() => navigate(-1)} // esto regresa una página atrás
-            >
-              <i className="fa-solid fa-arrow-left me-2"></i> Regresar
-            </button>
-
+            
             <AnimatePresence>
               {error && (
                 <motion.p
