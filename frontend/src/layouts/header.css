@@ -1,53 +1,48 @@
+/* ====== NAV LINKS ====== */
 .navbar-nav .nav-link {
-    border-radius: 0.5rem;
-    margin: 0 0.25rem;
-    transition: all 0.2s ease;
-    color: rgba(255, 255, 255, 0.8) !important;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin: 0 0.25rem;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }
-          
 .navbar-nav .nav-link.active {
-    background-color: #dc3545;
-    color: white !important;
+  background-color: #dc3545;
+  color: white !important;
 }
-          
 .navbar-nav .nav-link:hover {
-    background-color: rgba(220, 53, 69, 0.3);
-    color: white !important;
+  background-color: rgba(220, 53, 69, 0.3);
+  color: white !important;
 }
-          
 .navbar-brand {
-    text-decoration: none !important;
+  text-decoration: none !important;
 }
-          
 .btn-login {
-    white-space: nowrap;
+  white-space: nowrap;
 }
-          
 .logo-image {
-    width: 100px;
-    height: 70px;
-    object-fit: contain;
-    margin-right: 0.75rem;
+  width: 100px;
+  height: 70px;
+  object-fit: contain;
+  margin-right: 0.75rem;
 }
 
-/* Estilos personalizados para el modal */
+/* ====== MODAL PERFIL ====== */
 .custom-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent; /* sin negro */
+  background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
 }
-
 .eye-btn {
   background: none;
   border: none;
@@ -57,156 +52,202 @@
 .eye-btn:hover {
   color: #000;
 }
-
-
 .custom-modal {
-    position: absolute;
-    top: 60px; /* Ajusta según el tamaño del botón de perfil */
-    right: 20px; /* Ajusta margen derecho */
-    background: #fff;
-    border-radius: 16px;
-    width: 350px;
-    overflow: hidden;
-    box-shadow:  0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
-    animation: modalFade 0.3s ease-in-out;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: #fff;
+  border-radius: 16px;
+  width: 350px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
+  animation: modalFade 0.3s ease-in-out;
 }
-
-/* Encabezado con fondo rojo-naranja */
 .modal-header-profile {
-    background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: white;
-}
-
-.profile-name {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 0;
-}
-
-.profile-email {
-    font-size: 0.9rem;
-    opacity: 0.85;
-    margin: 0;
-}
-
-/* Opciones */
-.modal-options {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-.darkmode-toggle-btn {
-  position: fixed;           /* siempre visible en pantalla */
-  top: 10%;                  /* centrado verticalmente */
-  right: calc(20% - 40px);  /* ajusta para colocarlo justo al lado derecho del modal */
-  transform: translateY(-50%);
-  background: var(--bs-dark);
+  background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
   color: white;
-  border: none;
-  border-radius: 50%;
-  padding: 10px;
-  cursor: pointer;
-  z-index: 2001;             /* asegúrate que esté encima del modal overlay */
-  transition: background 0.3s ease, transform 0.2s ease;
 }
-
-
+.profile-name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
+}
+.profile-email {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin: 0;
+}
+.modal-options {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
 .profile-label {
-    display: block;
-    font-size: 0.7rem; /* más pequeño */
-    color: #888;       /* gris suave */
-    font-weight: 500;
-    line-height: 1.1;
-    margin-bottom: 2px;
+  display: block;
+  font-size: 0.7rem;
+  color: #888;
+  font-weight: 500;
+  line-height: 1.1;
+  margin-bottom: 2px;
 }
-
 .content-profile-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
 }
-
 .profile-row {
-    background: #fff5f0; /* Fondo suave */
-    padding: 8px 12px;
-    border-radius: 8px;
-    width: 90%;
+  background: #fff5f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 90%;
 }
-
 .profile-data {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
 }
-
 .profile-input {
-    background: #fff5f0; /* Fondo suave */
-    padding: 8px 12px;
-    color:#000;
-    border-radius: 8px;
-    width: 90%;
-    border: 0px; /*  define tu propio borde */
-    
+  background: #fff5f0;
+  padding: 8px 12px;
+  color: #000;
+  border-radius: 8px;
+  width: 90%;
+  border: 0;
 }
-
 .profile-input:focus {
   outline: none;
-  border-color: #dc3545; /* rojo estilo Bootstrap */
+  border-color: #dc3545;
   box-shadow: 0 0 4px rgba(220, 53, 69, 0.5);
 }
-
-
 .edit-btn {
-    margin-left: 8px; /* separación del recuadro */
-    background: #ff4e4e;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  margin-left: 8px;
+  background: #ff4e4e;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
 .edit-btn:hover {
-    background: #e63d3d;
+  background: #e63d3d;
 }
-
-
-/* Footer del modal*/
 .modal-footer-profile {
-    padding: 15px;
-    border-top: 1px solid #eee;
-    text-align: center;
+  padding: 15px;
+  border-top: 1px solid #eee;
+  text-align: center;
 }
-
 .logout-btn {
-    background: #ff4e4e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  background: #ff4e4e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
 .logout-btn:hover {
-    background: #e63d3d;
+  background: #e63d3d;
+}
+@keyframes modalFade {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
 }
 
-/* Animación */
-@keyframes modalFade {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+/* ====== GOOGLE TRANSLATE ====== */
+
+/* Botón del traductor alineado con el grupo derecho */
+.translate-btn {
+  padding: 6px 10px;
+}
+
+/* Caja flotante del traductor (se muestra con .show) */
+#google_translate_element {
+  display: none; /* base: oculto, se muestra con .show */
+  position: fixed;
+  top: 70px; /* justo debajo del header */
+  right: 180px;  /* queda a la derecha, cerca del grupo de botones */
+  z-index: 3000;
+  background: linear-gradient(135deg, #dc3545, #ff7b42);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  animation: fadeSlide 0.25s ease-out;
+}
+
+#google_translate_element.show {
+  display: block !important;
+}
+
+/* Flecha */
+#google_translate_element::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #dc3545 transparent;
+}
+
+/* Ajustes del gadget */
+.goog-te-gadget {
+  color: transparent !important; /* oculta texto "Powered by" sin romper el combo */
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+/* ====== Personalización del combo de idiomas ====== */
+.goog-te-combo {
+  appearance: none !important; /* quita estilo del sistema */
+  background: #fff url("data:image/svg+xml;utf8,<svg fill='%23ff3b3b' height='24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+  background-size: 16px;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 35px 10px 15px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.goog-te-combo:hover {
+  background-color: #fff7f5 !important;
+  box-shadow: 0 4px 10px rgba(255, 59, 59, 0.3);
+  transform: scale(1.03);
+}
+
+/* Scrollbar personalizada dentro del menú desplegable */
+.goog-te-combo option {
+  background-color: #fff;
+  color: #222;
+}
+
+select::-webkit-scrollbar {
+  width: 8px;
+}
+select::-webkit-scrollbar-thumb {
+  background-color: #ff3b3b;
+  border-radius: 4px;
+}
+
+/* Menú de idiomas por encima de todo */
+.goog-te-menu-frame,
+.goog-te-menu2 {
+  z-index: 999999 !important;
+  pointer-events: auto !important;
+}
+
+/* Transición del pop */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }

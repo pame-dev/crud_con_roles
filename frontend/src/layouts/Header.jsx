@@ -1,14 +1,16 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff, Sun, Moon } from "lucide-react"; 
+import {
+  User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff, Sun, Moon,
+  Volume2, VolumeX
+} from "lucide-react";
 import logo from "../assets/logo-rojo.png";
-import './header.css';
+import "./header.css";
 import { EmpleadoContext } from "./EmpleadoContext";
 import { actualizarEmpleado } from "../api/empleadosApi";
 import { useTranslation } from "react-i18next";
-import ModalAlert from "../components/ModalAlert"; 
+import ModalAlert from "../components/ModalAlert";
 import { useDarkMode } from "./DarkModeContext";
-import { Volume2, VolumeX } from "lucide-react";
 import { useAudio } from "../components/AudioContext";
 
 const Header = () => {
@@ -31,13 +33,12 @@ const Header = () => {
     show: false,
     title: "",
     message: "",
-    type: "info"
+    type: "info",
   });
 
   const showModal = (title, message, type = "info") => {
     setModal({ show: true, title, message, type });
   };
-  
   const closeModal = () => setModal({ ...modal, show: false });
 
   const soloUsuario = [
@@ -47,13 +48,15 @@ const Header = () => {
     "/historial",
     "/administrar_empleados",
     "/register_gerentes_y_trabajadores",
-    "/register_trabajadores"
+    "/register_trabajadores",
   ];
-  const mostrarSoloUsuario = soloUsuario.includes(location.pathname) || location.pathname.startsWith("/editar_empleado");
+  const mostrarSoloUsuario =
+    soloUsuario.includes(location.pathname) ||
+    location.pathname.startsWith("/editar_empleado");
 
-  const { t, i18n } = useTranslation();
-  const toggleLanguage = () => i18n.changeLanguage(i18n.language === "es" ? "en" : "es");
+  const { t } = useTranslation(); // si luego usas i18n lingüístico interno
 
+  // Cargar datos del empleado al formulario
   useEffect(() => {
     if (empleado) {
       setFormData({
@@ -65,17 +68,94 @@ const Header = () => {
     }
   }, [empleado]);
 
+  // Dark mode en <body>
   useEffect(() => {
-    if (darkMode) {
-      document.body.classList.add("dark-mode");
-    } else {
-      document.body.classList.remove("dark-mode");
-    }
+    if (darkMode) document.body.classList.add("dark-mode");
+    else document.body.classList.remove("dark-mode");
   }, [darkMode]);
 
+  // === GOOGLE TRANSLATE: carga, toggle con clase 'show' y click-afuera ===
+  useEffect(() => {
+    // callback global antes de cargar script
+    window.googleTranslateElementInit = () => {
+      /* global google */
+      if (window.google && window.google.translate) {
+        new window.google.translate.TranslateElement(
+          { pageLanguage: "es" },
+          "google_translate_element"
+        );
+      }
+    };
+
+    // inyecta el script
+    const existingScript = document.querySelector(
+      "script[src*='translate.google.com/translate_a/element.js']"
+    );
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src =
+        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.async = true;
+      document.body.appendChild(script);
+    }
+
+    const toggleBtn = document.getElementById("translate-toggle");
+    const element = document.getElementById("google_translate_element");
+
+    const handleToggle = (e) => {
+      e.stopPropagation();
+      if (!element) return;
+      element.classList.toggle("show");
+    };
+
+    const handleClickOutside = (e) => {
+      if (!element) return;
+      const insideIcon = e.target.closest(".translate-icon-container");
+      const insideBox = e.target.closest("#google_translate_element");
+      if (!insideIcon && !insideBox && element.classList.contains("show")) {
+        element.classList.remove("show");
+      }
+    };
+
+    toggleBtn?.addEventListener("click", handleToggle);
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      toggleBtn?.removeEventListener("click", handleToggle);
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  // === OCULTAR BARRA SUPERIOR DE GOOGLE TRANSLATE ===
+  useEffect(() => {
+    const hideTranslateBanner = () => {
+      const iframe = document.querySelector("iframe.skiptranslate");
+      if (iframe) {
+        iframe.style.display = "none";
+        iframe.style.visibility = "hidden";
+      }
+
+      const banner = document.querySelector(".skiptranslate");
+      if (banner) {
+        banner.style.display = "none";
+      }
+
+      document.body.style.top = "0px"; // evita que mueva la página hacia abajo
+    };
+
+    // Llama inmediatamente y también periódicamente por si Google lo reinyecta
+    hideTranslateBanner();
+    const observer = new MutationObserver(() => hideTranslateBanner());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    // Limpieza al desmontar
+    return () => observer.disconnect();
+  }, []); //importante: dentro de un useEffect separado
+
+  // Cierra menú colapsable de Bootstrap al navegar
   useEffect(() => {
     const navbar = document.getElementById("navbarNav");
-    if (navbar && navbar.classList.contains("show")) {
+    if (navbar && navbar.classList.contains("show") && window.bootstrap) {
       const collapse = new window.bootstrap.Collapse(navbar, { toggle: false });
       collapse.hide();
     }
@@ -83,7 +163,7 @@ const Header = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSave = () => {
@@ -95,65 +175,88 @@ const Header = () => {
     };
 
     if (datosActualizados.nombre.length < 3) {
-      showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+      showModal(
+        "Nombre inválido",
+        "El nombre debe tener al menos 3 caracteres.",
+        "error"
+      );
       return;
     }
 
     const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!correoRegex.test(datosActualizados.correo)) {
-      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+      showModal(
+        "Correo inválido",
+        "Por favor, ingresa un correo electrónico válido.",
+        "error"
+      );
       return;
     }
 
     fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
+      body: JSON.stringify({
+        correo: datosActualizados.correo,
+        id: empleado.ID_EMPLEADO,
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
         if (data.existe) {
           setCorreoError("El correo ya está registrado por otro empleado.");
-          return;
+          throw new Error("Correo ya registrado");
         }
 
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-        if (!passwordRegex.test(formData.contrasena)) {
+        if (datosActualizados.contrasena) {
+          const passwordRegex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
+          if (!passwordRegex.test(datosActualizados.contrasena)) {
+            showModal(
+              "Contraseña inválida",
+              "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
+              "error"
+            );
+            throw new Error("Contraseña inválida");
+          }
+        }
+
+        if (
+          !datosActualizados.nombre ||
+          !datosActualizados.correo ||
+          !datosActualizados.cargo
+        ) {
           showModal(
-            "Contraseña inválida",
-            "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
+            "Campos incompletos",
+            "Por favor, completa todos los campos obligatorios.",
             "error"
           );
-          return;
-        }
-
-        if (!datosActualizados.nombre || !datosActualizados.correo || !datosActualizados.cargo) {
-          showModal("Campos incompletos", "Por favor, completa todos los campos obligatorios.", "error");
-          return;
+          throw new Error("Campos incompletos");
         }
       })
       .then(() => {
-        actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
-          .then(res => {
-            showModal("Éxito", "Perfil actualizado correctamente", "success");
-            setIsEditing(false);
-            setShowProfileModal(false);
-            setEmpleado(res.empleado);
-            localStorage.setItem("empleado", JSON.stringify(res.empleado));
-          })
-          .catch(err => {
-            if (err.errors) {
-              const mensajes = Object.values(err.errors).flat().join("\n");
-              showModal("Error al actualizar perfil", mensajes);
-            } else if (err.message) {
-              showModal("Error al actualizar perfil", err.message);
-            } else if (err.error) {
-              showModal("Error al actualizar perfil", err.error);
-            } else {
-              showModal("Error al actualizar perfil", "Error desconocido");
-            }
-            console.error(err);
-          });
+        return actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados);
+      })
+      .then((res) => {
+        showModal("Éxito", "Perfil actualizado correctamente", "success");
+        setIsEditing(false);
+        setShowProfileModal(false);
+        setEmpleado(res.empleado);
+        localStorage.setItem("empleado", JSON.stringify(res.empleado));
+      })
+      .catch((err) => {
+        if (err.message === "Correo ya registrado") return;
+        if (err.errors) {
+          const mensajes = Object.values(err.errors).flat().join("\n");
+          showModal("Error al actualizar perfil", mensajes);
+        } else if (err.message && !/Correo ya registrado/.test(err.message)) {
+          showModal("Error al actualizar perfil", err.message);
+        } else if (err.error) {
+          showModal("Error al actualizar perfil", err.error);
+        } else if (!modal.show) {
+          showModal("Error al actualizar perfil", "Error desconocido");
+        }
+        console.error(err);
       });
   };
 
@@ -177,11 +280,18 @@ const Header = () => {
             <img src={logo} alt="PitLine Logo" className="logo-image" />
             <div>
               <h4 className="mb-0 fw-bold">PitLine</h4>
-              <small className="text-light opacity-75">Acelera tu servicio</small>
+              <small className="text-light opacity-75">
+                Acelera tu servicio
+              </small>
             </div>
           </Link>
 
-          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+          >
             <span className="navbar-toggler-icon"></span>
           </button>
 
@@ -189,28 +299,48 @@ const Header = () => {
             {!mostrarSoloUsuario && (
               <ul className="navbar-nav mx-auto">
                 <li className="nav-item">
-                  <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
+                  <Link
+                    to="/"
+                    className={`nav-link d-flex align-items-center ${
+                      location.pathname === "/" ? "active" : ""
+                    }`}
+                  >
                     <TrendingUp size={20} className="me-2" /> Dashboard
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link to="/pantalla_completa" className={`nav-link d-flex align-items-center ${location.pathname === "/pantalla_completa" ? "active" : ""}`}>
+                  <Link
+                    to="/pantalla_completa"
+                    className={`nav-link d-flex align-items-center ${
+                      location.pathname === "/pantalla_completa" ? "active" : ""
+                    }`}
+                  >
                     <Tv size={20} className="me-2" /> Pantalla Completa
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="#" className="nav-link d-flex align-items-center" onClick={(e) => { e.preventDefault(); toggleLanguage(); }}>
-                    <Globe size={20} className="me-2" /> {t("traducir")}
                   </Link>
                 </li>
               </ul>
             )}
+
             <div className="ms-auto d-flex align-items-center gap-2">
-              <button className="btn btn-danger d-flex align-items-center btn-login" onClick={() => {
-                if (location.pathname === "/" || location.pathname === "/login") navigate("/login");
-                else setShowProfileModal(true);
-              }}>
-                <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
+              <button
+                    id="translate-toggle"
+                    aria-label="Traducir"
+                    title="Idioma"
+                    className="btn btn-outline-light d-flex align-items-center"
+                    type="button"
+                  >
+                    <Globe size={18} />
+                  </button>
+              <button
+                className="btn btn-danger d-flex align-items-center btn-login"
+                onClick={() => {
+                  if (location.pathname === "/" || location.pathname === "/login")
+                    navigate("/login");
+                  else setShowProfileModal(true);
+                }}
+              >
+                <User size={16} className="me-2" />{" "}
+                {!mostrarSoloUsuario && "Iniciar Sesión"}
               </button>
 
               {empleado && (
@@ -224,55 +354,61 @@ const Header = () => {
                   >
                     {audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
                   </button>
-                  
+
                   <button
                     className={`btn d-flex align-items-center ${
                       darkMode ? "btn-light" : "btn-dark"
                     }`}
                     onClick={() => setDarkMode(!darkMode)}
-                    title={darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+                    title={
+                      darkMode ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
+                    }
                   >
                     {darkMode ? <Sun size={16} /> : <Moon size={16} />}
                   </button>
                 </>
               )}
-
             </div>
           </div>
         </div>
       </nav>
 
+      {/* Caja flotante del traductor*/}
+      <div id="google_translate_element"></div>
+
       {showProfileModal && empleado && (
         <div
           className="custom-modal-overlay"
           onClick={() => {
-            if (!modal.show) setShowProfileModal(false); //  solo cierra si no hay alerta abierta
+            if (!modal.show) setShowProfileModal(false);
           }}
-          style={{
-            pointerEvents: modal.show ? "none" : "auto" //  evita que bloquee clicks del ModalAlert
-          }}
+          style={{ pointerEvents: modal.show ? "none" : "auto" }}
         >
-          <div className="custom-modal" onClick={e => e.stopPropagation()}>
+          <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header-profile">
               <div>
                 <h5 className="profile-name">{empleado.NOMBRE}</h5>
                 <p className="profile-email">{empleado.CORREO}</p>
               </div>
-          
+
               {!isEditing ? (
-                <button 
-                  className="edit-btn" 
-                  onClick={() => { 
-                    setIsEditing(true); 
-                    setCorreoError(""); //  limpia error al empezar a editar 
+                <button
+                  className="edit-btn"
+                  onClick={() => {
+                    setIsEditing(true);
+                    setCorreoError("");
                   }}
                 >
                   <Pencil size={16} />
                 </button>
               ) : (
                 <div className="d-flex gap-2">
-                  <button className="edit-btn" onClick={handleSave}><Save size={16} /></button>
-                  <button className="edit-btn" onClick={handleCancel}><X size={16} /></button>
+                  <button className="edit-btn" onClick={handleSave}>
+                    <Save size={16} />
+                  </button>
+                  <button className="edit-btn" onClick={handleCancel}>
+                    <X size={16} />
+                  </button>
                 </div>
               )}
             </div>
@@ -281,7 +417,13 @@ const Header = () => {
               <span className="profile-label">Nombre</span>
               <div className="content-profile-row">
                 {isEditing ? (
-                  <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
+                  <input
+                    type="text"
+                    name="NOMBRE"
+                    value={formData.NOMBRE}
+                    onChange={handleChange}
+                    className="profile-input"
+                  />
                 ) : (
                   <div className="profile-row darkable">{empleado.NOMBRE}</div>
                 )}
@@ -291,30 +433,44 @@ const Header = () => {
               <div className="content-profile-row">
                 {isEditing ? (
                   <>
-                    <input 
-                      type="email" 
-                      name="CORREO" 
-                      value={formData.CORREO} 
-                      onChange={handleChange} 
-                      className="profile-input" 
+                    <input
+                      type="email"
+                      name="CORREO"
+                      value={formData.CORREO}
+                      onChange={handleChange}
+                      className="profile-input"
                     />
-                    {correoError && <div className="text-danger mt-1">{correoError}</div>}
+                    {correoError && (
+                      <div className="text-danger mt-1">{correoError}</div>
+                    )}
                   </>
                 ) : (
                   <div className="profile-row darkable">{empleado.CORREO}</div>
                 )}
               </div>
-              
+
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row d-flex align-items-center">
                 {isEditing ? (
                   <>
-                    <input type={showPassword ? "text" : "password"} name="CONTRASENA" value={formData.CONTRASENA} onChange={handleChange} className="profile-input me-2" />
-                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="eye-btn">
-                      {showPassword ? <EyeOff size={16}/> : <Eye size={16}/>}
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="CONTRASENA"
+                      value={formData.CONTRASENA}
+                      onChange={handleChange}
+                      className="profile-input me-2"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="eye-btn"
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </>
-                ) : <div className="profile-row darkable">********</div>}
+                ) : (
+                  <div className="profile-row darkable">********</div>
+                )}
               </div>
 
               <span className="profile-label">Área</span>
@@ -324,7 +480,14 @@ const Header = () => {
             </div>
 
             <div className="modal-footer-profile darkable">
-              <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
+              <button
+                className="logout-btn"
+                onClick={() => {
+                  logout();
+                  setShowProfileModal(false);
+                  navigate("/");
+                }}
+              >
                 Cerrar Sesión
               </button>
             </div>
