@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { User, TrendingUp, Tv, Pencil, Globe, Save, X } from "lucide-react"; // ✅ un solo import
+import { User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff } from "lucide-react"; // ✅ un solo import
 import logo from "../assets/logo-rojo.png";
 import './header.css';
 import { EmpleadoContext } from "./EmpleadoContext";
@@ -16,6 +16,13 @@ const Header = () => {
   const [showModal, setShowModal] = useState(false); //valor predeterminado para el modal (oculto) se pasara a true cuando se presione 
   const [isEditing, setIsEditing] = useState(false); // Estado para editar perfil(modal)
   const [formData, setFormData] = useState({...empleado}); // Estado para los datos del formulario
+
+  // Sincronizar formData con el empleado activo cada vez que cambie el usuario autenticado o se abra el modal
+  useEffect(() => {
+    if (showModal) {
+      setFormData({...empleado});
+    }
+  }, [empleado, showModal]);
   const [passwordRules, setPasswordRules] = useState({
     length: false,
     uppercase: false,
@@ -24,10 +31,15 @@ const Header = () => {
   const [passwordUsed, setPasswordUsed] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isPasswordEditing, setIsPasswordEditing] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
 //RECORDATORIO: terminar el editar y modificar el cancelar
 //colocar en los inputs el "isEditing"
 //checar composer.phar en backend
+//enviar un correo al empleado si se cambia la contraseña (urgente solo cuando se trabaje en ello)
+//mostrar y ocultar contraseña al presionar el boton de cambiar contraseña
+//modificar el color gris de los input (utilizar el mismo que que el de la pagina sin modficiar)
+//quitar datos genericos para rellenar inputs del perfil al editar
 
   const soloUsuario = [
     "/vista_gerente",
@@ -308,7 +320,10 @@ const Header = () => {
 
               {/* NUEVO: lápiz / guardar / cancelar */}
               {!isEditing ? (
-                <button className="edit-btn" onClick={() => setIsEditing(true)}>
+                <button className="edit-btn" onClick={() => {
+                  setFormData({...empleado}); // Siempre cargar datos actuales al iniciar edición
+                  setIsEditing(true);
+                }}>
                   <Pencil size={16} />
                 </button>
               ) : (
@@ -405,14 +420,35 @@ const Header = () => {
                 )}
                 {isEditing && isPasswordEditing && (
                   <div style={{width: '100%'}}>
-                    <input
-                      type="password"
-                      name="CONTRASENA"
-                      value={formData.CONTRASENA || ''}
-                      onChange={handleChange}
-                      className="profile-input"
-                      placeholder="Ingresa nueva contraseña (no se muestra la actual)"
-                    />
+                    <div style={{position: 'relative'}}>
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        name="CONTRASENA"
+                        value={formData.CONTRASENA || ''}
+                        onChange={handleChange}
+                        className="profile-input"
+                        placeholder="Ingresa nueva contraseña (no se muestra la actual)"
+                        autoComplete="new-password"
+                      />
+                      <button
+                        type="button"
+                        style={{
+                          position: 'absolute',
+                          right: 8,
+                          top: '50%',
+                          transform: 'translateY(-50%)',
+                          background: 'none',
+                          border: 'none',
+                          padding: 0,
+                          cursor: 'pointer'
+                        }}
+                        tabIndex={-1}
+                        onClick={() => setShowPassword((v) => !v)}
+                        aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
                     <div className="password-rules mt-2">
                       {/* operacionnes ternario para validar parametros de la nueva contraseña */}
                       <div style={{color: passwordRules.length ? 'green' : 'red'}}> - la contraseña debe contener mínimo 8 dígitos</div>
@@ -421,13 +457,13 @@ const Header = () => {
                       {passwordUsed && <div style={{color: 'red'}}>esta contraseña ya ha sido utilizada, utiliza una diferente</div>}
                       <div className="mt-2">
                         <input 
-                        /*caja de texto para confirmar la contraseña*/
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           name="CONFIRM_CONTRASENA"
                           value={confirmPassword}
                           onChange={handleConfirmPasswordChange}
                           className="profile-input"
                           placeholder="Confirma tu nueva contraseña"
+                          autoComplete="new-password"
                         />
                         <div style={{marginTop: '6px'}}>
                           {formData.CONTRASENA && formData.CONTRASENA !== '' ? (
