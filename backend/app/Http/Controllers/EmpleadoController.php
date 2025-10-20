@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Empleado;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use App\Mail\NotificacionCambioContrasenaMail;
 
 class EmpleadoController extends Controller
 {
@@ -110,6 +114,7 @@ class EmpleadoController extends Controller
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
+<<<<<<< HEAD
 
         $datosActualizados = [
             'NOMBRE' => $request->nombre ?? $empleado->NOMBRE,
@@ -125,11 +130,83 @@ class EmpleadoController extends Controller
         }
 
         $empleado->update($datosActualizados);
+=======
+        // Validación básica
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'correo' => 'required|email|max:255',
+            'cargo'  => 'required|string|max:255',
+            'contrasena' => 'nullable|string|min:8',
+        ]);
+>>>>>>> josue
+
+        // Preparar cambios que se aplicarán
+        $changes = [];
+        if (isset($validated['nombre']) && $empleado->NOMBRE !== $validated['nombre']) {
+            $changes['NOMBRE'] = $validated['nombre'];
+        }
+        if (isset($validated['correo']) && $empleado->CORREO !== $validated['correo']) {
+            $changes['CORREO'] = $validated['correo'];
+        }
+        if (isset($validated['cargo']) && $empleado->CARGO !== $validated['cargo']) {
+            $changes['CARGO'] = $validated['cargo'];
+        }
+
+        // Manejo de contraseña: no retornamos ni mostramos la actual. Solo actualizar si se envía y es válida.
+        $cambioContrasena = false;
+        if ($request->has('contrasena') && $request->contrasena) {
+            $nueva = $request->contrasena;
+            // Comparar en texto plano y evitar la misma contraseña actual
+            if ($nueva === $empleado->CONTRASENA) {
+                return response()->json(['error' => 'La contraseña no debe de ser idéntica a la actual'], 422);
+            }
+            // Guardar la nueva contraseña SIN encriptar (según requisito)
+            $changes['CONTRASENA'] = $nueva;
+            $cambioContrasena = true;
+        }
+
+
+        if (!empty($changes)) {
+            $empleado->update($changes);
+            // Enviar correo si se cambió la contraseña
+            if ($cambioContrasena) {
+                $fecha = now()->format('d/m/Y H:i:s');
+                $ip = request()->ip();
+                $userAgent = request()->header('User-Agent');
+                try {
+                    Mail::to($empleado->CORREO)->send(new NotificacionCambioContrasenaMail(
+                        $empleado->NOMBRE,
+                        $empleado->CORREO,
+                        $fecha,
+                        $ip,
+                        $userAgent
+                    ));
+                } catch (\Exception $e) {
+                    Log::error('Error enviando correo de cambio de contraseña: ' . $e->getMessage());
+                }
+            }
+        }
 
         return response()->json([
             'message' => 'Empleado actualizado correctamente',
-            'empleado' => $empleado
+            'empleado' => $empleado->fresh()
         ]);
+    }
+
+    // Endpoint para verificar si la contraseña enviada coincide con la actual
+    public function verificarContrasena(Request $request, $id)
+    {
+        $empleado = Empleado::find($id);
+        if (!$empleado) {
+            return response()->json(['error' => 'Empleado no encontrado'], 404);
+        }
+
+        $request->validate(['contrasena' => 'required|string']);
+        $contrasena = $request->contrasena;
+
+        $igual = $contrasena === $empleado->CONTRASENA;
+
+        return response()->json(['igual' => $igual]);
     }
 
     // Verificar si el correo ya existe (excluyendo el empleado actual)
