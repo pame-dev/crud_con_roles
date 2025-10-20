@@ -22,6 +22,8 @@ const Header = () => {
     number: false
   });
   const [passwordUsed, setPasswordUsed] = useState(false);
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [isPasswordEditing, setIsPasswordEditing] = useState(false);
 
 //RECORDATORIO: terminar el editar y modificar el cancelar
 //colocar en los inputs el "isEditing"
@@ -74,6 +76,10 @@ const Header = () => {
     }
   };
 
+  const handleConfirmPasswordChange = (e) => {
+    setConfirmPassword(e.target.value);
+  };
+
 // ╔═══════════════════════════════╗
 // ║           GUARDAR             ║
 // ╚═══════════════════════════════╝
@@ -83,11 +89,14 @@ const Header = () => {
     const cambios = [];
     if (formData.NOMBRE && formData.NOMBRE.trim() !== empleado.NOMBRE) cambios.push(`tu nuevo nombre será ${formData.NOMBRE.trim()}`);
     if (formData.CORREO && formData.CORREO.trim() !== empleado.CORREO) cambios.push(`tu nuevo correo será ${formData.CORREO.trim()}`);
-    let cambiandoPass = false;
-    if (formData.CONTRASENA && formData.CONTRASENA.trim() !== '') {
-      cambiandoPass = true;
-      cambios.push("nueva contraseña actualizada, no la compartas con nadie.");
-    }
+    const cambiandoPass = isPasswordEditing && !!(formData.CONTRASENA && formData.CONTRASENA.trim() !== '');
+    // Nota: si también se cambia la contraseña, NO agregamos ningún mensaje aquí para la confirmación.
+    // Construimos un mensaje de éxito para después de guardar.
+    const mensajesExito = [];
+    if (formData.NOMBRE && formData.NOMBRE.trim() !== empleado.NOMBRE) mensajesExito.push('El nombre ha sido actualizado.');
+    if (formData.CORREO && formData.CORREO.trim() !== empleado.CORREO) mensajesExito.push('El correo ha sido actualizado.');
+    if (formData.CARGO && formData.CARGO.trim() !== empleado.CARGO) mensajesExito.push('El área ha sido actualizada.');
+    if (cambiandoPass) mensajesExito.push('La contraseña ha sido actualizada, no compartas este dato con nadie.');
 
     if (!formData.NOMBRE || !formData.CORREO || !formData.CARGO) {
       alert("Por favor, completa todos los campos obligatorios.");
@@ -124,9 +133,16 @@ const Header = () => {
 
           actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
             .then((res) => {
-              alert('Perfil actualizado correctamente');
+              let mensaje = 'Perfil actualizado correctamente';
+              if (mensajesExito.length) {
+                mensaje += '. ' + mensajesExito.join(' ');
+              }
+              alert(mensaje);
               setIsEditing(false);
-              setShowModal(false);
+              setIsPasswordEditing(false);
+              setConfirmPassword('');
+              // Cerrar modal en el siguiente tick para evitar interferencias con alert
+              setTimeout(() => setShowModal(false), 0);
               localStorage.setItem('empleado', JSON.stringify(res.empleado));
             })
             .catch((err) => {
@@ -151,9 +167,15 @@ const Header = () => {
 
     actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
       .then((res) => {
-        alert('Perfil actualizado correctamente');
+        let mensaje = 'Perfil actualizado correctamente';
+        if (mensajesExito.length) {
+          mensaje += '. ' + mensajesExito.join(' ');
+        }
+        alert(mensaje);
         setIsEditing(false);
-        setShowModal(false);
+        setIsPasswordEditing(false);
+        setConfirmPassword('');
+        setTimeout(() => setShowModal(false), 0);
         localStorage.setItem('empleado', JSON.stringify(res.empleado));
       })
       .catch((err) => {
@@ -168,6 +190,10 @@ const Header = () => {
   const handleCancel = () => {
     setIsEditing(false);
     setFormData({...empleado}); // Restablece los datos al estado original del empleado
+    setIsPasswordEditing(false);
+    setConfirmPassword('');
+    setPasswordRules({ length: false, uppercase: false, number: false });
+    setPasswordUsed(false);
   };
 
   return (
@@ -287,7 +313,29 @@ const Header = () => {
                 </button>
               ) : (
                 <div className="d-flex gap-2">
-                  <button className="edit-btn" onClick={handleSave}>
+                  <button
+                    className="edit-btn"
+                    onClick={handleSave}
+                    disabled={
+                      // Si está habilitada la edición de contraseña, exigir reglas y coincidencia
+                      (isPasswordEditing && (
+                        !(passwordRules.length && passwordRules.uppercase && passwordRules.number) ||
+                        !formData.CONTRASENA ||
+                        formData.CONTRASENA !== confirmPassword
+                      ))
+                    }
+                    title={
+                      isPasswordEditing
+                        ? (!(passwordRules.length && passwordRules.uppercase && passwordRules.number)
+                            ? 'La contraseña no cumple las reglas'
+                            : (!formData.CONTRASENA
+                                ? 'Ingresa la nueva contraseña'
+                                : formData.CONTRASENA !== confirmPassword
+                                  ? 'Las contraseñas no coinciden'
+                                  : 'Guardar'))
+                        : 'Guardar'
+                    }
+                  >
                     <Save size={16} />
                   </button>
                   <button className="edit-btn" onClick={handleCancel}>
@@ -332,7 +380,30 @@ const Header = () => {
 
               <span className="profile-label">Contraseña</span>
               <div className="content-profile-row">
-                {isEditing ? (
+                {!isEditing && (
+                  <div className="profile-row">********</div>
+                )}
+                {isEditing && !isPasswordEditing && (
+                  <div style={{width: '100%'}}>
+                    <div className="profile-row">********</div>
+                    <div className="mt-2">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() => {
+                          setIsPasswordEditing(true);
+                          setFormData({...formData, CONTRASENA: ''});
+                          setConfirmPassword('');
+                          setPasswordRules({ length: false, uppercase: false, number: false });
+                          setPasswordUsed(false);
+                        }}
+                      >
+                        Cambiar contraseña
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {isEditing && isPasswordEditing && (
                   <div style={{width: '100%'}}>
                     <input
                       type="password"
@@ -343,14 +414,51 @@ const Header = () => {
                       placeholder="Ingresa nueva contraseña (no se muestra la actual)"
                     />
                     <div className="password-rules mt-2">
+                      {/* operacionnes ternario para validar parametros de la nueva contraseña */}
                       <div style={{color: passwordRules.length ? 'green' : 'red'}}> - la contraseña debe contener mínimo 8 dígitos</div>
                       <div style={{color: passwordRules.uppercase ? 'green' : 'red'}}> - la contraseña debe tener una letra mayúscula</div>
                       <div style={{color: passwordRules.number ? 'green' : 'red'}}> - la contraseña debe tener mínimo 1 número</div>
                       {passwordUsed && <div style={{color: 'red'}}>esta contraseña ya ha sido utilizada, utiliza una diferente</div>}
+                      <div className="mt-2">
+                        <input 
+                        /*caja de texto para confirmar la contraseña*/
+                          type="password"
+                          name="CONFIRM_CONTRASENA"
+                          value={confirmPassword}
+                          onChange={handleConfirmPasswordChange}
+                          className="profile-input"
+                          placeholder="Confirma tu nueva contraseña"
+                        />
+                        <div style={{marginTop: '6px'}}>
+                          {formData.CONTRASENA && formData.CONTRASENA !== '' ? (
+                            formData.CONTRASENA === confirmPassword ? (
+                              /*cuando la contraseña coincida con lo que se pide el texto cambiará y semostrará en verde*/
+                              <div style={{color: 'green'}}>la contraseña coincide</div>
+                            ) : (
+                              <div style={{color: 'red'}}>las contraseñas no coinciden</div>
+                            )
+                          ) : null}
+                        </div>
+                        <div className="mt-2">
+                          <button
+                          /* boton para confirmar cambio de contraseña */
+                            type="button"
+                            className="btn btn-outline-secondary btn-sm"
+                            onClick={() => {
+                              /*  Cancelar cambio de contraseña */
+                              setIsPasswordEditing(false);
+                              setFormData({...formData, CONTRASENA: ''});
+                              setConfirmPassword('');
+                              setPasswordRules({ length: false, uppercase: false, number: false });
+                              setPasswordUsed(false);
+                            }}
+                          >
+                            Cancelar cambio de contraseña
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                ) : (
-                  <div className="profile-row">{empleado.CONTRASENA}</div>
                 )}
               </div>
 
@@ -373,16 +481,18 @@ const Header = () => {
 
             {/* Footer */}
             <div className="modal-footer-profile">
-              <button
-                className="logout-btn" 
-                onClick={() => {
-                  logout(); 
-                  setShowModal(false);
-                  navigate("/"); 
-                }}
-              >
-                Cerrar Sesión
-              </button>
+              {!isEditing && (
+                <button
+                  className="logout-btn" 
+                  onClick={() => {
+                    logout(); 
+                    setShowModal(false);
+                    navigate("/"); 
+                  }}
+                >
+                  Cerrar Sesión
+                </button>
+              )}
             </div>
           </div>
         </div>
