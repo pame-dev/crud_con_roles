@@ -126,31 +126,7 @@ const Header = () => {
     };
   }, []);
 
-  // === OCULTAR BARRA SUPERIOR DE GOOGLE TRANSLATE ===
-  useEffect(() => {
-    const hideTranslateBanner = () => {
-      const iframe = document.querySelector("iframe.skiptranslate");
-      if (iframe) {
-        iframe.style.display = "none";
-        iframe.style.visibility = "hidden";
-      }
 
-      const banner = document.querySelector(".skiptranslate");
-      if (banner) {
-        banner.style.display = "none";
-      }
-
-      document.body.style.top = "0px"; // evita que mueva la página hacia abajo
-    };
-
-    // Llama inmediatamente y también periódicamente por si Google lo reinyecta
-    hideTranslateBanner();
-    const observer = new MutationObserver(() => hideTranslateBanner());
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Limpieza al desmontar
-    return () => observer.disconnect();
-  }, []); //importante: dentro de un useEffect separado
 
   // Cierra menú colapsable de Bootstrap al navegar
   useEffect(() => {
