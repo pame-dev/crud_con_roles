@@ -40,11 +40,6 @@
   display: grid;
   align-content: start;
 }
-/* Desplaza suavemente la tarjeta un poco hacia abajo */
-.login-card.glass {
-  transform: translateY(20px); /* 👈 puedes cambiar el 60px por 40, 80, etc. */
-}
-
 
 /* Header */
 .login-card-header {
@@ -81,26 +76,46 @@
   gap: 14px;
   margin-top: 10px;
 }
-.login-input-group { 
-  position: relative; 
-  display: block; 
+.login-input-group {
+  position: relative;
+  display: flex;       /* cambia de block a flex */
+  align-items: center; /* centra verticalmente los hijos */
 }
 
 .login-input-group input {
-  width: 100%;
+  flex: 1;             /* ocupa todo el ancho disponible */
   height: 46px;
-  padding: 0 46px 0 46px;
+  padding: 0 46px;     /* espacio para iconos a los lados */
   border: 0;
   border-radius: 12px;
-  background: var(--login-field-bg);  /* ← rojo */
-  color: #fff;                        /* texto blanco */
+  background: var(--login-field-bg);
+  color: #fff;
   font-size: 15px;
   outline: 2px solid transparent;
   transition: background .15s ease, outline-color .15s ease, box-shadow .15s ease;
 }
-.login-input-group input::placeholder { 
-  color: #ffe7e7; 
+
+.login-input-group .icon {
+  position: absolute;   /* lo dejamos absolute para mantenerlo a la izquierda */
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fff;
+  pointer-events: none;
 }
+
+.login-input-group .eye {
+  position: absolute; 
+  right: 10px; 
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent; 
+  border: none;
+  color: #fff; 
+  font-size: 18px; 
+  cursor: pointer;
+}
+
 .login-input-group input:focus,
 .login-input-group input:hover {
   background: var(--login-field-focus);         /* ← rojo más intenso */
@@ -151,47 +166,6 @@
   flex-wrap: wrap; 
   margin-top: 2px;
 }
-
-/* Botón de regresar arriba */
-.back-btn {
-  position: absolute;
-  top: 1.5rem;
-  left: 1.5rem;
-  width: 48px;
-  height: 48px;
-  border-radius:50%; /* círculo perfecto */
-  background: var(--login-field-bg);
-  color: white;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-sizing: border-box; /* asegura medidas exactas */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.25s ease;
-  
-}
-
-/* Hover con efecto gradiente y movimiento */
-.back-btn:hover {
-  background: linear-gradient(
-    135deg,
-    var(--login-grad-start)
-  );
-  transform: translateX(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-}
-
-/* Ícono centrado correctamente */
-.back-btn i {
-  font-size: 20px;
-}
-
-.login-btn-secondary:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
 .login-check { 
   display: flex; 
   align-items: center; 
