@@ -74,11 +74,14 @@ class TurnController extends Controller
                 'TURNOS.ESTATUS as estado',
                 'TURNOS.TELEFONO as cliente_telefono',
                 'TURNOS.DURACION',
+                'TURNOS.DESCRIPCION',
+                'TURNOS.TIPO_SERVICIO',
+                'TURNOS.TIEMPO_ENTREGA',
                 'EMPLEADO.NOMBRE as NOMBRE_EMPLEADO',
                 'EMPLEADO.ID_EMPLEADO as ID_EMPLEADO_EMPLEADO',
                 'EMPLEADO.CORREO as CORREO_EMPLEADO'
             );
-
+    
         if ($request->q) {
             $query->where(function ($sub) use ($request) {
                 $sub->where('TURNOS.ID_TURNO', 'like', "%{$request->q}%")
@@ -87,25 +90,25 @@ class TurnController extends Controller
                     ->orWhere('TURNOS.TELEFONO', 'like', "%{$request->q}%");
             });
         }
-
+    
         if ($request->estado && $request->estado !== 'todos') {
             $query->whereRaw('LOWER(TURNOS.ESTATUS) = ?', [strtolower($request->estado)]);
         }
-
+    
         if ($request->desde) {
             $query->whereDate('TURNOS.FECHA', '>=', $request->desde);
         }
-
+    
         if ($request->hasta) {
             $query->whereDate('TURNOS.FECHA', '<=', $request->hasta);
         }
-
+    
         $perPage = $request->limit ?? 12;
-
+    
         $turnos = $query->orderBy('TURNOS.FECHA', 'desc')
             ->orderBy('TURNOS.HORA', 'desc')
             ->paginate($perPage);
-
+    
         $turnosFormatted = $turnos->getCollection()->map(function($t) {
             return [
                 'folio' => $t->ID_TURNO,
@@ -114,30 +117,24 @@ class TurnController extends Controller
                 'fecha' => $t->FECHA,
                 'hora' => $t->HORA,
                 'estado' => strtolower($t->estado),
-                'NOMBRE_EMPLEADO' => $t->NOMBRE_EMPLEADO ?? null, // el nombre del empleado
-                'ID_EMPLEADO' => $t->ID_EMPLEADO_EMPLEADO ?? null, // id del empleado que atendió
+                'NOMBRE_EMPLEADO' => $t->NOMBRE_EMPLEADO ?? null,
+                'ID_EMPLEADO' => $t->ID_EMPLEADO_EMPLEADO ?? null,
                 'CORREO_EMPLEADO' => $t->CORREO_EMPLEADO ?? null,
-                'duracion' => $t->DURACION ?? null, // duración del turno
+                'duracion' => $t->DURACION ?? null,
+                'DESCRIPCION' => $t->DESCRIPCION ?? null,
+                'TIPO_SERVICIO' => $t->TIPO_SERVICIO ?? null,
+                'TIEMPO_ENTREGA' => $t->TIEMPO_ENTREGA ?? null,
             ];
         });
-
-        return response()->json([
-            'data' => $turnosFormatted->toArray(),
-            'page' => $turnos->currentPage(),
-            'totalPages' => $turnos->lastPage(),
-            'total' => $turnos->total(),
-        ]);
     
-
-
-        // Mantén la paginación
         return response()->json([
             'data' => $turnosFormatted->toArray(),
             'page' => $turnos->currentPage(),
             'totalPages' => $turnos->lastPage(),
             'total' => $turnos->total(),
         ]);
-    }
+}
+
 
     public function enAtencion()
     {
