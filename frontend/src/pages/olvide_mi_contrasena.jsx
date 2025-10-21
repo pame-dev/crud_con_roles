@@ -58,7 +58,7 @@ const OlvideMiContrasena = () => {
       >
         <div className="login-wrap">
           <main className="login-main">
-            <section className="login-card glass">
+            <section className="login-card glass darkable">
               <div className="login-avatar">
                 <i className="fa-regular fa-envelope"></i>
               </div>
