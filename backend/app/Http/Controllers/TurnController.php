@@ -284,4 +284,27 @@ class TurnController extends Controller
         ]);
     }
 
+    public function guardarDiagnostico(Request $request, $idTurno)
+    {
+        $request->validate([
+            'descripcion' => 'required|string',
+            'fechaEntrega' => 'required|date',
+            'tipoServicio' => 'required|string',
+        ]);
+
+        $turno = Turno::where('ID_TURNO', $idTurno)->first();
+        
+        if (!$turno) {
+            return response()->json(['error' => 'Turno no encontrado'], 404);
+        }
+
+        $turno->DESCRIPCION = $request->descripcion;
+        $turno->TIEMPO_ENTREGA = $request->fechaEntrega;
+        $turno->TIPO_SERVICIO = $request->tipoServicio;
+        $turno->save();
+
+        return response()->json(['success' => true, 'turno' => $turno]);
+    }
+
+
 }
