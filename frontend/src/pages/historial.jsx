@@ -80,6 +80,9 @@ function TurnoCard({ turno }) {
             <strong>ID:</strong> {turno.ID_EMPLEADO} <br />
             <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"} <br />
             <strong>Duración:</strong> {formatDuracion(turno.duracion) || "—"} <br />
+            <strong>Descripción:</strong> {turno.DESCRIPCION || "—"} <br />
+            <strong>Tiempo de entrega:</strong> {turno.TIEMPO_ENTREGA} <br />
+            <strong>Tipo de Servicio:</strong> {turno.TIPO_SERVICIO || "—"} <br />
           </div>
         )}
       </div>
