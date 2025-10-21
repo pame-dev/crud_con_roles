@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCurrentUserRole } from "../hooks/auth";
 import "./pages-styles/editar_empleado.css";
+import ModalAlert from "../components/ModalAlert";
 
 export default function EditarEmpleado() {
   const { id } = useParams();
@@ -12,9 +13,21 @@ export default function EditarEmpleado() {
   const [correoError, setCorreoError] = useState("");
   const [nombreError, setNombreError] = useState("");
 
-  // Rol de la sesión (superadmin | gerente)
+  // Rol actual
   const role = getCurrentUserRole();
   const isSuper = role === "superadmin";
+
+  // Modal de alertas
+  const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
+
+  const showModal = (title, message, type = "info") =>
+    setModal({ show: true, title, message, type });
+  const closeModal = () => setModal({ ...modal, show: false });
 
   useEffect(() => {
     fetch(`http://127.0.0.1:8000/api/empleados/${id}`)
@@ -37,216 +50,228 @@ export default function EditarEmpleado() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!empleado) return;
 
     setCorreoError("");
-
-    if (!empleado.NOMBRE || empleado.NOMBRE.trim().length < 3) {
-      setNombreError("El nombre debe tener al menos 3 caracteres.");
-      return;
-    }
     setNombreError("");
 
-    // Validar si el correo ya existe antes de enviar
-    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: empleado.CORREO, id }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.existe) {
-          setCorreoError("El correo ya está registrado por otro empleado.");
-          return;
-        }
+    // 🟢 Validar nombre
+    if (!empleado.NOMBRE || empleado.NOMBRE.trim().length < 3) {
+      showModal("Error de validación", "El nombre debe tener al menos 3 caracteres.", "error");
+      return;
+    }
 
-        // Payload: nombre y correo siempre; cargo/rol solo si es superadmin
-        const datos = {
-          nombre: empleado.NOMBRE,
-          correo: empleado.CORREO,
-        };
-        if (isSuper) {
-          datos.cargo = empleado.CARGO;
-          datos.id_rol = Number(empleado.ID_ROL);
-        }
+    // 🟢 Validar formato de correo
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!empleado.CORREO || !correoRegex.test(empleado.CORREO)) {
+      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+      return;
+    }
 
-        fetch(`http://127.0.0.1:8000/api/empleados/${id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(datos),
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            console.log("Actualización exitosa:", data);
-            navigate("/administrar_empleados");
-          })
-          .catch((err) => console.error("Error al actualizar:", err));
-      })
-      .catch((err) => {
-        setCorreoError("Error al validar el correo.");
-        console.error("Error al validar correo:", err);
+    try {
+      // 🟢 Validar si el correo ya existe antes de actualizar
+      const res = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: empleado.CORREO, id }),
       });
+      const data = await res.json();
+
+      if (data.existe) {
+        setCorreoError("El correo ya está registrado por otro empleado.");
+        return;
+      }
+
+      // 🟢 Construir datos para enviar
+      const datos = {
+        nombre: empleado.NOMBRE,
+        correo: empleado.CORREO,
+      };
+
+      if (isSuper) {
+        datos.cargo = empleado.CARGO;
+        datos.id_rol = Number(empleado.ID_ROL);
+      }
+
+      // 🟢 Enviar actualización
+      const updateRes = await fetch(`http://127.0.0.1:8000/api/empleados/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(datos),
+      });
+
+      if (!updateRes.ok) throw new Error("Error en la actualización");
+
+      showModal("Éxito", "Empleado actualizado correctamente.", "success");
+
+      setTimeout(() => navigate("/administrar_empleados"), 1500);
+    } catch (err) {
+      console.error("Error al actualizar:", err);
+      showModal("Error", "Ocurrió un error al actualizar el empleado.", "error");
+    }
   };
 
-  const handleCancel = () => {
-    navigate("/administrar_empleados");
-  };
+  const handleCancel = () => navigate("/administrar_empleados");
 
-  // Mostrar estado de carga mientras se obtienen los datos
-  if (loading) {
-  return (
-    <div className="editar-empleado-page">
-      <div className="editar-empleado-card skeleton">
-        <div className="skeleton-header">
-          <div className="skeleton-box"></div>
-          <div className="skeleton-line" style={{ width: "50%", margin: "10px auto" }}></div>
-        </div>
-
-        <div className="skeleton-body">
-          <div className="skeleton-row">
-            <div className="skeleton-input"></div>
-            <div className="skeleton-input"></div>
+  // 🟠 Estado de carga
+  if (loading)
+    return (
+      <div className="editar-empleado-page">
+        <div className="editar-empleado-card skeleton">
+          <div className="skeleton-header">
+            <div className="skeleton-box"></div>
+            <div className="skeleton-line" style={{ width: "50%", margin: "10px auto" }}></div>
           </div>
-
-          <div className="skeleton-row">
-            <div className="skeleton-input"></div>
-            <div className="skeleton-input"></div>
-          </div>
-          
-          <div className="skeleton-buttons">
-            <div className="skeleton-button"></div>
-            <div className="skeleton-button"></div>
+          <div className="skeleton-body">
+            <div className="skeleton-row">
+              <div className="skeleton-input"></div>
+              <div className="skeleton-input"></div>
+            </div>
+            <div className="skeleton-row">
+              <div className="skeleton-input"></div>
+              <div className="skeleton-input"></div>
+            </div>
+            <div className="skeleton-buttons">
+              <div className="skeleton-button"></div>
+              <div className="skeleton-button"></div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
     );
-  }
-  
-    if (!empleado) 
-    return 
-    <p className="editar-empleado-error">Empleado no encontrado</p>;
+
+  if (!empleado)
+    return <p className="editar-empleado-error">Empleado no encontrado</p>;
 
   return (
-    <div className="editar-empleado-page">
-      <div className="editar-empleado-card">
-        <div className="editar-empleado-header">
-          <div className="header-compact-icon">
-            <i className="fa-solid fa-user-gear"></i>
-          </div>
-          <h2>Editar empleado</h2>
-        </div>
-
-        <form onSubmit={handleSubmit} className="editar-empleado-form darkable">
-          {/* Fila 1: Nombre + Correo */}
-          <div className="editar-empleado-row">
-            <div className="editar-empleado-group">
-              <label className="editar-empleado-label">
-                <i className="fa-solid fa-user"></i> Nombre *
-              </label>
-              <input
-                type="text"
-                name="NOMBRE"
-                className="editar-empleado-control"
-                value={empleado.NOMBRE || ""}
-                onChange={handleChange}
-                placeholder="Nombre"
-                required
-              />
-              {nombreError && <div className="input-error">{nombreError}</div>}
+    <>
+      <div className="editar-empleado-page">
+        <div className="editar-empleado-card">
+          <div className="editar-empleado-header">
+            <div className="header-compact-icon">
+              <i className="fa-solid fa-user-gear"></i>
             </div>
-
-            <div className="editar-empleado-group">
-              <label className="editar-empleado-label">
-                <i className="fa-solid fa-envelope"></i> Correo *
-              </label>
-              <input
-                type="email"
-                name="CORREO"
-                className="editar-empleado-control"
-                value={empleado.CORREO || ""}
-                onChange={handleChange}
-                placeholder="correo@empresa.com"
-                required
-              />
-              {correoError && <div className="input-error">{correoError}</div>}
-            </div>
+            <h2>Editar empleado</h2>
           </div>
 
-          {/* Fila 2: Cargo + (Rol) — solo si superadmin */}
-          {isSuper && (
+          <form onSubmit={handleSubmit} className="editar-empleado-form darkable">
+            {/* Fila 1: Nombre + Correo */}
             <div className="editar-empleado-row">
               <div className="editar-empleado-group">
                 <label className="editar-empleado-label">
-                  <i className="fa-solid fa-wrench"></i> Cargo *
+                  <i className="fa-solid fa-user"></i> Nombre *
                 </label>
-                <select
-                  name="CARGO"
-                  className="editar-empleado-select darkable"
-                  value={empleado.CARGO || ""}
+                <input
+                  type="text"
+                  name="NOMBRE"
+                  className="editar-empleado-control"
+                  value={empleado.NOMBRE || ""}
                   onChange={handleChange}
+                  placeholder="Nombre"
                   required
-                >
-                  <option value="" disabled>
-                    Selecciona un cargo
-                  </option>
-                  <option value="Reparacion">Reparación</option>
-                  <option value="Cotizacion">Cotización</option>
-                </select>
+                />
+                {nombreError && <div className="input-error">{nombreError}</div>}
               </div>
 
               <div className="editar-empleado-group">
                 <label className="editar-empleado-label">
-                  <i className="fa-solid fa-id-badge"></i> Rol *
+                  <i className="fa-solid fa-envelope"></i> Correo *
                 </label>
-                <select
-                  name="ID_ROL"
-                  className="editar-empleado-select darkable"
-                  value={empleado.ID_ROL ?? ""}
+                <input
+                  type="email"
+                  name="CORREO"
+                  className="editar-empleado-control"
+                  value={empleado.CORREO || ""}
                   onChange={handleChange}
+                  placeholder="correo@empresa.com"
                   required
-                >
-                  <option value="" disabled>
-                    Selecciona un rol
-                  </option>
-                  <option value="0">Administrador</option>
-                  <option value="1">Gerente</option>
-                  <option value="2">Empleado</option>
-                </select>
+                />
+                {correoError && <div className="input-error">{correoError}</div>}
               </div>
             </div>
-          )}
 
-          <div className="editar-empleado-footer">
-            <p className="editar-empleado-note">* Campos obligatorios</p>
+            {/* Fila 2: Cargo + Rol (solo superadmin) */}
+            {isSuper && (
+              <div className="editar-empleado-row">
+                <div className="editar-empleado-group">
+                  <label className="editar-empleado-label">
+                    <i className="fa-solid fa-wrench"></i> Cargo *
+                  </label>
+                  <select
+                    name="CARGO"
+                    className="editar-empleado-select darkable"
+                    value={empleado.CARGO || ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Selecciona un cargo
+                    </option>
+                    <option value="Reparacion">Reparación</option>
+                    <option value="Cotizacion">Cotización</option>
+                  </select>
+                </div>
 
-            <div className="botones-editar-container">
-              <button type="submit" className="submit-compact-button" disabled={loading}>
-                {loading ? (
-                  <>
-                    <i className="fa-solid fa-spinner fa-spin"></i> Guardando…
-                  </>
-                ) : (
-                  <>
-                    <i className="fa-solid fa-check-circle"></i> Guardar cambios
-                  </>
-                )}
-              </button>
+                <div className="editar-empleado-group">
+                  <label className="editar-empleado-label">
+                    <i className="fa-solid fa-id-badge"></i> Rol *
+                  </label>
+                  <select
+                    name="ID_ROL"
+                    className="editar-empleado-select darkable"
+                    value={empleado.ID_ROL ?? ""}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="" disabled>
+                      Selecciona un rol
+                    </option>
+                    <option value="0">Administrador</option>
+                    <option value="1">Gerente</option>
+                    <option value="2">Empleado</option>
+                  </select>
+                </div>
+              </div>
+            )}
 
-              <button
-                type="button"
-                className="cancel-compact-button darkable"
-                onClick={handleCancel}
-                disabled={loading}
-              >
-                <i className="fa-solid fa-times-circle"></i> Cancelar
-              </button>
+            <div className="editar-empleado-footer">
+              <p className="editar-empleado-note">* Campos obligatorios</p>
+              <div className="botones-editar-container">
+                <button type="submit" className="submit-compact-button" disabled={loading}>
+                  {loading ? (
+                    <>
+                      <i className="fa-solid fa-spinner fa-spin"></i> Guardando…
+                    </>
+                  ) : (
+                    <>
+                      <i className="fa-solid fa-check-circle"></i> Guardar cambios
+                    </>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  className="cancel-compact-button darkable"
+                  onClick={handleCancel}
+                  disabled={loading}
+                >
+                  <i className="fa-solid fa-times-circle"></i> Cancelar
+                </button>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+
+      <ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal}
+      />
+    </>
   );
 }

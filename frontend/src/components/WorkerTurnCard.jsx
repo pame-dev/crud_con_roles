@@ -3,6 +3,7 @@ import { pasarTurno } from "../api/turnosApi";
 import { useNavigate } from "react-router-dom";
 import "./WorkerTurnCard.css";
 import "./DiagnosticoModal.css";
+import ModalAlert from "../components/ModalAlert"; 
 
 const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre }) => {
   const [descripcion, setDescripcion] = useState("");
@@ -11,7 +12,7 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre }) => {
 
   const handleSubmit = () => {
     if (!descripcion || !fechaEntrega || !tipoServicio) {
-      alert("Completa todos los campos.");
+      showModal("Error", "Por favor, completa todos los campos.", "error");
       return;
     }
     onSubmit({ descripcion, fechaEntrega, tipoServicio });
@@ -74,6 +75,20 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
   const [modalData, setModalData] = useState({ show: false, trabajador: null });
   const navigate = useNavigate();
 
+  const [modal, setModal] = useState({
+  show: false,
+  title: "",
+  message: "",
+  type: "info",
+});
+
+const showModal = (title, message, type = "info") => {
+  setModal({ show: true, title, message, type });
+};
+
+const closeModal = () => setModal({ ...modal, show: false });
+
+
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
@@ -114,7 +129,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
 
   const handleAbrirDiagnostico = (trabajador) => {
     const turnoId = trabajador.turnos?.[0]?.ID_TURNO;
-    if (!turnoId) return alert("Este trabajador no tiene un turno asignado");
+    if (!turnoId) return showModal("Error", "Este trabajador no tiene un turno asignado", "error");
     setModalData({ show: true, trabajador, turnoId });
   };
 
@@ -123,7 +138,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
       const turnoId = modalData.trabajador.turnos?.[0]?.ID_TURNO;
       console.log("Turno a diagnosticar:", turnoId);
 
-      if (!turnoId) return alert("No hay turno seleccionado.");
+      if (!turnoId) return showModal("Error", "No hay turno seleccionado.", "error");
 
       try {
           const response = await fetch(`http://127.0.0.1:8000/api/turnos/${turnoId}/diagnostico`, {
@@ -146,19 +161,19 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
           }
 
           if (!response.ok) {
-              alert(`Error API (${response.status}): ${result?.error || text || 'Sin detalles'}`);
+              showModal("Error", `Error al guardar diagnóstico: ${response.status} ${response.statusText}`, "error");
               return;
           }
 
           if (result && result.success) {
-              alert("Diagnóstico guardado correctamente");
+              showModal("Éxito", "Diagnóstico guardado correctamente", "success");
               onRefresh && onRefresh();
           } else {
-              alert("Error al guardar diagnóstico: " + (result?.error || "Respuesta inesperada"));
+              showModal("Error", "Error al guardar diagnóstico: " + (result?.error || "Respuesta inesperada"), "error");
           }
       } catch (err) {
           console.error("Error al guardar diagnóstico:", err);
-          alert("Error al guardar diagnóstico: " + err.message);
+          showModal("Error", "Error al guardar diagnóstico: " + err.message, "error");
       }
 
       setModalData({ show: false, trabajador: null });
@@ -286,6 +301,13 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
           onSubmit={handleGuardarDiagnostico}
       />
 
+      <ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal}
+      />
     </>
   );
 };
