@@ -114,8 +114,7 @@ class EmpleadoController extends Controller
         if (!$empleado) {
             return response()->json(['error' => 'Empleado no encontrado'], 404);
         }
-<<<<<<< HEAD
-
+        
         $datosActualizados = [
             'NOMBRE' => $request->nombre ?? $empleado->NOMBRE,
             'CORREO' => $request->correo ?? $empleado->CORREO,
@@ -130,15 +129,6 @@ class EmpleadoController extends Controller
         }
 
         $empleado->update($datosActualizados);
-=======
-        // Validación básica
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'correo' => 'required|email|max:255',
-            'cargo'  => 'required|string|max:255',
-            'contrasena' => 'nullable|string|min:8',
-        ]);
->>>>>>> josue
 
         // Preparar cambios que se aplicarán
         $changes = [];
