@@ -5,16 +5,26 @@ import "./WorkerTurnCard.css";
 import "./DiagnosticoModal.css";
 import ModalAlert from "../components/ModalAlert"; 
 
-const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre }) => {
+/* 
+--------------------------------------------------
+ COMPONENTE: DiagnosticoModal
+Muestra un modal donde el trabajador puede registrar
+el diagnóstico del turno actual.
+--------------------------------------------------
+*/
+/* --------------------------------------------------
+ COMPONENTE: DiagnosticoModal (versión mejorada)
+-------------------------------------------------- */
+const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal }) => {
   const [descripcion, setDescripcion] = useState("");
   const [fechaEntrega, setFechaEntrega] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
+  const hoy = new Date().toISOString().split("T")[0];
 
   const handleSubmit = () => {
-    if (!descripcion || !fechaEntrega || !tipoServicio) {
-      showModal("Error", "Por favor, completa todos los campos.", "error");
-      return;
-    }
+    if (!descripcion || !fechaEntrega || !tipoServicio)
+      return showModal("Error", "Por favor, completa todos los campos", "error");
+
     onSubmit({ descripcion, fechaEntrega, tipoServicio });
     setDescripcion("");
     setFechaEntrega("");
@@ -23,23 +33,21 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre }) => {
 
   if (!show) return null;
 
-  const hoy = new Date().toISOString().split("T")[0];
-
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <h5>Diagnóstico de {trabajadorNombre}</h5>
+      <div className="modal-diagnostico" onClick={(e) => e.stopPropagation()}>
+        <h4 className="modal-title">
+          <i className="bi bi-tools me-2"></i> Diagnóstico {trabajadorNombre}
+        </h4>
 
-        <div className="modal-field">
+        <div className="modal-body">
           <label>Descripción del problema</label>
           <textarea
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             placeholder="Describe el problema..."
           />
-        </div>
 
-        <div className="modal-field">
           <label>Tiempo estimado de entrega</label>
           <input
             type="date"
@@ -47,55 +55,77 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre }) => {
             onChange={(e) => setFechaEntrega(e.target.value)}
             min={hoy}
           />
-        </div>
 
-        <div className="modal-field">
           <label>Tipo de servicio</label>
           <input
             type="text"
             value={tipoServicio}
             onChange={(e) => setTipoServicio(e.target.value)}
-            placeholder="Escribe el tipo de servicio..."
+            placeholder="Ej. Reparación, mantenimiento, revisión..."
           />
         </div>
 
-        <div className="modal-buttons">
-          <button className="btn btn-secondary" onClick={onClose}>Cancelar</button>
-          <button className="btn btn-primary" onClick={handleSubmit}>Guardar</button>
+        <div className="modal-actions">
+          <button className="btn-cancel" onClick={onClose}>
+            <i className="bi bi-x-circle me-1"></i> Cancelar
+          </button>
+          <button className="btn-save" onClick={handleSubmit}>
+            <i className="bi bi-check-circle me-1"></i> Guardar
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
+
+
+/* 
+--------------------------------------------------
+ COMPONENTE PRINCIPAL: WorkerTurnCard
+Muestra las tarjetas con la información de los trabajadores,
+sus turnos actuales y permite pasar turno o registrar diagnóstico.
+--------------------------------------------------
+*/
 const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo = false, modoMosaico = false, onRefresh, onDiagnostico }) => {
+  // Estados principales
   const [turnoEnProceso, setTurnoEnProceso] = useState(null);
   const [trabajadoresLocal, setTrabajadoresLocal] = useState(trabajadores);
-  const [now, setNow] = useState(new Date());
-  const [modalData, setModalData] = useState({ show: false, trabajador: null });
+  const [now, setNow] = useState(new Date()); // ⏰ Control de tiempo transcurrido
+  const [modalData, setModalData] = useState({ show: false, trabajador: null }); // Modal diagnóstico
+
   const navigate = useNavigate();
 
+  //  Modal genérico de alertas
   const [modal, setModal] = useState({
-  show: false,
-  title: "",
-  message: "",
-  type: "info",
-});
+    show: false,
+    title: "",
+    message: "",
+    type: "info",
+  });
 
-const showModal = (title, message, type = "info") => {
-  setModal({ show: true, title, message, type });
-};
+  const showModal = (title, message, type = "info") => setModal({ show: true, title, message, type });
+  const closeModal = () => setModal({ ...modal, show: false });
 
-const closeModal = () => setModal({ ...modal, show: false });
-
-
+  /* 
+  --------------------------------------------------
+   Actualiza el reloj cada segundo
+  --------------------------------------------------
+  */
   useEffect(() => {
     const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
+  /* 
+  --------------------------------------------------
+   Actualiza el estado local si cambian los trabajadores
+  --------------------------------------------------
+  */
   useEffect(() => {
     setTrabajadoresLocal(trabajadores);
+
+    // Si el turno cambia o termina, limpia el estado
     if (turnoEnProceso && trabajadores.length > 0) {
       const trabajadorActualizado = trabajadores.find(t => t.ID_EMPLEADO === turnoEnProceso);
       if (trabajadorActualizado) {
@@ -108,6 +138,11 @@ const closeModal = () => setModal({ ...modal, show: false });
     }
   }, [trabajadores]);
 
+  /* 
+  --------------------------------------------------
+   Filtrado de trabajadores por nombre o cargo
+  --------------------------------------------------
+  */
   const trabajadoresFiltrados = trabajadores.filter(
     t =>
       t.NOMBRE.toLowerCase().includes(filtroBusqueda.toLowerCase()) ||
@@ -116,6 +151,11 @@ const closeModal = () => setModal({ ...modal, show: false });
 
   if (!trabajadoresFiltrados.length) return <p>No hay trabajadores que coincidan.</p>;
 
+  /* 
+  --------------------------------------------------
+   Pasa al siguiente turno de un empleado
+  --------------------------------------------------
+  */
   const handlePasarTurno = async (idEmpleado, cargo) => {
     setTurnoEnProceso(idEmpleado);
     try {
@@ -127,66 +167,84 @@ const closeModal = () => setModal({ ...modal, show: false });
     }
   };
 
+  /* 
+  --------------------------------------------------
+   Abre el modal de diagnóstico
+  --------------------------------------------------
+  */
   const handleAbrirDiagnostico = (trabajador) => {
     const turnoId = trabajador.turnos?.[0]?.ID_TURNO;
     if (!turnoId) return showModal("Error", "Este trabajador no tiene un turno asignado", "error");
     setModalData({ show: true, trabajador, turnoId });
   };
 
-
+  /* 
+  --------------------------------------------------
+   Guarda el diagnóstico en el backend
+  --------------------------------------------------
+  */
   const handleGuardarDiagnostico = async (data) => {
-      const turnoId = modalData.trabajador.turnos?.[0]?.ID_TURNO;
-      console.log("Turno a diagnosticar:", turnoId);
+    const turnoId = modalData.trabajador.turnos?.[0]?.ID_TURNO;
+    if (!turnoId) return showModal("Error", "No hay turno seleccionado.", "error");
 
-      if (!turnoId) return showModal("Error", "No hay turno seleccionado.", "error");
+    try {
+      const response = await fetch(`http://127.0.0.1:8000/api/turnos/${turnoId}/diagnostico`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
 
+      // Logs para depuración
+      console.log("HTTP Status:", response.status, response.statusText);
+      const text = await response.text();
+      console.log("Cuerpo de la respuesta:", text);
+
+      // Intenta parsear JSON si existe
+      let result = null;
       try {
-          const response = await fetch(`http://127.0.0.1:8000/api/turnos/${turnoId}/diagnostico`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(data),
-          });
-
-          // Log completo para depuración
-          console.log("HTTP Status:", response.status, response.statusText);
-          const text = await response.text(); // primero obtenemos texto crudo
-          console.log("Cuerpo de la respuesta:", text);
-
-          // Intentamos parsear JSON solo si hay algo
-          let result = null;
-          try {
-              result = text ? JSON.parse(text) : null;
-          } catch (err) {
-              console.error("Error al parsear JSON:", err);
-          }
-
-          if (!response.ok) {
-              showModal("Error", `Error al guardar diagnóstico: ${response.status} ${response.statusText}`, "error");
-              return;
-          }
-
-          if (result && result.success) {
-              showModal("Éxito", "Diagnóstico guardado correctamente", "success");
-              onRefresh && onRefresh();
-          } else {
-              showModal("Error", "Error al guardar diagnóstico: " + (result?.error || "Respuesta inesperada"), "error");
-          }
+        result = text ? JSON.parse(text) : null;
       } catch (err) {
-          console.error("Error al guardar diagnóstico:", err);
-          showModal("Error", "Error al guardar diagnóstico: " + err.message, "error");
+        console.error("Error al parsear JSON:", err);
       }
 
-      setModalData({ show: false, trabajador: null });
+      // Verifica el estado HTTP
+      if (!response.ok) {
+        showModal("Error", `Error al guardar diagnóstico: ${response.status} ${response.statusText}`, "error");
+        return;
+      }
+
+      // Muestra feedback según resultado
+      if (result && result.success) {
+        showModal("Éxito", "Diagnóstico guardado correctamente", "success");
+        onRefresh && onRefresh();
+      } else {
+        showModal("Error", "Error al guardar diagnóstico: " + (result?.error || "Respuesta inesperada"), "error");
+      }
+    } catch (err) {
+      console.error("Error al guardar diagnóstico:", err);
+      showModal("Error", "Error al guardar diagnóstico: " + err.message, "error");
+    }
+
+    // Cierra el modal al terminar
+    setModalData({ show: false, trabajador: null });
   };
 
-
-
+  /* 
+  --------------------------------------------------
+   Formatea una hora en formato hh:mm
+  --------------------------------------------------
+  */
   const formatHora = (hora) => {
     if (!hora) return "—";
     const date = new Date(hora);
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
+  /* 
+  --------------------------------------------------
+   Calcula el tiempo transcurrido desde una hora dada
+  --------------------------------------------------
+  */
   const getTiempoTranscurrido = (horaInicio) => {
     if (!horaInicio) return "—";
     const inicio = new Date(horaInicio);
@@ -199,6 +257,11 @@ const closeModal = () => setModal({ ...modal, show: false });
     return `${formato(horas)}:${formato(minutos)}:${formato(segundos)}`;
   };
 
+  /* 
+  --------------------------------------------------
+   Renderizado de las tarjetas de trabajadores
+  --------------------------------------------------
+  */
   return (
     <>
       {trabajadoresFiltrados.map((t) => {
@@ -213,6 +276,7 @@ const closeModal = () => setModal({ ...modal, show: false });
             className={`current-turn-card mb-2 p-3 shadow-sm rounded ${estaProcesando ? "turno-procesando" : ""}`}
           >
             {modoMosaico ? (
+              /* Vista tipo mosaico (horizontal) */
               <div className="d-flex justify-content-between align-items-center">
                 <div>
                   <div className="fw-bold fs-5">
@@ -220,11 +284,13 @@ const closeModal = () => setModal({ ...modal, show: false });
                     {t.NOMBRE} {t.APELLIDOS}
                     {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
                   </div>
+
                   {mostrarCargo && <div className="text-muted"><i className="bi bi-briefcase me-1"></i>{t.CARGO}</div>}
                   {turno ? <div>Turno: #{turno.ID_TURNO}</div> : <div className="turno-sin">Sin turno asignado</div>}
                 </div>
 
                 <div className="text-end">
+                  {/* Hora + cronómetro */}
                   <div className="d-flex align-items-center mb-1 justify-content-end">
                     <i className="bi bi-clock me-1"></i>
                     {turno?.ATENCION_EN ? (
@@ -236,6 +302,7 @@ const closeModal = () => setModal({ ...modal, show: false });
                     ) : <div>—</div>}
                   </div>
 
+                  {/* Botones de acción */}
                   <div className="btn-group-turnos">
                     <button
                       className="btn btn-danger btn-sm"
@@ -258,15 +325,28 @@ const closeModal = () => setModal({ ...modal, show: false });
                 </div>
               </div>
             ) : (
+              /* Vista tipo lista (centrada y vertical) */
               <div className="text-center">
-                <div className="fw-bold fs-4">{t.NOMBRE} {t.APELLIDOS} {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}</div>
+                <div className="fw-bold fs-4">
+                  {t.NOMBRE} {t.APELLIDOS}
+                  {estaAusente && <span className="badge bg-secondary ms-2">Ausente</span>}
+                </div>
+
                 {mostrarCargo && <div className="text-muted mb-1">{t.CARGO}</div>}
+
                 {turno ? (
                   <>
                     <div>Atendiendo turno: #{turno.ID_TURNO}</div>
-                    <div className="mt-1">{turno ? formatHora(turno.ATENCION_EN) : "—"} <i className="bi bi-hourglass-split spin ms-1"></i> {getTiempoTranscurrido(turno.ATENCION_EN)}</div>
+                    <div className="mt-1">
+                      <i className="bi bi-clock me-1"></i>
+                      {turno ? formatHora(turno.ATENCION_EN) : "—"} 
+                      <i className="bi bi-hourglass-split spin ms-1"></i> 
+                      {getTiempoTranscurrido(turno.ATENCION_EN)}
+                    </div>
                   </>
                 ) : <div className="turno-sin">Sin turno asignado</div>}
+
+                {/* Botones */}
                 <button
                   className="btn btn-danger mt-2 bi bi-arrow-right-circle me-2"
                   onClick={() => handlePasarTurno(t.ID_EMPLEADO, t.CARGO?.toLowerCase())}
@@ -290,17 +370,20 @@ const closeModal = () => setModal({ ...modal, show: false });
         );
       })}
 
+      {/* Modal de diagnóstico */}
       <DiagnosticoModal
-          show={modalData.show}
-          trabajadorNombre={
-              modalData.trabajador 
-              ? `turno #${modalData.trabajador.turnos?.[0]?.ID_TURNO || "—"}`
-              : ""
-          }
-          onClose={() => setModalData({ show: false, trabajador: null })}
-          onSubmit={handleGuardarDiagnostico}
+        show={modalData.show}
+        trabajadorNombre={
+          modalData.trabajador 
+            ? `turno #${modalData.trabajador.turnos?.[0]?.ID_TURNO || "—"}`
+            : ""
+        }
+        onClose={() => setModalData({ show: false, trabajador: null })}
+        onSubmit={handleGuardarDiagnostico}
+        showModal={showModal}
       />
 
+      {/* Modal de alertas */}
       <ModalAlert
         show={modal.show}
         title={modal.title}
