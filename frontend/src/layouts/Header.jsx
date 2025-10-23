@@ -63,35 +63,24 @@ const Header = () => {
 
   // === GOOGLE TRANSLATE: carga con HTTPS + init robusto + toggle .show ===
   useEffect(() => {
-    const initGoogleTranslate = () => {
-      const el = document.getElementById("google_translate_element");
-      if (window.google?.translate && el) {
-        new window.google.translate.TranslateElement(
-          { pageLanguage: "es" },
-          "google_translate_element"
-        );
-        hideTranslateBanner(); // ocultar barra una vez cargado
-      } else {
-        setTimeout(initGoogleTranslate, 500);
-      }
+    // callback global que reintenta hasta que Google esté listo
+    window.googleTranslateElementInit = () => {
+      const tryInit = () => {
+        if (window.google && window.google.translate) {
+          new window.google.translate.TranslateElement(
+            { pageLanguage: "es" },
+            "google_translate_element"
+          );
+        } else {
+          setTimeout(tryInit, 500);
+        }
+      };
+      tryInit();
     };
 
-    // Oculta la barra superior de Google Translate
-    const hideTranslateBanner = () => {
-      const iframe = document.querySelector("iframe.skiptranslate");
-      const banner = document.querySelector(".skiptranslate");
-      if (iframe) {
-        iframe.style.display = "none";
-        iframe.style.visibility = "hidden";
-      }
-      if (banner) banner.style.display = "none";
-      document.body.style.top = "0px";
-    };
-
-    window.googleTranslateElementInit = initGoogleTranslate;
-
-    // inyectar script si no existe
-    if (!document.querySelector("script[data-gt='el']")) {
+    // inyectar script (HTTPS)
+    const existing = document.querySelector("script[data-gt='el']");
+    if (!existing) {
       const s = document.createElement("script");
       s.src = "https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       s.async = true;
@@ -99,15 +88,12 @@ const Header = () => {
       s.setAttribute("data-gt", "el");
       document.body.appendChild(s);
     } else {
-      initGoogleTranslate();
+      // si ya estaba, forzar init por si acaso
+      if (typeof window.googleTranslateElementInit === "function") {
+        window.googleTranslateElementInit();
+      }
     }
 
-    // Retry hide banner por si Google lo vuelve a inyectar
-    const hideTimeout = setTimeout(hideTranslateBanner, 1000);
-    const observer = new MutationObserver(hideTranslateBanner);
-    observer.observe(document.body, { childList: true, subtree: true });
-
-    // Toggle de visibilidad del traductor
     const toggleBtn = document.getElementById("translate-toggle");
     const element = document.getElementById("google_translate_element");
 
@@ -118,7 +104,9 @@ const Header = () => {
 
     const handleClickOutside = (e) => {
       if (!element) return;
-      if (!e.target.closest("#translate-toggle") && !e.target.closest("#google_translate_element") && element.classList.contains("show")) {
+      const insideBtn = e.target.closest("#translate-toggle");
+      const insideBox = e.target.closest("#google_translate_element");
+      if (!insideBtn && !insideBox && element.classList.contains("show")) {
         element.classList.remove("show");
       }
     };
@@ -127,14 +115,10 @@ const Header = () => {
     document.addEventListener("click", handleClickOutside);
 
     return () => {
-      clearTimeout(hideTimeout);
-      observer.disconnect();
       toggleBtn?.removeEventListener("click", handleToggle);
       document.removeEventListener("click", handleClickOutside);
     };
   }, []);
-
-
 
   // === OCULTAR BARRA SUPERIOR DE GOOGLE TRANSLATE ===
   useEffect(() => {
