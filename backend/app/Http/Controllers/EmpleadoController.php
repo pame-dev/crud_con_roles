@@ -7,7 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Mail\NotificacionCambioContrasenaMail;
+use App\Mail\CodigoRegistroMail; 
 
 class EmpleadoController extends Controller
 {
@@ -38,21 +40,143 @@ class EmpleadoController extends Controller
 
     public function store(Request $request)
     {
-        $empleado = Empleado::create([
-            'NOMBRE'     => $request->nombre,
-            'CORREO'     => $request->correo,
-            'CARGO'      => $request->cargo,
-            'CONTRASENA' => $request->contrasena,
-            'ID_ROL'     => $request->id_rol,
+        $request->validate([
+            'nombre' => 'required|string|min:3',
+            'correo' => 'required|email|unique:EMPLEADO,CORREO',
+            'cargo' => 'required|string',
+            'contrasena' => 'required|string|min:8',
+            'id_rol' => 'required|numeric',
+            'codigo' => 'required|numeric',
         ]);
 
-        return response()->json([
-            'message' => 'Empleado registrado correctamente',
-            'empleado' => $empleado
-        ], 201);
+        try {
+            // Validar el código antes de crear al empleado
+            $registro = DB::table('registro_codigos')
+                ->where('correo', $request->correo)
+                ->orderByDesc('created_at')
+                ->first();
+
+            if (!$registro || $registro->codigo != $request->codigo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Código incorrecto o no enviado'
+                ], 422);
+            }
+
+            // Código válido → eliminarlo para que no se reutilice
+            DB::table('registro_codigos')->where('correo', $request->correo)->delete();
+
+            // Crear empleado - CORREGIDO
+            $empleado = Empleado::create([
+                'NOMBRE' => $request->nombre,
+                'CORREO' => $request->correo,
+                'CARGO' => $request->cargo,
+                'CONTRASENA' => Hash::make($request->contrasena),
+                'ID_ROL' => $request->id_rol,
+                'ESTADO' => 1, // ← CAMBIO AQUÍ
+                'ACTIVO' => 1
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Empleado registrado correctamente',
+                'empleado' => $empleado
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error('Error al registrar empleado: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al registrar empleado'
+            ], 500);
+        }
     }
 
-    
+
+    public function registrarConCodigo(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|min:3',
+            'correo' => 'required|email|unique:EMPLEADO,CORREO',
+            'cargo' => 'required|string',
+            'contrasena' => 'required|string|min:8',
+            'id_rol' => 'required|numeric',
+            'codigo' => 'required|numeric',
+        ]);
+
+        try {
+            // Validar el código antes de crear al empleado
+            $registro = DB::table('registro_codigos')
+                ->where('correo', $request->correo)
+                ->orderByDesc('created_at')
+                ->first();
+
+            if (!$registro || $registro->codigo != $request->codigo) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Código incorrecto o no enviado'
+                ], 422);
+            }
+
+            // Código válido → eliminarlo para que no se reutilice
+            DB::table('registro_codigos')->where('correo', $request->correo)->delete();
+
+            // Crear empleado - CORREGIDO: usar 1 en lugar de 'ACTIVO'
+            $empleado = Empleado::create([
+                'NOMBRE' => $request->nombre,
+                'CORREO' => $request->correo,
+                'CARGO' => $request->cargo,
+                'CONTRASENA' => Hash::make($request->contrasena),
+                'ID_ROL' => $request->id_rol,
+                'ESTADO' => 1, // ← CAMBIO AQUÍ: 1 para activo, 0 para inactivo
+                'ACTIVO' => 1
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Empleado registrado correctamente',
+                'empleado' => $empleado
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error('Error al registrar empleado: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al registrar empleado: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function validarCodigo(Request $request)
+    {
+        $request->validate([
+            'correo' => 'required|email',
+            'codigo' => 'required|numeric'
+        ]);
+
+        $registro = DB::table('registro_codigos')
+            ->where('correo', $request->correo)
+            ->orderByDesc('created_at')
+            ->first();
+
+        if (!$registro || $registro->codigo != $request->codigo) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Código incorrecto'
+            ], 422);
+        }
+
+        // Opcional: eliminar el código ya usado
+        DB::table('registro_codigos')->where('correo', $request->correo)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Código válido'
+        ]);
+    }
+
+
+
     // MÉTODO ACTUALIZADO: trabajadores con turno INCLUYENDO estado
     public function trabajadoresConTurno(Request $request)
     {

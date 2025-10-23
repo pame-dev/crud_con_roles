@@ -34,6 +34,11 @@ const RegisterGerentes = () => {
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
+  const [codigoEnviado, setCodigoEnviado] = useState(null);
+  const [codigoIngresado, setCodigoIngresado] = useState("");
+  const [esperandoCodigo, setEsperandoCodigo] = useState(false);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((s) => ({ ...s, [name]: value }));
@@ -57,69 +62,106 @@ const RegisterGerentes = () => {
     showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
     return;
   }
+  // Validar cargo seleccionado
+  if (!formData.cargo) {
+    showModal("Cargo no seleccionado", "Por favor, selecciona un cargo.", "error");
+    return;
+  }
+  // Validar rol seleccionado
+  if (!formData.id_rol) {
+    showModal("Rol no seleccionado", "Por favor, selecciona un rol.", "error");
+    return;
+  }
+
+  
+  //  AGREGAR: Validar que las contraseñas coincidan
+  if (formData.contrasena !== formData.confirmarContrasena) {
+    showModal("Contraseñas no coinciden", "Las contraseñas deben ser idénticas.", "error");
+    return;
+  }
+
+  //  AGREGAR: Validar longitud de contraseña
+  if (formData.contrasena.length < 8) {
+    showModal("Contraseña muy corta", "La contraseña debe tener al menos 8 caracteres.", "error");
+    return;
+  }
 
   // Validar que el correo no exista en la base de datos
   try {
-    setSubmitting(true);
-    const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: formData.correo }),
-    }).then((r) => r.json());
+      setSubmitting(true);
 
-    if (v.existe) {
-      setCorreoError("El correo ya está registrado por otro empleado.");
+      // 1. Validar que el correo no exista
+      const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo: formData.correo }),
+      }).then((r) => r.json());
+
+      if (v.existe) {
+        setCorreoError("El correo ya está registrado por otro empleado.");
+        setSubmitting(false);
+        return;
+      }
+
+      // 2. Si no estamos esperando código aún → enviarlo
+      if (!esperandoCodigo) {
+        const codigo = Math.floor(100000 + Math.random() * 900000); // código 6 dígitos
+
+        try {
+          setSubmitting(true);
+
+          // Llamar al backend
+          await axios.post("http://127.0.0.1:8000/api/enviar-codigo", {
+            correo: formData.correo,
+            codigo,
+          });
+
+          // Si la respuesta es correcta, guardamos el código y mostramos el input
+          setCodigoEnviado(codigo);
+          setEsperandoCodigo(true);
+
+          showModal(
+            "Código enviado",
+            "Se ha enviado un código de verificación a tu correo. Ingrésalo para continuar.",
+            "info"
+          );
+
+        } catch (err) {
+          console.error(err);
+          showModal(
+            "Error",
+            "No se pudo enviar el código. Revisa tu correo o intenta nuevamente.",
+            "error"
+          );
+        } finally {
+          setSubmitting(false);
+        }
+
+        return;
+      }
+
+
+      // 3. Si ya estamos esperando código → validar
+      if (codigoIngresado.toString() !== codigoEnviado.toString()) {
+        showModal("Código incorrecto", "El código ingresado no coincide. Revisa tu correo.", "error");
+        setSubmitting(false);
+        return;
+      }
+
+      // 4. Registro final
+      const payload = { ...formData, codigo: codigoIngresado, id_rol: Number(formData.id_rol) };
+      await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
+
+      showModal("Registro exitoso", "Empleado registrado correctamente.", "success");
+      setTimeout(() => navigate("/administrar_empleados"), 1500);
+
+    } catch (err) {
+      console.error(err);
+      showModal("Error", "Ocurrió un error.", "error");
+    } finally {
       setSubmitting(false);
-      return;
     }
-
-    // Validar selección de cargo
-    if (!formData.cargo || formData.cargo.trim() === "") {
-      showModal("Cargo inválido", "Por favor, selecciona un cargo.", "error");
-      setSubmitting(false);
-      return;
-    }
-
-    // Validar selección de rol
-    if (!formData.id_rol || isNaN(formData.id_rol)) {
-      showModal("Rol inválido", "Por favor, selecciona un rol válido.", "error");
-      setSubmitting(false);
-      return;
-    }
-
-    // Validar seguridad de contraseña
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    if (!passwordRegex.test(formData.contrasena)) {
-      showModal(
-        "Contraseña débil",
-        "Debe tener 8 caracteres, 1 mayúscula, 1 minúscula y 1 carácter especial.",
-        "error"
-      );
-      setSubmitting(false);
-      return;
-    }
-
-    // Validar coincidencia de contraseñas
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      showModal("Contraseñas diferentes", "Las contraseñas no coinciden.", "error");
-      setSubmitting(false);
-      return;
-    }
-
-    // Si todo está bien → enviar los datos
-    const payload = { ...formData, id_rol: Number(formData.id_rol) };
-    await axios.post("http://127.0.0.1:8000/api/empleados", payload);
-
-    showModal("Registro exitoso", "Empleado registrado correctamente.", "success");
-    setTimeout(() => navigate("/administrar_empleados"), 1500);
-
-  } catch (err) {
-    console.error(err);
-    showModal("Error", "Error al registrar empleado.", "error");
-  } finally {
-    setSubmitting(false);
-  }
-    };
+  };
 
   return (
     <><AnimatePresence>
@@ -253,6 +295,24 @@ const RegisterGerentes = () => {
                 ></i>
               </button>
             </label>
+
+
+              {submitting && !esperandoCodigo && (
+                <p className="reg-info">Enviando código a tu correo…</p>
+              )}
+                {esperandoCodigo && (
+                <label className="reg-group">
+                  <span className="icon"><i className="fa-solid fa-key"></i></span>
+                  <input
+                    type="text"
+                    name="codigo"
+                    placeholder="Ingresa el código"
+                    value={codigoIngresado}
+                    onChange={(e) => setCodigoIngresado(e.target.value)}
+                    required
+                  />
+                </label>
+                )}
 
             {/* Acciones */}
             <div className="reg-actions">
