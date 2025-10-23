@@ -54,57 +54,56 @@ const Header = () => {
     location.pathname.startsWith("/editar_empleado");
 
   useEffect(() => {
-    // Asegurarse de que el script de Google Translate solo se cargue una vez
-    const existingScript = document.querySelector("script[src*='translate.google.com']");
-    if (!existingScript) {
-      const script = document.createElement("script");
-      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
-      script.async = true;
-      document.body.appendChild(script);
+  // Verificar si el script de Google Translate ya está cargado
+  const existingScript = document.querySelector("script[src*='translate.google.com']");
+  if (!existingScript) {
+    const script = document.createElement("script");
+    script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+  }
+
+  // Función de inicialización del traductor
+  window.googleTranslateElementInit = () => {
+    new window.google.translate.TranslateElement(
+      {
+        pageLanguage: "es",  // Idioma principal de la página
+        layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE, // Configuración de layout
+      },
+      "google_translate_element"
+    );
+  };
+
+  // Iniciar el traductor si ya está cargado
+  if (window.google && window.google.translate) {
+    window.googleTranslateElementInit();
+  }
+
+  // Control del botón de traductor
+  const toggle = document.getElementById("translate-toggle");
+  const element = document.getElementById("google_translate_element");
+
+  const handleToggle = (e) => {
+    e.stopPropagation();
+    element?.classList.toggle("show");
+  };
+
+  const handleClickOutside = (e) => {
+    if (!e.target.closest(".translate-icon-container")) {
+      element?.classList.remove("show");
     }
+  };
 
-    // Inicialización del traductor
-    window.googleTranslateElementInit = () => {
-      new window.google.translate.TranslateElement(
-        {
-          pageLanguage: "es",  // Idioma principal de la página
-          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE, // Configuración de layout
-        },
-        "google_translate_element"
-      );
-    };
+  // Agregar listeners de eventos
+  toggle?.addEventListener("click", handleToggle);
+  document.addEventListener("click", handleClickOutside);
 
-
-    // Iniciar traductor en caso de que ya esté cacheado
-    if (window.google && window.google.translate) {
-      window.googleTranslateElementInit();
-    }
-
-    // Control del botón de traductor
-    const toggle = document.getElementById("translate-toggle");
-    const element = document.getElementById("google_translate_element");
-
-    const handleToggle = (e) => {
-      e.stopPropagation();
-      element?.classList.toggle("show");
-    };
-
-    const handleClickOutside = (e) => {
-      if (!e.target.closest(".translate-icon-container")) {
-        element?.classList.remove("show");
-      }
-    };
-
-    toggle?.addEventListener("click", handleToggle);
-    document.addEventListener("click", handleClickOutside);
-
-    return () => {
-      toggle?.removeEventListener("click", handleToggle);
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
-  
+  return () => {
+    toggle?.removeEventListener("click", handleToggle);
+    document.removeEventListener("click", handleClickOutside);
+  };
+}, []);  
 
   useEffect(() => {
     if (empleado) {
@@ -201,9 +200,8 @@ const Header = () => {
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span className="navbar-toggler-icon"></span>
           </button>
-
+          
           <div className="collapse navbar-collapse" id="navbarNav">
-            {!mostrarSoloUsuario && (
               <ul className="navbar-nav mx-auto align-items-center">
                 <li className="nav-item">
                   <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
@@ -228,6 +226,90 @@ const Header = () => {
                   <div id="google_translate_element" className="translate-box"></div>
                 </li>
               </ul>
+            </div>
+
+
+            {/* Modal Perfil */}
+            {showProfileModal && empleado && (
+              <div
+                className="custom-modal-overlay"
+                onClick={() => { if (!modal.show) setShowProfileModal(false); }}
+                style={{ pointerEvents: modal.show ? "none" : "auto" }}
+              >
+                <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+                  <div className="modal-header-profile">
+                    <div>
+                      <h5 className="profile-name">{empleado.NOMBRE}</h5>
+                      <p className="profile-email">{empleado.CORREO}</p>
+                    </div>
+
+                    {!isEditing ? (
+                      <button className="edit-btn" onClick={() => { setIsEditing(true); setCorreoError(""); }}>
+                        <Pencil size={16} />
+                      </button>
+                    ) : (
+                      <div className="d-flex gap-2">
+                        <button className="edit-btn" onClick={handleSave}><Save size={16} /></button>
+                        <button className="edit-btn" onClick={handleCancel}><X size={16} /></button>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="modal-options darkable">
+                    <span className="profile-label">Nombre</span>
+                    <div className="content-profile-row">
+                      {isEditing ? (
+                        <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
+                      ) : (
+                        <div className="profile-row darkable">{empleado.NOMBRE}</div>
+                      )}
+                    </div>
+
+                    <span className="profile-label">Correo</span>
+                    <div className="content-profile-row">
+                      {isEditing ? (
+                        <>
+                          <input type="email" name="CORREO" value={formData.CORREO} onChange={handleChange} className="profile-input" />
+                          {correoError && <div className="text-danger mt-1">{correoError}</div>}
+                        </>
+                      ) : (
+                        <div className="profile-row darkable">{empleado.CORREO}</div>
+                      )}
+                    </div>
+
+                    <span className="profile-label">Contraseña</span>
+                    <div className="content-profile-row d-flex align-items-center">
+                      {isEditing ? (
+                        <>
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            name="CONTRASENA"
+                            value={formData.CONTRASENA}
+                            onChange={handleChange}
+                            className="profile-input me-2"
+                          />
+                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="eye-btn">
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                        </>
+                      ) : (
+                        <div className="profile-row darkable">********</div>
+                      )}
+                    </div>
+
+                    <span className="profile-label">Área</span>
+                    <div className="content-profile-row">
+                      <div className="profile-row darkable">{empleado.CARGO}</div>
+                    </div>
+                  </div>
+
+                  <div className="modal-footer-profile darkable">
+                    <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                </div>
+              </div>
             )}
 
             <div className="ms-auto d-flex align-items-center gap-2">
@@ -264,7 +346,6 @@ const Header = () => {
               )}
             </div>
           </div>
-        </div>
       </nav>
 
       <ModalAlert
