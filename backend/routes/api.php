@@ -42,6 +42,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/empleados/ausentes', [EmpleadoController::class, 'ausentes']);
     Route::put('/empleados/{id}/estado', [EmpleadoController::class, 'actualizarEstado']);
     Route::put('/turnos/{idTurno}/diagnostico', [TurnController::class, 'guardarDiagnostico']);
-
+    Route::post('/enviar-codigo', [AuthController::class, 'enviarCodigo']);
+    Route::post('/empleados/registrar-con-codigo', [EmpleadoController::class, 'registrarConCodigo']);
 
 });
