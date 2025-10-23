@@ -167,7 +167,7 @@ const RegisterTrabajadores = () => {
       console.log("Payload a enviar:", payload); // Para debugging
 
       await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
-      showModal("Registro exitoso", "Empleado registrado correctamente.", "success");
+      showModal("Registro exitoso", "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", "success");
       setTimeout(() => navigate("/administrar_empleados"), 1500);
 
     } catch (err) {
@@ -317,6 +317,11 @@ const RegisterTrabajadores = () => {
                 />
               </label>
             )}
+
+            <div className="reg-info-box">
+              <i className="fa-solid fa-shield-alt"></i>
+              <span>Al registrarse, el empleado recibirá un correo con las políticas de privacidad y términos de servicio.</span>
+            </div>
 
             {/* Acciones */}
             <div className="reg-actions">

@@ -157,8 +157,8 @@
 
         <div class="highlight">
             <h3>🔒 Políticas de Privacidad</h3>
-            <p>En Pitline nos tomamos muy en serio la protección de tus datos personales. Te invitamos a revisar nuestras políticas de privacidad completas en:</p>
-            <a href="{{ route('politicas.privacidad') }}" class="btn">Ver Políticas de Privacidad Completas</a>
+            <p>En Pitline nos tomamos muy en serio la protección de tus datos personales. Para consultar nuestras políticas de privacidad completas, contacta al administrador del sistema.</p>
+            <p><strong>Tu privacidad es importante para nosotros.</strong></p>
         </div>
 
         <p>Si tienes alguna pregunta sobre estos términos o necesitas ayuda, no dudes en contactar al administrador del sistema.</p>

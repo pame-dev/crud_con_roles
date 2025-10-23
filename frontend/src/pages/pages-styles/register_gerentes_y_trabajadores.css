@@ -234,3 +234,26 @@
   border-radius:999px;
 }
 .reg-badge i{ color:#d80808; }
+
+.reg-info-box {
+  background: rgba(59, 130, 246, 0.1);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin: 15px 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #1e40af;
+}
+
+.reg-info-box i {
+  color: #3b82f6;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.reg-info-box span {
+  line-height: 1.4;
+}
