@@ -166,25 +166,26 @@
   padding: 6px 10px;
 }
 
-/* Caja flotante del traductor (se muestra con .show) */
+/* Contenedor del traductor */
 #google_translate_element {
-  display: none; /* base: oculto, se muestra con .show */
+  display: none; /* Inicialmente oculto */
   position: fixed;
-  top: 70px; /* justo debajo del header */
-  right: 180px;  /* queda a la derecha, cerca del grupo de botones */
+  top: 70px; /* Justo debajo del header */
+  right: 180px; /* Cerca del grupo de botones */
   z-index: 3000;
-  background: linear-gradient(135deg, #dc3545, #ff7b42);
+  background: linear-gradient(135deg, #ff3b3b, #ff7b42);
   border-radius: 12px;
   padding: 14px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
   animation: fadeSlide 0.25s ease-out;
 }
 
+/* Mostrar el traductor al añadir la clase .show */
 #google_translate_element.show {
   display: block !important;
 }
 
-/* Flecha */
+/* Estilo de la flecha del menú */
 #google_translate_element::before {
   content: "";
   position: absolute;
@@ -192,8 +193,9 @@
   right: 12px;
   border-width: 0 8px 8px 8px;
   border-style: solid;
-  border-color: transparent transparent #dc3545 transparent;
+  border-color: transparent transparent #ff3b3b transparent;
 }
+
 
 /* Ajustes del gadget */
 .goog-te-gadget {
