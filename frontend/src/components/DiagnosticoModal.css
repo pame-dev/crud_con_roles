@@ -1,99 +1,120 @@
-/* Overlay semi-transparente */
+/* Fondo borroso con desenfoque */
 .modal-overlay {
+  margin-top: 2rem;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(5px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(3px); /* efecto blur detrás del modal */
+  z-index: 1050;
 }
 
-/* Contenedor del modal */
-.modal-content {
-  background: #fff; /* blanco para contraste */
-  padding: 2rem;
-  border-radius: 12px;
-  max-width: 450px;
-  width: 90%;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-  position: relative;
+/* Contenedor principal del modal */
+.modal-diagnostico {
+  background: rgba(113, 93, 93, 0.228);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 1rem;
+  color: #fff;
+  width: 420px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+  animation: modalFadeIn 0.3s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Título */
+.modal-title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Cuerpo del modal */
+.modal-body {
   display: flex;
   flex-direction: column;
+  gap: 0.9rem;
 }
 
-/* Campos del formulario */
-.modal-field {
-  margin-bottom: 1.2rem;
-}
-
-.modal-field label {
-  display: block;
-  margin-bottom: 0.4rem;
-  font-weight: 600;
-  color: #333;
+.modal-body label {
   font-size: 0.95rem;
+  color: #ffbfbf;
+  font-weight: 500;
 }
 
-.modal-field input,
-.modal-field textarea {
+/* Campos */
+.modal-body input,
+.modal-body textarea {
   width: 100%;
-  padding: 0.6rem 0.8rem;
+  border: none;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  padding: 0.6rem 0.8rem;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
   font-size: 0.95rem;
-  font-family: inherit;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.modal-field input:focus,
-.modal-field textarea:focus {
-  border-color: #a32525;
-  box-shadow: 0 0 5px rgba(163, 37, 37, 0.5);
   outline: none;
+  transition: all 0.2s ease;
+  resize: none;
 }
 
-/* Botones del modal */
-.modal-buttons {
+.modal-body input:focus,
+.modal-body textarea:focus {
+  background: rgba(255, 255, 255, 0.25);
+  border: 1px solid #ff6b6b;
+}
+
+/* Botones */
+.modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.7rem;
-  margin-top: 1rem;
+  margin-top: 1.2rem;
 }
 
-.modal-buttons button {
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
+.btn-cancel,
+.btn-save {
   border: none;
-  cursor: pointer;
+  padding: 0.55rem 1.2rem;
+  border-radius: 8px;
   font-weight: 600;
-  transition: background 0.2s, transform 0.1s;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
 }
 
-.modal-buttons button:hover {
-  transform: translateY(-2px);
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.25);
+  color: #f1f1f1;
 }
 
-/* Botón de guardar */
-.modal-buttons .btn-save {
-  background-color: #a32525;
-  color: #fff;
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
-.modal-buttons .btn-save:hover {
-  background-color: #7f1f1f;
+.btn-save {
+  background: #ff4d4d;
+  color: white;
 }
 
-/* Botón de cancelar */
-.modal-buttons .btn-cancel {
-  background-color: #f0f0f0;
-  color: #333;
+.btn-save:hover {
+  background: #e63939;
+  transform: scale(1.05);
 }
 
-.modal-buttons .btn-cancel:hover {
-  background-color: #e0e0e0;
+/* Scroll para textarea si se llena */
+textarea {
+  max-height: 120px;
+  min-height: 70px;
 }
