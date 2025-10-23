@@ -6,9 +6,48 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\RecuperarContrasenaMail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
+    public function enviarCodigo(Request $request)
+    {
+        $request->validate([
+            'correo' => 'required|email',
+            'codigo' => 'required|numeric',
+        ]);
+
+        try {
+            // Eliminar códigos antiguos del correo
+            DB::table('registro_codigos')->where('correo', $request->correo)->delete();
+
+            // Insertar nuevo código
+            DB::table('registro_codigos')->insert([
+                'correo' => $request->correo,
+                'codigo' => $request->codigo,
+                'created_at' => now()
+            ]);
+
+            // Enviar correo con el código
+            Mail::to($request->correo)
+            ->send(new \App\Mail\CodigoRegistroMail($request->correo, $request->codigo));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Código enviado y guardado correctamente'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error('Error enviando código de verificación: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error al enviar código'
+            ], 500);
+        }
+    }
+
+
+
     public function login(Request $request)
     {
                         // Buscar al usuario por correo
