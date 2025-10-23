@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Mail\NotificacionCambioContrasenaMail;
 use App\Mail\CodigoRegistroMail; 
+use App\Mail\ConfirmacionRegistroMail; 
 
 class EmpleadoController extends Controller
 {
@@ -66,20 +67,32 @@ class EmpleadoController extends Controller
             // Código válido → eliminarlo para que no se reutilice
             DB::table('registro_codigos')->where('correo', $request->correo)->delete();
 
-            // Crear empleado - CORREGIDO
+            // Crear empleado
             $empleado = Empleado::create([
                 'NOMBRE' => $request->nombre,
                 'CORREO' => $request->correo,
                 'CARGO' => $request->cargo,
                 'CONTRASENA' => Hash::make($request->contrasena),
                 'ID_ROL' => $request->id_rol,
-                'ESTADO' => 1, // ← CAMBIO AQUÍ
+                'ESTADO' => 1,
                 'ACTIVO' => 1
             ]);
 
+            try {
+                Mail::to($request->correo)
+                    ->send(new ConfirmacionRegistroMail(
+                        $request->nombre,
+                        $request->correo,
+                        $request->cargo
+                    ));
+                Log::info('Email de confirmación enviado a: ' . $request->correo);
+            } catch (\Exception $emailError) {
+                Log::error('Error enviando email de confirmación: ' . $emailError->getMessage());
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Empleado registrado correctamente',
+                'message' => 'Empleado registrado correctamente y notificación enviada',
                 'empleado' => $empleado
             ], 201);
 
@@ -121,20 +134,34 @@ class EmpleadoController extends Controller
             // Código válido → eliminarlo para que no se reutilice
             DB::table('registro_codigos')->where('correo', $request->correo)->delete();
 
-            // Crear empleado - CORREGIDO: usar 1 en lugar de 'ACTIVO'
+            // Crear empleado
             $empleado = Empleado::create([
                 'NOMBRE' => $request->nombre,
                 'CORREO' => $request->correo,
                 'CARGO' => $request->cargo,
                 'CONTRASENA' => Hash::make($request->contrasena),
                 'ID_ROL' => $request->id_rol,
-                'ESTADO' => 1, // ← CAMBIO AQUÍ: 1 para activo, 0 para inactivo
+                'ESTADO' => 1,
                 'ACTIVO' => 1
             ]);
 
+            // ✅ ENVIAR EMAIL DE CONFIRMACIÓN
+            try {
+                Mail::to($request->correo)
+                    ->send(new \App\Mail\ConfirmacionRegistroMail(
+                        $request->nombre,
+                        $request->correo,
+                        $request->cargo
+                    ));
+                Log::info('Email de confirmación enviado a: ' . $request->correo);
+            } catch (\Exception $emailError) {
+                Log::error('Error enviando email de confirmación: ' . $emailError->getMessage());
+                // No fallar el registro si el email falla, solo logear el error
+            }
+
             return response()->json([
                 'success' => true,
-                'message' => 'Empleado registrado correctamente',
+                'message' => 'Empleado registrado correctamente y notificación enviada',
                 'empleado' => $empleado
             ], 201);
 
