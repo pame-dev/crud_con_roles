@@ -145,23 +145,35 @@ const RegisterTrabajadores = () => {
         return;
       }
 
-      // 4. Registro final
+      // 4. Registro final - CORREGIDO: Asegurar que el cargo se envíe correctamente
       const cargoGerente = normalizaCargo(empleadoLogueado?.CARGO);
+      
+      // Verificar que el cargo no sea null o vacío
+      if (!cargoGerente) {
+        showModal("Error", "No se pudo determinar el cargo del gerente. Contacta al administrador.", "error");
+        setSubmitting(false);
+        return;
+      }
+
       const payload = {
         nombre: formData.nombre,
         correo: formData.correo,
         contrasena: formData.contrasena,
-        cargo: cargoGerente,
+        cargo: cargoGerente, // ← Este campo es requerido
         id_rol: 2,
-        codigo: codigoIngresado // ← Agregar el código al payload
+        codigo: codigoIngresado
       };
 
+      console.log("Payload a enviar:", payload); // Para debugging
+
       await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
-      showModal("Registro exitoso", "Empleado registrado correctamente.", "success");
+      showModal("Registro exitoso", "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", "success");
       setTimeout(() => navigate("/administrar_empleados"), 1500);
 
     } catch (err) {
-      console.error(err);
+      console.error("Error completo:", err);
+      console.error("Datos de respuesta:", err.response?.data);
+      
       const errorMessage = err.response?.data?.message || "Error al registrar empleado.";
       showModal("Error", errorMessage, "error");
     } finally {
@@ -305,6 +317,11 @@ const RegisterTrabajadores = () => {
                 />
               </label>
             )}
+
+            <div className="reg-info-box">
+              <i className="fa-solid fa-shield-alt"></i>
+              <span>Al registrarse, el empleado recibirá un correo con las políticas de privacidad y términos de servicio.</span>
+            </div>
 
             {/* Acciones */}
             <div className="reg-actions">
