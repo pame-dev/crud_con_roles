@@ -50,44 +50,22 @@ const RegisterGerentes = () => {
 
     setCorreoError("");
 
-  // Validaciones en orden correcto
-  if (!formData.nombre || formData.nombre.trim().length < 3) {
-    showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
-    return;
-  }
+    // Validaciones en orden correcto
+    if (!formData.nombre || formData.nombre.trim().length < 3) {
+      showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
+      return;
+    }
 
-  // Validar correo (formato correcto)
-  const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!formData.correo || !correoRegex.test(formData.correo)) {
-    showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
-    return;
-  }
-  // Validar cargo seleccionado
-  if (!formData.cargo) {
-    showModal("Cargo no seleccionado", "Por favor, selecciona un cargo.", "error");
-    return;
-  }
-  // Validar rol seleccionado
-  if (!formData.id_rol) {
-    showModal("Rol no seleccionado", "Por favor, selecciona un rol.", "error");
-    return;
-  }
+    
 
-  
-  //  AGREGAR: Validar que las contraseñas coincidan
-  if (formData.contrasena !== formData.confirmarContrasena) {
-    showModal("Contraseñas no coinciden", "Las contraseñas deben ser idénticas.", "error");
-    return;
-  }
+    // Validar correo (formato correcto)
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.correo || !correoRegex.test(formData.correo)) {
+      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
+      return;
+    }
 
-  //  AGREGAR: Validar longitud de contraseña
-  if (formData.contrasena.length < 8) {
-    showModal("Contraseña muy corta", "La contraseña debe tener al menos 8 caracteres.", "error");
-    return;
-  }
-
-  // Validar que el correo no exista en la base de datos
-  try {
+        try {
       setSubmitting(true);
 
       // 1. Validar que el correo no exista
@@ -98,18 +76,51 @@ const RegisterGerentes = () => {
       }).then((r) => r.json());
 
       if (v.existe) {
-        setCorreoError("El correo ya está registrado por otro empleado.");
+        showModal(
+          "Correo ya registrado", 
+          "El correo ya está registrado por otro empleado. Por favor, usa un correo diferente.",
+          "error"
+        );
         setSubmitting(false);
         return;
       }
+    // Validar cargo seleccionado
+    if (!formData.cargo) {
+      showModal("Cargo no seleccionado", "Por favor, selecciona un cargo.", "error");
+      return;
+    }
+
+    // Validar rol seleccionado
+    if (!formData.id_rol) {
+      showModal("Rol no seleccionado", "Por favor, selecciona un rol.", "error");
+      return;
+    }
+
+    // ✅ AGREGADO: Validar fortaleza de contraseña
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(formData.contrasena)) {
+      showModal(
+        "Contraseña insegura", 
+        "La contraseña debe tener:\n• Mínimo 8 caracteres\n• 1 letra mayúscula\n• 1 letra minúscula\n• 1 número\n• 1 carácter especial (@$!%*?&)",
+        "error"
+      );
+      return;
+    }
+
+    // Validar que las contraseñas coincidan
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      showModal("Contraseñas no coinciden", "Las contraseñas deben ser idénticas.", "error");
+      return;
+    }
+
+    // Validar que el correo no exista en la base de datos
+
 
       // 2. Si no estamos esperando código aún → enviarlo
       if (!esperandoCodigo) {
         const codigo = Math.floor(100000 + Math.random() * 900000); // código 6 dígitos
 
         try {
-          setSubmitting(true);
-
           // Llamar al backend
           await axios.post("http://127.0.0.1:8000/api/enviar-codigo", {
             correo: formData.correo,
@@ -136,12 +147,16 @@ const RegisterGerentes = () => {
         } finally {
           setSubmitting(false);
         }
-
         return;
       }
 
-
       // 3. Si ya estamos esperando código → validar
+      if (!codigoIngresado) {
+        showModal("Código requerido", "Por favor, ingresa el código de verificación.", "error");
+        setSubmitting(false);
+        return;
+      }
+
       if (codigoIngresado.toString() !== codigoEnviado.toString()) {
         showModal("Código incorrecto", "El código ingresado no coincide. Revisa tu correo.", "error");
         setSubmitting(false);
@@ -149,15 +164,27 @@ const RegisterGerentes = () => {
       }
 
       // 4. Registro final
-      const payload = { ...formData, codigo: codigoIngresado, id_rol: Number(formData.id_rol) };
+      const payload = { 
+        ...formData, 
+        codigo: codigoIngresado, 
+        id_rol: Number(formData.id_rol) 
+      };
+      
       await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
-      showModal("Registro exitoso", "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", "success");
+      showModal(
+        "Registro exitoso", 
+        "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", 
+        "success"
+      );
 
       setTimeout(() => navigate("/administrar_empleados"), 1500);
 
     } catch (err) {
-      console.error(err);
-      showModal("Error", "Ocurrió un error.", "error");
+      console.error("Error completo:", err);
+      console.error("Datos de respuesta:", err.response?.data);
+      
+      const errorMessage = err.response?.data?.message || "Ocurrió un error durante el registro.";
+      showModal("Error", errorMessage, "error");
     } finally {
       setSubmitting(false);
     }
@@ -225,8 +252,8 @@ const RegisterGerentes = () => {
                   required
                 >
                   <option value="">Selecciona un cargo</option>
-                  <option value="Reparación">Reparación</option>
-                  <option value="Cotización">Cotización</option>
+                  <option value="Reparacion">Reparación</option>
+                  <option value="Cotizacion">Cotización</option>
                 </select>
               </div>
 
