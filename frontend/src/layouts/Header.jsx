@@ -51,6 +51,7 @@ const Header = () => {
     "/administrar_empleados",
     "/register_gerentes_y_trabajadores",
     "/register_trabajadores",
+    "/graficas",
   ];
   const mostrarSoloUsuario =
     soloUsuario.includes(location.pathname) ||
