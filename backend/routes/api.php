@@ -6,6 +6,7 @@ use App\Http\Middleware\CorsMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TurnController;
+use App\Http\Controllers\EstadisticasController;
 
 // Definición de rutas API para la aplicación.
 // Incluye rutas protegidas y rutas públicas con CORS para empleados y login.
@@ -45,5 +46,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/enviar-codigo', [AuthController::class, 'enviarCodigo']);
     Route::post('/empleados/registrar-con-codigo', [EmpleadoController::class, 'registrarConCodigo']);
     Route::post('/empleados/{id}/verificar-contrasena', [EmpleadoController::class, 'verificarContrasena']);
-
+    Route::get('/turnos/por-empleado', [EstadisticasController::class, 'turnosPorEmpleado']);
+    Route::get('/turnos/tiempos', [EstadisticasController::class, 'tiemposPromedio']);
+    Route::get('/turnos/dias', [EstadisticasController::class, 'turnosPorDia']);
 });
