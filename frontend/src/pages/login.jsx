@@ -92,7 +92,7 @@ const Login = () => {
           <button
             className="back-btn"
             type="button"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/")}   // 🔹 Cambiado aquí
             aria-label="Regresar"
             title="Regresar"
           >
