@@ -252,8 +252,8 @@ const RegisterGerentes = () => {
                   required
                 >
                   <option value="">Selecciona un cargo</option>
-                  <option value="Reparación">Reparación</option>
-                  <option value="Cotización">Cotización</option>
+                  <option value="Reparacion">Reparación</option>
+                  <option value="Cotizacion">Cotización</option>
                 </select>
               </div>
 

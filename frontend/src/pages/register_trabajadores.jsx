@@ -78,7 +78,6 @@ const RegisterTrabajadores = () => {
         body: JSON.stringify({ correo: formData.correo }),
       }).then((r) => r.json());
 
-      // ✅ CORREGIDO: Usar showModal en lugar de setCorreoError
       if (v.existe) {
         showModal(
           "Correo ya registrado", 
