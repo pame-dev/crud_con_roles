@@ -257,11 +257,17 @@ const Header = () => {
                     </div>
 
                     {!isEditing ? (
-                      <button className="edit-btn" onClick={() => { setIsEditing(true); setCorreoError(""); }}>
-                        <Pencil size={16} />
+                      <button
+                        className="edit-btn d-flex align-items-center"
+                        onClick={() => { setIsEditing(true); setCorreoError(""); }}
+                        title="Editar perfil"
+                      >
+                        <Pencil size={16} className="me-1" /> Editar
                       </button>
                     ) : (
-                      <span className="edit-mode">Modo edición</span>
+                      <span className="edit-mode badge bg-warning">
+                        Modo edición
+                      </span>
                     )}
                   </div>
 
@@ -323,7 +329,7 @@ const Header = () => {
                       </div>
                     )}
 
-                    <span className="profile-label">Área</span>
+                    <span className="profile-label">Área *</span>
                     <div className="content-profile-row">
                       <div className="profile-row darkable">{empleado.CARGO}</div>
                     </div>
@@ -333,19 +339,19 @@ const Header = () => {
                     {isEditing && (
                       <div className="d-flex gap-1">
                         <button className="btn btn-success d-flex align-items-center" onClick={handleSave}>
-                          <Save size={12} className="me-1" /> Guardar
+                          <Save size={20} className="me-0" /> 
                         </button>
                         <button className="btn btn-secondary d-flex align-items-center" onClick={handleCancel}>
-                          <X size={12} className="me-1" /> Cancelar
+                          <X size={20} className="me-0" /> 
                         </button>
                       </div>
                     )}
 
                     <button
-                      className="logout-btn btn btn-danger btn-sm align-items-center"
+                      className="logout-btn btn btn-danger btn-sm align-items-center ms-1"
                       onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}
                     >
-                      <User size={16} className="me-1" /> Cerrar Sesión
+                      <User size={16} className="me-2" /> Cerrar Sesión
                     </button>
 
                   </div>
