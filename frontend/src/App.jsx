@@ -32,6 +32,7 @@ import EditarEmpleado from './pages/editar_empleado';
 import TerminosYCondiciones from './pages/terminos_y_condiciones';
 import { DarkModeProvider, useDarkMode } from "./layouts/DarkModeContext";
 import {AudioProvider} from "./components/AudioContext";
+import Graficas from "./pages/graficas";
 // Layout condicional
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -85,6 +86,7 @@ const PitLineApp = () => {
                 <Route path='/editar_empleado' element={<EditarEmpleado />} />
                 <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
                 <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
+                <Route path="/graficas" element={<Graficas />} />
               </Routes>
             </AppLayout>
           </Router>
