@@ -101,6 +101,30 @@ const Header = () => {
     };
   }, []);
 
+  // === OCULTAR BARRA SUPERIOR DE GOOGLE TRANSLATE ===
+  useEffect(() => {
+    const hideTranslateBanner = () => {
+      const iframe = document.querySelector("iframe.skiptranslate");
+      const banner = document.querySelector(".skiptranslate");
+
+      // Solo baja el z-index y opacidad en vez de eliminar
+      if (iframe) {
+        iframe.style.zIndex = "11";
+      }
+
+      // Reajusta el body si Google empuja la página hacia abajo
+      document.body.style.top = "0px";
+    };
+
+    // Ejecuta al montar y cada vez que Google reinyecta elementos
+    hideTranslateBanner();
+    const observer = new MutationObserver(() => hideTranslateBanner());
+    observer.observe(document.body, { childList: true, subtree: true });
+
+    return () => observer.disconnect();
+  }, []);
+
+
   useEffect(() => {
     if (empleado) {
       setFormData({
@@ -230,16 +254,6 @@ const Header = () => {
                   <Link to="/pantalla_completa" className={`nav-link d-flex align-items-center ${location.pathname === "/pantalla_completa" ? "active" : ""}`}>
                     <Tv size={20} className="me-2" /> Pantalla Completa
                   </Link>
-                </li>
-                <li className="nav-item translate-icon-container ms-2">
-                  <button
-                    id="translate-toggle"
-                    className="btn btn-outline-light d-flex align-items-center"
-                    title="Traducir página"
-                  >
-                    <Globe size={18} />
-                  </button>
-                  <div id="google_translate_element" className="translate-box"></div>
                 </li>
               </ul>
             )}
@@ -405,6 +419,18 @@ const Header = () => {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Traductor fuera del grupo de botones */}
+        <div className="translate-wrapper">
+          <button
+            id="translate-toggle"
+            className="btn btn-outline-light d-flex align-items-center translate-btn"
+            title="Traducir página"
+          >
+            <Globe size={18} />
+          </button>
+          <div id="google_translate_element" className="translate-box"></div>
         </div>
       </nav>
 

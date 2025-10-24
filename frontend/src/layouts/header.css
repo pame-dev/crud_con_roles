@@ -20,9 +20,20 @@
 .navbar-brand {
   text-decoration: none !important;
 }
+
+/* Botón de login: animación suave como el globo */
 .btn-login {
   white-space: nowrap;
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease; /* <– clave */
+  will-change: transform;
 }
+
+.btn-login:hover {
+  background: #ff4e4e !important; /* sobrepone el hover de Bootstrap */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+
 .logo-image {
   width: 100px;
   height: 70px;
@@ -43,6 +54,7 @@
   align-items: center;
   z-index: 1050;
 }
+
 .eye-btn {
   background: none;
   border: none;
@@ -63,6 +75,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
   animation: modalFade 0.3s ease-in-out;
 }
+
 .modal-header-profile {
   background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
   padding: 20px;
@@ -161,31 +174,58 @@
 
 /* ====== GOOGLE TRANSLATE ====== */
 
-/* Botón del traductor alineado con el grupo derecho */
-.translate-btn {
-  padding: 6px 10px;
+/* Traductor flotante pero visualmente integrado al header */
+.translate-wrapper {
+  position: fixed;
+  top: 25px; /* centrado verticalmente con los botones */
+  right: 270px; /* ajusta horizontalmente si cambia el tamaño del header */
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Contenedor del traductor */
+/* Botón del globo con estilo uniforme */
+.translate-wrapper .translate-btn {
+  background: #dc3545;
+  border: none;
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.translate-wrapper .translate-btn:hover {
+  background: #ff4e4e;
+  transform: translateY(-2px);
+}
+
+/* Caja del traductor */
 #google_translate_element {
-  display: none; /* Inicialmente oculto */
-  position: fixed;
-  top: 70px; /* Justo debajo del header */
-  right: 180px; /* Cerca del grupo de botones */
-  z-index: 3000;
+  display: none;
+  position: absolute;
+  top: 45px; /* justo debajo del botón */
+  right: 0;
   background: linear-gradient(135deg, #ff3b3b, #ff7b42);
   border-radius: 12px;
   padding: 14px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
   animation: fadeSlide 0.25s ease-out;
+  z-index: 99999 !important;
 }
 
-/* Mostrar el traductor al añadir la clase .show */
+/* Mostrar al activar */
 #google_translate_element.show {
   display: block !important;
 }
 
-/* Estilo de la flecha del menú */
+/* Flechita decorativa */
 #google_translate_element::before {
   content: "";
   position: absolute;
@@ -196,17 +236,16 @@
   border-color: transparent transparent #ff3b3b transparent;
 }
 
-
 /* Ajustes del gadget */
 .goog-te-gadget {
-  color: transparent !important; /* oculta texto "Powered by" sin romper el combo */
+  color: transparent !important;
   height: auto !important;
   overflow: hidden !important;
 }
 
-/* ====== Personalización del combo de idiomas ====== */
+/* Combo de idiomas */
 .goog-te-combo {
-  appearance: none !important; /* quita estilo del sistema */
+  appearance: none !important;
   background: #fff url("data:image/svg+xml;utf8,<svg fill='%23ff3b3b' height='24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
   background-size: 16px;
   color: #222 !important;
@@ -227,7 +266,7 @@
   transform: scale(1.03);
 }
 
-/* Scrollbar personalizada dentro del menú desplegable */
+/* Scrollbar personalizada */
 .goog-te-combo option {
   background-color: #fff;
   color: #222;
@@ -241,14 +280,15 @@ select::-webkit-scrollbar-thumb {
   border-radius: 4px;
 }
 
-/* Menú de idiomas por encima de todo */
+/* Menú del traductor sobre todo */
 .goog-te-menu-frame,
 .goog-te-menu2 {
   z-index: 999999 !important;
   pointer-events: auto !important;
 }
 
-/* Transición del pop */
+
+/* Animación */
 @keyframes fadeSlide {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
