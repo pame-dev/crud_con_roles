@@ -55,7 +55,7 @@ const RegisterTrabajadores = () => {
     e.preventDefault();
     if (submitting) return;
 
-    // Validaciones básicas
+    // Validaciones en orden correcto
     if (!formData.nombre || formData.nombre.trim().length < 3) {
       showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
       return;
@@ -79,32 +79,34 @@ const RegisterTrabajadores = () => {
       }).then((r) => r.json());
 
       if (v.existe) {
-        setCorreoError("El correo ya está registrado por otro empleado.");
+        showModal(
+          "Correo ya registrado", 
+          "El correo ya está registrado por otro empleado. Por favor, usa un correo diferente.",
+          "error"
+        );
         setSubmitting(false);
         return;
       }
 
+    // ✅ AGREGADO: Validar fortaleza de contraseña (antes de verificar correo en BD)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(formData.contrasena)) {
+      showModal(
+        "Contraseña insegura", 
+        "La contraseña debe tener:\n• Mínimo 8 caracteres\n• 1 letra mayúscula\n• 1 letra minúscula\n• 1 número\n• 1 carácter especial (@$!%*?&)",
+        "error"
+      );
+      return;
+    }
+
+    // Validar que las contraseñas coincidan
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      showModal("Contraseñas no coinciden", "Las contraseñas deben ser idénticas.", "error");
+      return;
+    }
+
       // 2. Si no estamos esperando código aún → enviarlo
       if (!esperandoCodigo) {
-        // Validar contraseña (seguridad) - solo si no estamos en modo código
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-        if (!passwordRegex.test(formData.contrasena)) {
-          showModal(
-            "Contraseña inválida",
-            "Debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial.",
-            "error"
-          );
-          setSubmitting(false);
-          return;
-        }
-
-        // Validar que las contraseñas coincidan
-        if (formData.contrasena !== formData.confirmarContrasena) {
-          showModal("Contraseñas no coinciden", "Las contraseñas no coinciden.", "error");
-          setSubmitting(false);
-          return;
-        }
-
         const codigo = Math.floor(100000 + Math.random() * 900000); // código 6 dígitos
 
         try {
@@ -134,18 +136,23 @@ const RegisterTrabajadores = () => {
         } finally {
           setSubmitting(false);
         }
-
         return;
       }
 
       // 3. Si ya estamos esperando código → validar
-      if (!codigoIngresado || codigoIngresado.toString() !== codigoEnviado.toString()) {
+      if (!codigoIngresado) {
+        showModal("Código requerido", "Por favor, ingresa el código de verificación.", "error");
+        setSubmitting(false);
+        return;
+      }
+
+      if (codigoIngresado.toString() !== codigoEnviado.toString()) {
         showModal("Código incorrecto", "El código ingresado no coincide. Revisa tu correo.", "error");
         setSubmitting(false);
         return;
       }
 
-      // 4. Registro final - CORREGIDO: Asegurar que el cargo se envíe correctamente
+      // 4. Registro final
       const cargoGerente = normalizaCargo(empleadoLogueado?.CARGO);
       
       // Verificar que el cargo no sea null o vacío
@@ -159,7 +166,7 @@ const RegisterTrabajadores = () => {
         nombre: formData.nombre,
         correo: formData.correo,
         contrasena: formData.contrasena,
-        cargo: cargoGerente, // ← Este campo es requerido
+        cargo: cargoGerente,
         id_rol: 2,
         codigo: codigoIngresado
       };
@@ -167,7 +174,11 @@ const RegisterTrabajadores = () => {
       console.log("Payload a enviar:", payload); // Para debugging
 
       await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
-      showModal("Registro exitoso", "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", "success");
+      showModal(
+        "Registro exitoso", 
+        "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", 
+        "success"
+      );
       setTimeout(() => navigate("/administrar_empleados"), 1500);
 
     } catch (err) {
