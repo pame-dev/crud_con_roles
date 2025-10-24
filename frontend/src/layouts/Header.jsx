@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff, Sun, Moon,
-  Volume2, VolumeX
+  Volume2, VolumeX, BarChart3
 } from "lucide-react";
 import logo from "../assets/logo-rojo.png";
 import "./header.css";
@@ -375,6 +375,17 @@ const Header = () => {
 
               {empleado && (
                 <>
+                  <li className="nav-item">
+                    <Link
+                      to="/graficas"
+                      className={`nav-link d-flex align-items-center text-light ${location.pathname === "/graficas" ? "active fw-bold" : ""}`}
+                      title="Ver gráficas"
+                      style={{ color: "white" }}
+                    >
+                      <BarChart3 size={20} className="me-2" />
+                      <span>Gráficas</span>
+                    </Link>
+                  </li>
                   <button
                     className={`btn d-flex align-items-center ${audioEnabled ? "btn-success" : "btn-secondary"}`}
                     onClick={toggleAudio}
@@ -382,7 +393,6 @@ const Header = () => {
                   >
                     {audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
                   </button>
-
                   <button
                     className={`btn d-flex align-items-center ${darkMode ? "btn-light" : "btn-dark"}`}
                     onClick={() => setDarkMode(!darkMode)}
