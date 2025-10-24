@@ -202,6 +202,7 @@ const Header = () => {
           </button>
           
           <div className="collapse navbar-collapse" id="navbarNav">
+            {!mostrarSoloUsuario && (
               <ul className="navbar-nav mx-auto align-items-center">
                 <li className="nav-item">
                   <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
@@ -213,7 +214,6 @@ const Header = () => {
                     <Tv size={20} className="me-2" /> Pantalla Completa
                   </Link>
                 </li>
-
                 {/* Google Translate */}
                 <li className="nav-item translate-icon-container ms-2">
                   <button
@@ -226,91 +226,90 @@ const Header = () => {
                   <div id="google_translate_element" className="translate-box"></div>
                 </li>
               </ul>
-            </div>
+            )}
 
-
-            {/* Modal Perfil */}
-            {showProfileModal && empleado && (
-              <div
-                className="custom-modal-overlay"
-                onClick={() => { if (!modal.show) setShowProfileModal(false); }}
-                style={{ pointerEvents: modal.show ? "none" : "auto" }}
-              >
-                <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
-                  <div className="modal-header-profile">
-                    <div>
-                      <h5 className="profile-name">{empleado.NOMBRE}</h5>
-                      <p className="profile-email">{empleado.CORREO}</p>
-                    </div>
-
-                    {!isEditing ? (
-                      <button className="edit-btn" onClick={() => { setIsEditing(true); setCorreoError(""); }}>
-                        <Pencil size={16} />
-                      </button>
-                    ) : (
-                      <div className="d-flex gap-2">
-                        <button className="edit-btn" onClick={handleSave}><Save size={16} /></button>
-                        <button className="edit-btn" onClick={handleCancel}><X size={16} /></button>
+              {/* Modal Perfil */}
+              {showProfileModal && empleado && (
+                <div
+                  className="custom-modal-overlay"
+                  onClick={() => { if (!modal.show) setShowProfileModal(false); }}
+                  style={{ pointerEvents: modal.show ? "none" : "auto" }}
+                >
+                  <div className="custom-modal" onClick={(e) => e.stopPropagation()}>
+                    <div className="modal-header-profile">
+                      <div>
+                        <h5 className="profile-name">{empleado.NOMBRE}</h5>
+                        <p className="profile-email">{empleado.CORREO}</p>
                       </div>
-                    )}
-                  </div>
 
-                  <div className="modal-options darkable">
-                    <span className="profile-label">Nombre</span>
-                    <div className="content-profile-row">
-                      {isEditing ? (
-                        <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
+                      {!isEditing ? (
+                        <button className="edit-btn" onClick={() => { setIsEditing(true); setCorreoError(""); }}>
+                          <Pencil size={16} />
+                        </button>
                       ) : (
-                        <div className="profile-row darkable">{empleado.NOMBRE}</div>
+                        <div className="d-flex gap-2">
+                          <button className="edit-btn" onClick={handleSave}><Save size={16} /></button>
+                          <button className="edit-btn" onClick={handleCancel}><X size={16} /></button>
+                        </div>
                       )}
                     </div>
 
-                    <span className="profile-label">Correo</span>
-                    <div className="content-profile-row">
-                      {isEditing ? (
-                        <>
-                          <input type="email" name="CORREO" value={formData.CORREO} onChange={handleChange} className="profile-input" />
-                          {correoError && <div className="text-danger mt-1">{correoError}</div>}
-                        </>
-                      ) : (
-                        <div className="profile-row darkable">{empleado.CORREO}</div>
-                      )}
+                    <div className="modal-options darkable">
+                      <span className="profile-label">Nombre</span>
+                      <div className="content-profile-row">
+                        {isEditing ? (
+                          <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
+                        ) : (
+                          <div className="profile-row darkable">{empleado.NOMBRE}</div>
+                        )}
+                      </div>
+
+                      <span className="profile-label">Correo</span>
+                      <div className="content-profile-row">
+                        {isEditing ? (
+                          <>
+                            <input type="email" name="CORREO" value={formData.CORREO} onChange={handleChange} className="profile-input" />
+                            {correoError && <div className="text-danger mt-1">{correoError}</div>}
+                          </>
+                        ) : (
+                          <div className="profile-row darkable">{empleado.CORREO}</div>
+                        )}
+                      </div>
+
+                      <span className="profile-label">Contraseña</span>
+                      <div className="content-profile-row d-flex align-items-center">
+                        {isEditing ? (
+                          <>
+                            <input
+                              type={showPassword ? "text" : "password"}
+                              name="CONTRASENA"
+                              value={formData.CONTRASENA}
+                              onChange={handleChange}
+                              className="profile-input me-2"
+                            />
+                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="eye-btn">
+                              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                            </button>
+                          </>
+                        ) : (
+                          <div className="profile-row darkable">********</div>
+                        )}
+                      </div>
+
+                      <span className="profile-label">Área</span>
+                      <div className="content-profile-row">
+                        <div className="profile-row darkable">{empleado.CARGO}</div>
+                      </div>
                     </div>
 
-                    <span className="profile-label">Contraseña</span>
-                    <div className="content-profile-row d-flex align-items-center">
-                      {isEditing ? (
-                        <>
-                          <input
-                            type={showPassword ? "text" : "password"}
-                            name="CONTRASENA"
-                            value={formData.CONTRASENA}
-                            onChange={handleChange}
-                            className="profile-input me-2"
-                          />
-                          <button type="button" onClick={() => setShowPassword(!showPassword)} className="eye-btn">
-                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                          </button>
-                        </>
-                      ) : (
-                        <div className="profile-row darkable">********</div>
-                      )}
+                    <div className="modal-footer-profile darkable">
+                      <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
+                        Cerrar Sesión
+                      </button>
                     </div>
-
-                    <span className="profile-label">Área</span>
-                    <div className="content-profile-row">
-                      <div className="profile-row darkable">{empleado.CARGO}</div>
-                    </div>
-                  </div>
-
-                  <div className="modal-footer-profile darkable">
-                    <button className="logout-btn" onClick={() => { logout(); setShowProfileModal(false); navigate("/"); }}>
-                      Cerrar Sesión
-                    </button>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <div className="ms-auto d-flex align-items-center gap-2">
               <button
@@ -346,6 +345,7 @@ const Header = () => {
               )}
             </div>
           </div>
+        </div>
       </nav>
 
       <ModalAlert
