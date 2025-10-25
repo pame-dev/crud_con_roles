@@ -1,3 +1,4 @@
+/* Loader */
 .loader-container-graficas {
   min-height: 100vh;
   display: flex;
@@ -6,7 +7,7 @@
   justify-content: center;
   background: linear-gradient(135deg, #d8080894, #b20606b7);
   background-size: 400% 400%;
-  animation: gradientBG 12s ease infinite;
+  animation: gradientBG 2s ease infinite;
 }
 
 .loader-ring-graficas {
@@ -15,7 +16,7 @@
   border: 6px solid rgba(255, 255, 255, 0.2);
   border-top-color: #fff;
   border-radius: 50%;
-  animation: spin 1.2s linear infinite, glow 2s ease-in-out infinite alternate;
+  animation: spin 0.8s linear infinite, glow 1s ease-in-out infinite alternate;
   box-shadow: 0 0 25px rgba(255, 255, 255, 0.3);
 }
 
@@ -24,31 +25,76 @@
   font-size: 1.2rem;
   font-weight: 500;
   margin-top: 20px;
-  animation: fadePulse 2s ease-in-out infinite;
+  animation: fadePulse 1s ease-in-out infinite;
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-areas: "left center right";
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.grid-left {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.grid-right {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.grid-left { grid-area: left; }
+.grid-center { grid-area: center; }
+.grid-right { grid-area: right; }
+
+.btn-regresar {
+  margin-bottom: -30px;
+  margin-top: 20px;
+  padding: 10px 10px;
+  border-radius: 10px;
+  border: none;
+  background-color: #fa4444ff;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 900;
+  transition: all 0.3s ease;
+}
+
+.btn-regresar:hover {
+  background-color: #ff6666; /* cambia el color */
+  transform: scale(1.05);     /* efecto de leve zoom */
+}
+
+/* Responsive: apilar todo verticalmente en pantallas pequeñas */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-areas:
+      "center"
+      "left"
+      "right";
+    grid-template-columns: 1fr;
   }
+}
+
+/* Animaciones */
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 @keyframes glow {
-  0% {
-    box-shadow: 0 0 10px #fff;
-  }
-  100% {
-    box-shadow: 0 0 30px #fff;
-  }
+  0% { box-shadow: 0 0 10px #fff; }
+  100% { box-shadow: 0 0 30px #fff; }
 }
 
 @keyframes fadePulse {
-  0%, 100% {
-    opacity: 0.6;
-  }
-  50% {
-    opacity: 1;
-  }
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
 @keyframes gradientBG {
