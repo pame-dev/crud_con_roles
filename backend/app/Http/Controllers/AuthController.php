@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\RecuperarContrasenaMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -59,8 +60,12 @@ class AuthController extends Controller
             ], 404); // 🔹 código 404 para indicar "no encontrado"
         }
 
-        if (!$user || $user->CONTRASENA !== $request->pass) {
-            return response()->json(['error' => 'Usuario o contraseña incorrectos'], 401);
+         // Verificar contraseña
+        if (!Hash::check($request->pass, $user->CONTRASENA)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contraseña incorrecta.'
+            ], 401);
         }
 
         return response()->json([
