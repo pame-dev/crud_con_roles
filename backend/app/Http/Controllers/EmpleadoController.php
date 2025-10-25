@@ -12,6 +12,7 @@ use App\Mail\NotificacionCambioContrasenaMail;
 use App\Mail\CodigoRegistroMail; 
 use App\Mail\ConfirmacionRegistroMail; 
 
+
 class EmpleadoController extends Controller
 {
     public function index()
@@ -276,7 +277,7 @@ class EmpleadoController extends Controller
 
         // Actualizar la contraseña solo si viene en la request
         if ($request->has('contrasena') && $request->contrasena) {
-            $datosActualizados['CONTRASENA'] = ($request->contrasena);
+            $datosActualizados['CONTRASENA'] = Hash::make($request->contrasena);
         }
 
         $empleado->update($datosActualizados);
@@ -301,8 +302,8 @@ class EmpleadoController extends Controller
             if ($nueva === $empleado->CONTRASENA) {
                 return response()->json(['error' => 'La contraseña no debe de ser idéntica a la actual'], 422);
             }
-            // Guardar la nueva contraseña SIN encriptar (según requisito)
-            $changes['CONTRASENA'] = $nueva;
+            // Guardar la nueva contraseña encriptada
+            $changes['CONTRASENA'] = Hash::make($nueva);
             $cambioContrasena = true;
         }
 
@@ -345,7 +346,7 @@ class EmpleadoController extends Controller
         $request->validate(['contrasena' => 'required|string']);
         $contrasena = $request->contrasena;
 
-        $igual = $contrasena === $empleado->CONTRASENA;
+        $igual = Hash::check($contrasena, $empleado->CONTRASENA);
 
         return response()->json(['igual' => $igual]);
     }
