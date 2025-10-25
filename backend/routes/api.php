@@ -49,4 +49,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::get('/turnos/por-empleado', [EstadisticasController::class, 'turnosPorEmpleado']);
     Route::get('/turnos/tiempos', [EstadisticasController::class, 'tiemposPromedio']);
     Route::get('/turnos/dias', [EstadisticasController::class, 'turnosPorDia']);
+    Route::get('/turnos/por-tipo', [EstadisticasController::class, 'turnosPorTipo']);
+    Route::get('/turnos/tiempo-empleado', [EstadisticasController::class, 'tiempoPorEmpleado']);
+
 });
