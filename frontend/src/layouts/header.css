@@ -167,6 +167,12 @@
 .logout-btn:hover {
   background: #e63d3d;
 }
+
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
 @keyframes modalFade {
   from { transform: translateY(-20px); opacity: 0; }
   to   { transform: translateY(0); opacity: 1; }
@@ -178,7 +184,7 @@
 .translate-wrapper {
   position: fixed;
   top: 25px; /* centrado verticalmente con los botones */
-  right: 270px; /* ajusta horizontalmente si cambia el tamaño del header */
+  right: 310px; /* ajusta horizontalmente si cambia el tamaño del header */
   z-index: 9999;
   display: flex;
   flex-direction: column;
@@ -189,8 +195,8 @@
 .translate-wrapper .translate-btn {
   background: #dc3545;
   border: none;
-  border-radius: 8px;
-  width: 38px;
+  border-radius: 6px;
+  width: 50px;
   height: 38px;
   display: flex;
   align-items: center;

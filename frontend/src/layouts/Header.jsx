@@ -318,9 +318,24 @@ const Header = () => {
                           className="profile-input me-2"
                           placeholder="Contraseña actual"
                         />
-                        <button type="button" className="btn btn-primary" onClick={handleCurrentPasswordCheck}>Verificar</button>
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="eye-btn me-2"
+                          title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-primary"
+                          onClick={handleCurrentPasswordCheck}
+                        >
+                          Verificar
+                        </button>
                       </div>
                     )}
+
 
                     {isEditing && passwordVerified && (
                       <div className="content-profile-row d-flex align-items-center">
@@ -390,17 +405,22 @@ const Header = () => {
 
               {empleado && (
                 <>
-                  <li className="nav-item">
-                    <Link
-                      to="/graficas"
-                      className={`nav-link d-flex align-items-center text-light ${location.pathname === "/graficas" ? "active fw-bold" : ""}`}
-                      title="Ver gráficas"
-                      style={{ color: "white" }}
-                    >
-                      <BarChart3 size={20} className="me-2" />
-                      <span>Gráficas</span>
-                    </Link>
-                  </li>
+                  <button
+                    onClick={() => navigate("/graficas")}
+                    className={`btn d-flex align-items-center ${
+                      location.pathname === "/graficas" ? "btn-danger active" : "btn-outline-light"
+                    }`}
+                    title="Ver gráficas"
+                    style={{
+                      fontWeight: "600",
+                      borderRadius: "10px",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <BarChart3 size={20} className="me-2" />
+                    Gráficas
+                  </button>
+
                   <button
                     className={`btn d-flex align-items-center ${audioEnabled ? "btn-success" : "btn-secondary"}`}
                     onClick={toggleAudio}
