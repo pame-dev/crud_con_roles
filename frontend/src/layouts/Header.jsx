@@ -69,10 +69,11 @@ const Header = () => {
 
     window.googleTranslateElementInit = () => {
       new window.google.translate.TranslateElement(
-        { pageLanguage: "es", layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE },
+        { pageLanguage: "es" },
         "google_translate_element"
       );
     };
+
 
     if (window.google && window.google.translate) {
       window.googleTranslateElementInit();
@@ -87,10 +88,16 @@ const Header = () => {
     };
 
     const handleClickOutside = (e) => {
-      if (!e.target.closest(".translate-icon-container")) {
-        element?.classList.remove("show");
-      }
-    };
+    // evita cerrar si haces clic dentro del contenedor del traductor o su iframe
+    if (
+      !e.target.closest(".translate-icon-container") &&
+      !e.target.closest("#google_translate_element") &&
+      !e.target.closest(".goog-te-menu-frame")
+    ) {
+      element?.classList.remove("show");
+    }
+  };
+
 
     toggle?.addEventListener("click", handleToggle);
     document.addEventListener("click", handleClickOutside);
@@ -105,11 +112,9 @@ const Header = () => {
   useEffect(() => {
     const hideTranslateBanner = () => {
       const iframe = document.querySelector("iframe.skiptranslate");
-      const banner = document.querySelector(".skiptranslate");
-
       // Solo baja el z-index y opacidad en vez de eliminar
       if (iframe) {
-        iframe.style.zIndex = "11";
+        iframe.style.zIndex = "1";
       }
 
       // Reajusta el body si Google empuja la página hacia abajo
