@@ -185,7 +185,7 @@
 .translate-wrapper {
   position: fixed;
   top: 25px; /* centrado verticalmente con los botones */
-  right: 310px; /* ajusta horizontalmente si cambia el tamaño del header */
+  right: 180px; /* ajusta horizontalmente si cambia el tamaño del header */
   z-index: 9999;
   display: flex;
   flex-direction: column;
