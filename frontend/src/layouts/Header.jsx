@@ -112,7 +112,7 @@ const Header = () => {
   useEffect(() => {
     const hideTranslateBanner = () => {
       const iframe = document.querySelector("iframe.skiptranslate");
-      // Solo baja el z-index y opacidad en vez de eliminar
+      // Solo baja el z-index
       if (iframe) {
         iframe.style.zIndex = "1";
       }
@@ -458,19 +458,18 @@ const Header = () => {
                 <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
               </button>
             </div>
-          </div>
-        </div>
 
-        {/* Traductor fuera del grupo de botones */}
-        <div className="translate-wrapper">
-          <button
-            id="translate-toggle"
-            className="btn btn-outline-light d-flex align-items-center translate-btn"
-            title="Traducir página"
-          >
-            <Globe size={18} />
-          </button>
-          <div id="google_translate_element" className="translate-box"></div>
+            <div className="translate-wrapper">
+              <button
+                id="translate-toggle"
+                className="btn btn-outline-light d-flex align-items-center translate-btn"
+                title="Traducir página"
+              >
+                <Globe size={18} />
+              </button>
+              <div id="google_translate_element" className="translate-box"></div>
+            </div>            
+          </div>
         </div>
       </nav>
 
