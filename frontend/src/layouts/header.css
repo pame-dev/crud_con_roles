@@ -111,6 +111,7 @@
   display: flex;
   align-items: center;
   margin-bottom: 16px;
+  font-size: 0.9rem;
 }
 .profile-row {
   background: #fff5f0;
