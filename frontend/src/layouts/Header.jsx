@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   User, TrendingUp, Tv, Pencil, Globe, Save, X, Eye, EyeOff, Sun, Moon,
-  Volume2, VolumeX, BarChart3
+  Volume2, VolumeX, BarChart3, Home
 } from "lucide-react";
 import logo from "../assets/logo-rojo.png";
 import "./header.css";
@@ -248,20 +248,52 @@ const Header = () => {
           </button>
           
           <div className="collapse navbar-collapse" id="navbarNav">
-            {!mostrarSoloUsuario && (
-              <ul className="navbar-nav mx-auto align-items-center">
-                <li className="nav-item">
-                  <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
-                    <TrendingUp size={20} className="me-2" /> Dashboard
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link to="/pantalla_completa" className={`nav-link d-flex align-items-center ${location.pathname === "/pantalla_completa" ? "active" : ""}`}>
-                    <Tv size={20} className="me-2" /> Pantalla Completa
-                  </Link>
-                </li>
-              </ul>
-            )}
+            <ul className="navbar-nav mx-auto align-items-center">
+              {/* Botones para admin y gerente - SIEMPRE visibles cuando tienen sesión */}
+              {empleado && (empleado?.ID_ROL === 0 || empleado?.ID_ROL === 1) && (
+                <>
+                  <li className="nav-item">
+                    <button
+                      className={`nav-link d-flex align-items-center btn btn-link p-0 border-0 ${
+                        (location.pathname === "/vista_superadministrador" || location.pathname === "/vista_gerente") ? "active" : ""
+                      }`}
+                      onClick={() => {
+                        if (empleado?.ID_ROL === 0) {
+                          navigate("/vista_superadministrador");
+                        } else if (empleado?.ID_ROL === 1) {
+                          navigate("/vista_gerente");
+                        }
+                      }}
+                      style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                    >
+                      <Home size={20} className="my-2 mx-2" /> Principal
+                    </button>
+                  </li>
+                  
+                  <li className="nav-item">
+                    <Link to="/graficas" className={`nav-link d-flex align-items-center ${location.pathname === "/graficas" ? "active" : ""}`}>
+                      <BarChart3 size={20} className="my-2 mx-2" /> Gráficas
+                    </Link>
+                  </li>
+                </>
+              )}
+
+              {/* Dashboard y Pantalla Completa - solo en páginas públicas */}
+              {!mostrarSoloUsuario && (
+                <>
+                  <li className="nav-item">
+                    <Link to="/" className={`nav-link d-flex align-items-center ${location.pathname === "/" ? "active" : ""}`}>
+                      <TrendingUp size={20} className="me-2" /> Dashboard
+                    </Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link to="/pantalla_completa" className={`nav-link d-flex align-items-center ${location.pathname === "/pantalla_completa" ? "active" : ""}`}>
+                      <Tv size={20} className="me-2" /> Pantalla Completa
+                    </Link>
+                  </li>
+                </>
+              )}
+            </ul>
 
             {showProfileModal && empleado && (
               <div
@@ -397,35 +429,8 @@ const Header = () => {
             )}
 
             <div className="ms-auto d-flex align-items-center gap-2">
-              <button
-                className="btn btn-danger d-flex align-items-center btn-login"
-                onClick={() => {
-                  if (location.pathname === "/" || location.pathname === "/login")
-                    navigate("/login");
-                  else setShowProfileModal(true);
-                }}
-              >
-                <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
-              </button>
-
               {empleado && (
                 <>
-                  <button
-                    onClick={() => navigate("/graficas")}
-                    className={`btn d-flex align-items-center ${
-                      location.pathname === "/graficas" ? "btn-danger active" : "btn-outline-light"
-                    }`}
-                    title="Ver gráficas"
-                    style={{
-                      fontWeight: "600",
-                      borderRadius: "10px",
-                      transition: "all 0.3s ease",
-                    }}
-                  >
-                    <BarChart3 size={20} className="me-2" />
-                    Gráficas
-                  </button>
-
                   <button
                     className={`btn d-flex align-items-center ${audioEnabled ? "btn-success" : "btn-secondary"}`}
                     onClick={toggleAudio}
@@ -442,6 +447,16 @@ const Header = () => {
                   </button>
                 </>
               )}
+              <button
+                className="btn btn-danger d-flex align-items-center btn-login"
+                onClick={() => {
+                  if (location.pathname === "/" || location.pathname === "/login")
+                    navigate("/login");
+                  else setShowProfileModal(true);
+                }}
+              >
+                <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
+              </button>
             </div>
           </div>
         </div>
