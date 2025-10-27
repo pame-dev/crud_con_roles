@@ -14,7 +14,7 @@ const VistaSuperadministrador = () => {
   const [busqueda, setBusqueda] = useState("");
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
-  const [vistaLista, setVistaLista] = useState(false);
+  const [vistaLista, setVistaLista] = useState(true);
   const [trabajadores, setTrabajadores] = useState([]);
   
   const [modal, setModal] = useState({
