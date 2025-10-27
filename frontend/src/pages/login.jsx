@@ -186,7 +186,7 @@ const Login = () => {
             <AnimatePresence>
               {error && (
                 <motion.p
-                  className="login-error"
+                  className="login-error darkable"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
