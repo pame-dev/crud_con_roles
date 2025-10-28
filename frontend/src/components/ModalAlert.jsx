@@ -53,7 +53,7 @@ const ModalAlert = ({ show, title, message, onClose, type = "info" }) => {
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
           >
-            <h2 className="modal-title">{title}</h2>
+            <h2 className="modal-title" style={{ color: "white" }}>{title}</h2>
             <p className="modal-message">{message}</p>
             <button className="modal-btn" onClick={onClose}>
               Aceptar

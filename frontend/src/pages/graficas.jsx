@@ -128,13 +128,6 @@ const Graficas = () => {
       <main style={backgroundStyle}>
         <div className="container">
 
-          {/* Botón de regresar */}
-          <button className="btn-regresar"
-            onClick={() => navigate(-1)} 
-          >
-            ← Regresar
-          </button>
-
           <h1 className="text-center mb-5 mt-5 text-light" style={{ fontWeight: "700", fontSize: "3.5rem" }}>
             Dashboard de Turnos
           </h1>
