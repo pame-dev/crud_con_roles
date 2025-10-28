@@ -476,12 +476,11 @@ const Header = () => {
                     )}
 
                     {isLocked && (
-                      <div className="text-danger mt-2 text-center">
-                        <p>
-                          Has superado los intentos permitidos. <br />
+                      <div className="text-danger text-center">
+                        <p style={{ fontSize: "0.8rem" }}>
                           Espera <strong>{countdown}</strong> segundos para volver a intentarlo.
                         </p>
-                        <div className="progress my-2" style={{ height: "6px" }}>
+                        <div className="progress my-3" style={{ height: "4px" }}>
                           <div
                             className="progress-bar bg-danger"
                             role="progressbar"
@@ -492,8 +491,9 @@ const Header = () => {
                           ></div>
                         </div>
                         <button
-                          className="btn btn-link p-0 text-decoration-underline"
+                          className="btn btn-sm btn-outline-danger"
                           onClick={() => navigate("/olvide_mi_contrasena")}
+                          style={{ fontSize: "0.8rem", padding: "0.15rem 1rem" }}
                         >
                           Recuperar contraseña
                         </button>
