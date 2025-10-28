@@ -294,6 +294,23 @@ select::-webkit-scrollbar-thumb {
   pointer-events: auto !important;
 }
 
+.btn-recover-password {
+  background: none;
+  border: none;
+  color: #dc3545; /* color rojo (danger) */
+  padding: 0;
+  font-size: 0.75rem;
+  text-decoration: underline;
+  cursor: pointer;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.btn-recover-password:hover {
+  color: #a71d2a; /* un rojo más oscuro al pasar el mouse */
+  transform: translateY(-1px);
+}
+
+
 
 /* Animación */
 @keyframes fadeSlide {
