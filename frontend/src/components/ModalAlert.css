@@ -1,15 +1,17 @@
     .modal-overlay {
+    margin-top: 0rem;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
     display: flex;
-    justify-content: center;
     align-items: center;
-    z-index: 999;
-    backdrop-filter: blur(2px);
+    justify-content: center;
+    z-index: 999999 !important;
     }
 
     .modal-card {
+    margin-top: 3rem;
     background: #2c2c2c;
     color: #fff;
     border-radius: 16px;
