@@ -35,7 +35,6 @@ const Header = () => {
   const [countdown, setCountdown] = useState(0);
   const [loadingVerify, setLoadingVerify] = useState(false);
   const [loadingSave, setLoadingSave] = useState(false);
-
   const [modal, setModal] = useState({
     show: false,
     title: "",
@@ -200,7 +199,7 @@ const Header = () => {
             setCountdown(60);
             showModal("Bloqueado", "Demasiados intentos fallidos. Espera 60 segundos antes de volver a intentar.", "error");
           } else {
-            showModal("Error", `Contraseña incorrecta. Intento ${newAttempts} de 3.`, "error");
+            showModal("Error", `Contraseña incorrecta. Te quedan ${newAttempts} de 3 Intentos.`, "error");
           }
         }
       })
@@ -224,6 +223,16 @@ const Header = () => {
         ? { contrasena: formData.CONTRASENA.trim() }
         : {}),
     };
+
+    // Validar si no hubo ningún cambio
+    const sinCambios =
+      datosActualizados.nombre === (empleado.NOMBRE || "").trim() &&
+      datosActualizados.correo === (empleado.CORREO || "").trim() &&
+      (!datosActualizados.contrasena || datosActualizados.contrasena === "");
+
+    if (sinCambios) {
+      return showModal("Sin cambios", "No se detectaron modificaciones para guardar.", "info");
+    }
 
     if (datosActualizados.nombre.length < 3)
       return showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
@@ -311,34 +320,38 @@ const Header = () => {
           
           <div className="collapse navbar-collapse" id="navbarNav">
             <ul className="navbar-nav mx-auto align-items-center">
-              {/* Botones para admin y gerente - SIEMPRE visibles cuando tienen sesión */}
-              {empleado && (empleado?.ID_ROL === 0 || empleado?.ID_ROL === 1) && (
-                <>
-                  <li className="nav-item">
-                    <button
-                      className={`nav-link d-flex align-items-center btn btn-link p-0 border-0 ${
-                        (location.pathname === "/vista_superadministrador" || location.pathname === "/vista_gerente") ? "active" : ""
-                      }`}
-                      onClick={() => {
-                        if (empleado?.ID_ROL === 0) {
-                          navigate("/vista_superadministrador");
-                        } else if (empleado?.ID_ROL === 1) {
-                          navigate("/vista_gerente");
-                        }
-                      }}
-                      style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
-                    >
-                      <Home size={20} className="my-2 mx-2" /> Principal
-                    </button>
-                  </li>
-                  
-                  <li className="nav-item">
-                    <Link to="/graficas" className={`nav-link d-flex align-items-center ${location.pathname === "/graficas" ? "active" : ""}`}>
-                      <BarChart3 size={20} className="my-2 mx-2" /> Gráficas
-                    </Link>
-                  </li>
-                </>
+              {/* Secciones visibles solo si hay sesión activa y NO está en / o /login */}
+              {empleado && 
+                location.pathname !== "/" &&
+                location.pathname !== "/login" &&
+                (empleado?.ID_ROL === 0 || empleado?.ID_ROL === 1) && (
+                  <>
+                    <li className="nav-item">
+                      <button
+                        className={`nav-link d-flex align-items-center btn btn-link p-0 border-0 ${
+                          (location.pathname === "/vista_superadministrador" || location.pathname === "/vista_gerente") ? "active" : ""
+                        }`}
+                        onClick={() => {
+                          if (empleado?.ID_ROL === 0) navigate("/vista_superadministrador");
+                          else if (empleado?.ID_ROL === 1) navigate("/vista_gerente");
+                        }}
+                        style={{ textDecoration: 'none', color: 'inherit', cursor: 'pointer' }}
+                      >
+                        <Home size={20} className="my-2 mx-2" /> Principal
+                      </button>
+                    </li>
+                      
+                    <li className="nav-item">
+                      <Link
+                        to="/graficas"
+                        className={`nav-link d-flex align-items-center ${location.pathname === "/graficas" ? "active" : ""}`}
+                      >
+                        <BarChart3 size={20} className="my-2 mx-2" /> Gráficas
+                      </Link>
+                    </li>
+                  </>
               )}
+
 
               {/* Dashboard y Pantalla Completa - solo en páginas públicas */}
               {!mostrarSoloUsuario && (
@@ -371,6 +384,7 @@ const Header = () => {
                     </div>
 
                     {!isEditing ? (
+                      
                       <button
                         className="edit-btn d-flex align-items-center"
                         onClick={() => { 
@@ -386,12 +400,25 @@ const Header = () => {
                         <Pencil size={16} className="me-1" /> Editar
                       </button>
                     ) : (
-                      <span className="edit-mode badge bg-warning">Modo edición</span>
+                      <span
+                        className="edit-mode badge bg-warning"
+                        style={{ fontSize: "0.9rem", marginLeft: "60px" }}
+                      >
+                        Modo edición
+                      </span>
+
                     )}
 
                   </div>
 
                   <div className="modal-options darkable">
+                    {isEditing && !passwordVerified && (
+                      <div style={{ marginBottom: "6px" }}>
+                        <p className="text-danger mb-1" style={{ fontSize: "0.75rem", margin: 0 }}>
+                          *La edición de su perfil requiere la verificación de su contraseña*
+                        </p>
+                      </div>
+                    )}
                     <span className="profile-label">Nombre</span>
                     <div className="content-profile-row">
                       {isEditing ? (
@@ -427,36 +454,38 @@ const Header = () => {
 
                     <span className="profile-label">Contraseña</span>
                     {isEditing && !passwordVerified && (
-                      <div className="content-profile-row d-flex align-items-center">
-                        <input
-                          type={showPassword ? "text" : "password"}
-                          value={currentPassword}
-                          onChange={(e) => setCurrentPassword(e.target.value)}
-                          className="profile-input me-2"
-                          placeholder="Contraseña actual"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="eye-btn me-2"
-                          title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                        >
-                          {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-primary d-flex align-items-center justify-content-center"
-                          onClick={handleCurrentPasswordCheck}
-                          disabled={loadingVerify}
-                          style={{ width: "100px" }}
-                        >
-                          {loadingVerify ? (
-                            <div className="spinner-border spinner-border-sm text-light" role="status"></div>
-                          ) : (
-                            "Verificar"
-                          )}
-                        </button>
-                      </div>
+                      <>
+                        <div className="content-profile-row d-flex align-items-center">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            value={currentPassword}
+                            onChange={(e) => setCurrentPassword(e.target.value)}
+                            className="profile-input me-2"
+                            placeholder="Contraseña actual"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="eye-btn me-2"
+                            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                          >
+                            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                          </button>
+                          <button
+                            type="button"
+                            className="btn btn-primary d-flex align-items-center justify-content-center"
+                            onClick={handleCurrentPasswordCheck}
+                            disabled={loadingVerify}
+                            style={{ width: "100px" }}
+                          >
+                            {loadingVerify ? (
+                              <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+                            ) : (
+                              "Verificar"
+                            )}
+                          </button>
+                        </div>
+                      </>
                     )}
 
                     {isEditing && passwordVerified && (
@@ -544,17 +573,22 @@ const Header = () => {
             )}
 
             <div className="ms-auto d-flex align-items-center gap-2">
-              {empleado && (
+              {empleado && location.pathname !== "/" && location.pathname !== "/login" && (
                 <>
                   <button
-                    className={`btn d-flex align-items-center ${audioEnabled ? "btn-success" : "btn-secondary"}`}
+                    className={`btn d-flex align-items-center ${
+                      audioEnabled ? "btn-success" : "btn-secondary"
+                    }`}
                     onClick={toggleAudio}
                     title={audioEnabled ? "Desactivar sonido" : "Activar sonido"}
                   >
                     {audioEnabled ? <Volume2 size={16} /> : <VolumeX size={16} />}
                   </button>
+                  
                   <button
-                    className={`btn d-flex align-items-center ${darkMode ? "btn-light" : "btn-dark"}`}
+                    className={`btn d-flex align-items-center ${
+                      darkMode ? "btn-light" : "btn-dark"
+                    }`}
                     onClick={() => setDarkMode(!darkMode)}
                     title={darkMode ? "Modo claro" : "Modo oscuro"}
                   >
@@ -562,6 +596,7 @@ const Header = () => {
                   </button>
                 </>
               )}
+            
               <button
                 className="btn btn-danger d-flex align-items-center btn-login"
                 onClick={() => {
@@ -573,6 +608,7 @@ const Header = () => {
                 <User size={16} className="me-2" /> {!mostrarSoloUsuario && "Iniciar Sesión"}
               </button>
             </div>
+
 
             <div className="translate-wrapper">
               <button
