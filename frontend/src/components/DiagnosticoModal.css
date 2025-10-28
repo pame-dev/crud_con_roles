@@ -1,6 +1,6 @@
 /* Fondo borroso con desenfoque */
-.modal-overlay {
-  margin-top: 2rem;
+.modal-overlayy {
+  margin-top: 5rem;
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.6);
@@ -8,17 +8,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1050;
+  z-index: 999999 !important;
 }
 
 /* Contenedor principal del modal */
 .modal-diagnostico {
-  background: rgba(113, 93, 93, 0.228);
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 1rem;
-  color: #fff;
-  width: 420px;
+  color: #111; /* texto general oscuro */
+  width: 520px;
   padding: 1.5rem 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
   animation: modalFadeIn 0.3s ease;
@@ -33,7 +33,7 @@
 .modal-title {
   font-weight: bold;
   margin-bottom: 1rem;
-  color: #fff;
+  color: #111;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,19 +48,19 @@
 
 .modal-body label {
   font-size: 0.95rem;
-  color: #ffbfbf;
-  font-weight: 500;
+  color: #333; /* gris oscuro */
+  font-weight: 600;
 }
 
 /* Campos */
 .modal-body input,
 .modal-body textarea {
   width: 100%;
-  border: none;
+  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   padding: 0.6rem 0.8rem;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: rgba(0, 0, 0, 0.05);
+  color: #111;
   font-size: 0.95rem;
   outline: none;
   transition: all 0.2s ease;
@@ -69,8 +69,8 @@
 
 .modal-body input:focus,
 .modal-body textarea:focus {
-  background: rgba(255, 255, 255, 0.25);
-  border: 1px solid #ff6b6b;
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid #ff4d4d;
 }
 
 /* Botones */
@@ -94,15 +94,17 @@
   align-items: center;
 }
 
+/* Botón cancelar */
 .btn-cancel {
-  background: rgba(255, 255, 255, 0.25);
-  color: #f1f1f1;
+  background: rgba(0, 0, 0, 0.1);
+  color: #222;
 }
 
 .btn-cancel:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(0, 0, 0, 0.2);
 }
 
+/* Botón guardar */
 .btn-save {
   background: #ff4d4d;
   color: white;
@@ -118,3 +120,22 @@ textarea {
   max-height: 120px;
   min-height: 70px;
 }
+
+/* --- ÍCONO DEL CALENDARIO NEGRO --- */
+input[type="date"] {
+  color-scheme: light; /* fuerza estilo claro */
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #111;
+}
+
+/* Forzar color del icono del calendario (solo navegadores basados en WebKit) */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0); /* 0 = negro, 1 = blanco */
+  cursor: pointer;
+}
+
+/* Ajuste al pasar el mouse */
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: brightness(0.5);
+}
+

@@ -30,6 +30,11 @@ const Header = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [passwordVerified, setPasswordVerified] = useState(false);
+  const [verifyAttempts, setVerifyAttempts] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [loadingVerify, setLoadingVerify] = useState(false);
+  const [loadingSave, setLoadingSave] = useState(false);
 
   const [modal, setModal] = useState({
     show: false,
@@ -146,13 +151,33 @@ const Header = () => {
     else document.body.classList.remove("dark-mode");
   }, [darkMode]);
 
+  useEffect(() => {
+    let timer;
+    if (isLocked && countdown > 0) {
+      timer = setInterval(() => {
+        setCountdown((prev) => prev - 1);
+      }, 1000);
+    } else if (isLocked && countdown === 0) {
+      setIsLocked(false);
+      setVerifyAttempts(0);
+      showModal("Aviso", "Ya puedes volver a intentar verificar tu contraseña.", "info");
+    }
+
+    return () => clearInterval(timer);
+  }, [isLocked, countdown]);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCurrentPasswordCheck = () => {
-    if (!currentPassword) return showModal("Error", "Ingresa tu contraseña actual.", "error");
+    if (isLocked || loadingVerify) return;
+    if (!currentPassword)
+      return showModal("Error", "Ingresa tu contraseña actual.", "error");
+
+    setLoadingVerify(true);
 
     fetch(`http://127.0.0.1:8000/api/empleados/${empleado.ID_EMPLEADO}/verificar-contrasena`, {
       method: "POST",
@@ -161,25 +186,43 @@ const Header = () => {
     })
       .then((res) => res.json())
       .then((data) => {
+        setLoadingVerify(false);
         if (data.igual) {
           setPasswordVerified(true);
-          showModal("Éxito", "Contraseña verificada. Ahora puedes cambiar la contraseña.", "success");
+          setIsLocked(false);
+          setVerifyAttempts(0);
+          showModal("Éxito", "Contraseña verificada. Ahora puedes editar tu perfil.", "success");
         } else {
-          showModal("Error", "Contraseña actual incorrecta.", "error");
+          const newAttempts = verifyAttempts + 1;
+          setVerifyAttempts(newAttempts);
+          if (newAttempts >= 3) {
+            setIsLocked(true);
+            setCountdown(60);
+            showModal("Bloqueado", "Demasiados intentos fallidos. Espera 60 segundos antes de volver a intentar.", "error");
+          } else {
+            showModal("Error", `Contraseña incorrecta. Intento ${newAttempts} de 3.`, "error");
+          }
         }
       })
       .catch((err) => {
         console.error(err);
+        setLoadingVerify(false);
         showModal("Error", "Error al verificar la contraseña.", "error");
       });
   };
 
+
+
   const handleSave = () => {
+    if (loadingSave) return;
+
     const datosActualizados = {
       nombre: formData.NOMBRE.trim(),
       correo: formData.CORREO.trim(),
       cargo: formData.CARGO.trim(),
-      ...(passwordVerified && formData.CONTRASENA ? { contrasena: formData.CONTRASENA } : {}),
+      ...(passwordVerified && formData.CONTRASENA
+        ? { contrasena: formData.CONTRASENA.trim() }
+        : {}),
     };
 
     if (datosActualizados.nombre.length < 3)
@@ -189,17 +232,33 @@ const Header = () => {
     if (!correoRegex.test(datosActualizados.correo))
       return showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
 
+    if (passwordVerified && formData.CONTRASENA) {
+      const contrasena = formData.CONTRASENA.trim();
+      const contrasenaRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,}$/;
+      if (!contrasenaRegex.test(contrasena))
+        return showModal("Contraseña insegura", "Debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.", "error");
+    }
+
+    setLoadingSave(true);
+
     fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ correo: datosActualizados.correo, id: empleado.ID_EMPLEADO }),
+      body: JSON.stringify({
+        correo: datosActualizados.correo,
+        id: empleado.ID_EMPLEADO,
+      }),
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.existe) return setCorreoError("El correo ya está registrado por otro empleado.");
+        if (data.existe) {
+          setLoadingSave(false);
+          return setCorreoError("El correo ya está registrado por otro empleado.");
+        }
 
         actualizarEmpleado(empleado.ID_EMPLEADO, datosActualizados)
           .then((res) => {
+            setLoadingSave(false);
             const empleadoActualizado = res.empleado || res.data || res;
             setEmpleado(empleadoActualizado);
             localStorage.setItem("empleado", JSON.stringify(empleadoActualizado));
@@ -212,10 +271,13 @@ const Header = () => {
           })
           .catch((err) => {
             console.error(err);
+            setLoadingSave(false);
             showModal("Error", "Error al actualizar perfil", "error");
           });
       });
   };
+
+
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -311,35 +373,53 @@ const Header = () => {
                     {!isEditing ? (
                       <button
                         className="edit-btn d-flex align-items-center"
-                        onClick={() => { setIsEditing(true); setCorreoError(""); }}
+                        onClick={() => { 
+                          if (!passwordVerified) {
+                            setIsEditing(true); 
+                            setCorreoError(""); 
+                          } else {
+                            showModal("Aviso", "Ya verificaste tu contraseña, puedes editar directamente.", "info");
+                          }
+                        }}
                         title="Editar perfil"
                       >
                         <Pencil size={16} className="me-1" /> Editar
                       </button>
                     ) : (
-                      <span className="edit-mode badge bg-warning">
-                        Modo edición
-                      </span>
+                      <span className="edit-mode badge bg-warning">Modo edición</span>
                     )}
+
                   </div>
 
                   <div className="modal-options darkable">
                     <span className="profile-label">Nombre</span>
                     <div className="content-profile-row">
                       {isEditing ? (
-                        <input type="text" name="NOMBRE" value={formData.NOMBRE} onChange={handleChange} className="profile-input" />
+                        <input
+                          type="text"
+                          name="NOMBRE"
+                          value={formData.NOMBRE}
+                          onChange={handleChange}
+                          className="profile-input"
+                          disabled={!passwordVerified}
+                        />
                       ) : (
                         <div className="profile-row darkable">{empleado.NOMBRE}</div>
                       )}
+
                     </div>
 
                     <span className="profile-label">Correo</span>
                     <div className="content-profile-row">
                       {isEditing ? (
-                        <>
-                          <input type="email" name="CORREO" value={formData.CORREO} onChange={handleChange} className="profile-input" />
-                          {correoError && <div className="text-danger mt-1">{correoError}</div>}
-                        </>
+                        <input
+                          type="email"
+                          name="CORREO"
+                          value={formData.CORREO}
+                          onChange={handleChange}
+                          className="profile-input"
+                          disabled={!passwordVerified}
+                        />
                       ) : (
                         <div className="profile-row darkable">{empleado.CORREO}</div>
                       )}
@@ -365,14 +445,19 @@ const Header = () => {
                         </button>
                         <button
                           type="button"
-                          className="btn btn-primary"
+                          className="btn btn-primary d-flex align-items-center justify-content-center"
                           onClick={handleCurrentPasswordCheck}
+                          disabled={loadingVerify}
+                          style={{ width: "100px" }}
                         >
-                          Verificar
+                          {loadingVerify ? (
+                            <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+                          ) : (
+                            "Verificar"
+                          )}
                         </button>
                       </div>
                     )}
-
 
                     {isEditing && passwordVerified && (
                       <div className="content-profile-row d-flex align-items-center">
@@ -390,11 +475,32 @@ const Header = () => {
                       </div>
                     )}
 
-                    {!isEditing && (
-                      <div className="content-profile-row">
-                        <div className="profile-row darkable">********</div>
+                    {isLocked && (
+                      <div className="text-danger mt-2 text-center">
+                        <p>
+                          Has superado los intentos permitidos. <br />
+                          Espera <strong>{countdown}</strong> segundos para volver a intentarlo.
+                        </p>
+                        <div className="progress my-2" style={{ height: "6px" }}>
+                          <div
+                            className="progress-bar bg-danger"
+                            role="progressbar"
+                            style={{ width: `${((60 - countdown) / 60) * 100}%` }}
+                            aria-valuenow={60 - countdown}
+                            aria-valuemin="0"
+                            aria-valuemax="60"
+                          ></div>
+                        </div>
+                        <button
+                          className="btn btn-link p-0 text-decoration-underline"
+                          onClick={() => navigate("/olvide_mi_contrasena")}
+                        >
+                          Recuperar contraseña
+                        </button>
                       </div>
                     )}
+
+
 
                     <span className="profile-label">Área *</span>
                     <div className="content-profile-row">
@@ -405,9 +511,18 @@ const Header = () => {
                   <div className="modal-footer-profile darkable d-flex justify-content-between align-items-center">
                     {isEditing && (
                       <div className="d-flex gap-1">
-                        <button className="btn btn-success d-flex align-items-center" onClick={handleSave}>
-                          <Save size={20} className="me-0" /> 
+                        <button
+                          className="btn btn-success d-flex align-items-center"
+                          onClick={handleSave}
+                          disabled={loadingSave}
+                        >
+                          {loadingSave ? (
+                            <div className="spinner-border spinner-border-sm text-light" role="status"></div>
+                          ) : (
+                            <Save size={20} className="me-0" />
+                          )}
                         </button>
+
                         <button className="btn btn-secondary d-flex align-items-center" onClick={handleCancel}>
                           <X size={20} className="me-0" /> 
                         </button>
