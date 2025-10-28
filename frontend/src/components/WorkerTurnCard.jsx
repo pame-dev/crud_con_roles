@@ -20,6 +20,35 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal
   const [fechaEntrega, setFechaEntrega] = useState("");
   const [tipoServicio, setTipoServicio] = useState("");
   const hoy = new Date().toISOString().split("T")[0];
+  useEffect(() => {
+    const body = document.body;
+
+    if (show) {
+      const scrollY = window.scrollY;
+      body.style.position = "fixed";
+      body.style.top = `-${scrollY}px`;
+      body.style.left = "0";
+      body.style.right = "0";
+      body.style.overflow = "hidden";
+      body.dataset.scrollY = scrollY;
+    } else {
+      const scrollY = parseInt(body.dataset.scrollY || "0", 10);
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.overflow = "";
+      window.scrollTo(0, scrollY);
+    }
+
+    return () => {
+      body.style.position = "";
+      body.style.top = "";
+      body.style.left = "";
+      body.style.right = "";
+      body.style.overflow = "";
+    };
+  }, [show]);
 
   const handleSubmit = () => {
     if (!descripcion || !fechaEntrega || !tipoServicio)
@@ -34,8 +63,8 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal
   if (!show) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-diagnostico" onClick={(e) => e.stopPropagation()}>
+    <div className="modal-overlayy" onClick={onClose}>
+      <div className="modal-diagnostico darkable" onClick={(e) => e.stopPropagation()}>
         <h4 className="modal-title">
           <i className="bi bi-tools me-2"></i> Diagnóstico {trabajadorNombre}
         </h4>
@@ -43,6 +72,7 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal
         <div className="modal-body">
           <label>Descripción del problema</label>
           <textarea
+            className="textea darkable"
             value={descripcion}
             onChange={(e) => setDescripcion(e.target.value)}
             placeholder="Describe el problema..."
@@ -66,7 +96,7 @@ const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal
         </div>
 
         <div className="modal-actions">
-          <button className="btn-cancel" onClick={onClose}>
+          <button className="btn-cancel darkable" onClick={onClose}>
             <i className="bi bi-x-circle me-1"></i> Cancelar
           </button>
           <button className="btn-save" onClick={handleSubmit}>
