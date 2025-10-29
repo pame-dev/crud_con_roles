@@ -267,8 +267,8 @@ const RegisterGerentes = () => {
                   required
                 >
                   <option value="">Selecciona un rol</option>
-                  <option value="1">Gerente</option>
-                  <option value="2">Trabajador</option>
+                  <option value="1">Supervisor</option>
+                  <option value="2">Personal de atención</option>
                 </select>
               </div>
             </div>
