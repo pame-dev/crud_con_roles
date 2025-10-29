@@ -373,7 +373,7 @@ export default function AdministrarEmpleados() {
               <header className="trash-header darkable">
                 <h3 className="trash-title">Papelera</h3>
                 <p className="trash-subtitle">
-                  {isSuper ? "Empleados y gerentes eliminados" : "Empleados eliminados de tu área"}
+                  {isSuper ? "Personal de atención y Supervisores eliminados" : "Empleados eliminados de tu área"}
                 </p>
                 <button className="trash-close" onClick={() => setOpenTrash(false)} aria-label="Cerrar">
                   ✕
@@ -385,13 +385,13 @@ export default function AdministrarEmpleados() {
                       className={`trash-tab darkable ${trashTab === "empleados" ? "active" : ""}`}
                       onClick={() => changeTrashTab("empleados")}
                     >
-                      Empleados
+                      Personal de atención
                     </button>
                     <button
                       className={`trash-tab darkable ${trashTab === "gerentes" ? "active" : ""}`}
                       onClick={() => changeTrashTab("gerentes")}
                     >
-                      Gerentes
+                      Supervisores
                     </button>
                   </div>
                 )}
@@ -408,7 +408,7 @@ export default function AdministrarEmpleados() {
                         <div className="trash-name">{it.NOMBRE}</div>
                         <div className="trash-meta">
                           <span className={`chip ${it.ID_ROL === 1 ? "chip--gerente" : "chip--empleado"}`}>
-                            {it.ID_ROL === 1 ? "Gerente" : "Empleado"}
+                            {it.ID_ROL === 1 ? "Supervisor" : "Personal de atención"}
                           </span>
                           {it.CARGO && <span className="chip chip--cargo">{it.CARGO}</span>}
                           {it.FECHA_ELIMINADO && (
@@ -563,7 +563,7 @@ export default function AdministrarEmpleados() {
             <div className="grilla-grupos">
               {/* Gerentes */}
               <section className="grupo-col darkable">
-                <h3 className="grupo-title">Gerentes</h3>
+                <h3 className="grupo-title">Supervisores</h3>
                 <div className="grupo-cards">
                   {gerentes.length === 0 && <p className="grupo-empty">Cargando...</p>}
                   {gerentes.map((emp) => (
@@ -605,7 +605,7 @@ export default function AdministrarEmpleados() {
 
               {/* Trabajadores */}
               <section className="grupo-col trabajadores-col darkable">
-                <h3 className="grupo-title">{isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}</h3>
+                <h3 className="grupo-title">{isSuper ? "Personal de atención" : `Área de ${capital(gerenteCargo)}`}</h3>
                 <div className="subgrilla">
                   <div className="subcol">
                     <h4 className="sub-title">Cotización</h4>
@@ -616,7 +616,7 @@ export default function AdministrarEmpleados() {
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small darkable">Empleado de Cotización</div>
+                              <div className="text-muted small darkable">Cotización</div>
                             </div>
                             <div className="d-flex gap-2">
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
@@ -657,7 +657,7 @@ export default function AdministrarEmpleados() {
                           <div className="card-body d-flex justify-content-between align-items-center">
                             <div>
                               <div className="fw-bold">{emp.nombre}</div>
-                              <div className="text-muted small darkable">Empleado de Reparación</div>
+                              <div className="text-muted small darkable">Reparación</div>
                             </div>
                             <div className="d-flex gap-2">
                               <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
@@ -697,7 +697,6 @@ export default function AdministrarEmpleados() {
               <section className="grupo-col trabajadores-col darkable">
                 <h3 className="grupo-title">{isSuper ? "Trabajadores" : `Área de ${capital(gerenteCargo)}`}</h3>
                 <div className="subcol">
-                  <h4 className="sub-title">{capital(gerenteCargo)}</h4>
                   <div className="grupo-cards">
                     {(gerenteCargo === "cotizacion" ? cotizacion : reparacion).length === 0 && (
                       <p className="grupo-empty">Cargando...</p>
@@ -707,7 +706,7 @@ export default function AdministrarEmpleados() {
                         <div className="card-body d-flex justify-content-between align-items-center">
                           <div>
                             <div className="fw-bold">{emp.nombre}</div>
-                            <div className="text-muted small darkable">Empleado de {capital(gerenteCargo)}</div>
+                            <div className="text-muted small darkable">{capital(gerenteCargo)}</div>
                           </div>
                           <div className="d-flex gap-2">
                             <button className="btn btn-light btn-sm" onClick={() => editar(emp.id)}>
