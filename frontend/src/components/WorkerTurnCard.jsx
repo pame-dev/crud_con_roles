@@ -4,111 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "./WorkerTurnCard.css";
 import "./DiagnosticoModal.css";
 import ModalAlert from "../components/ModalAlert"; 
-
-/* 
---------------------------------------------------
- COMPONENTE: DiagnosticoModal
-Muestra un modal donde el trabajador puede registrar
-el diagnóstico del turno actual.
---------------------------------------------------
-*/
-/* --------------------------------------------------
- COMPONENTE: DiagnosticoModal (versión mejorada)
--------------------------------------------------- */
-const DiagnosticoModal = ({ show, onClose, onSubmit, trabajadorNombre, showModal }) => {
-  const [descripcion, setDescripcion] = useState("");
-  const [fechaEntrega, setFechaEntrega] = useState("");
-  const [tipoServicio, setTipoServicio] = useState("");
-  const hoy = new Date().toISOString().split("T")[0];
-  useEffect(() => {
-    const body = document.body;
-
-    if (show) {
-      const scrollY = window.scrollY;
-      body.style.position = "fixed";
-      body.style.top = `-${scrollY}px`;
-      body.style.left = "0";
-      body.style.right = "0";
-      body.style.overflow = "hidden";
-      body.dataset.scrollY = scrollY;
-    } else {
-      const scrollY = parseInt(body.dataset.scrollY || "0", 10);
-      body.style.position = "";
-      body.style.top = "";
-      body.style.left = "";
-      body.style.right = "";
-      body.style.overflow = "";
-      window.scrollTo(0, scrollY);
-    }
-
-    return () => {
-      body.style.position = "";
-      body.style.top = "";
-      body.style.left = "";
-      body.style.right = "";
-      body.style.overflow = "";
-    };
-  }, [show]);
-
-  const handleSubmit = () => {
-    if (!descripcion || !fechaEntrega || !tipoServicio)
-      return showModal("Error", "Por favor, completa todos los campos", "error");
-
-    onSubmit({ descripcion, fechaEntrega, tipoServicio });
-    setDescripcion("");
-    setFechaEntrega("");
-    setTipoServicio("");
-  };
-
-  if (!show) return null;
-
-  return (
-    <div className="modal-overlayy" onClick={onClose}>
-      <div className="modal-diagnostico darkable" onClick={(e) => e.stopPropagation()}>
-        <h4 className="modal-title">
-          <i className="bi bi-tools me-2"></i> Diagnóstico {trabajadorNombre}
-        </h4>
-
-        <div className="modal-body">
-          <label>Descripción del problema</label>
-          <textarea
-            className="textea darkable"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            placeholder="Describe el problema..."
-          />
-
-          <label>Tiempo estimado de entrega</label>
-          <input
-            type="date"
-            value={fechaEntrega}
-            onChange={(e) => setFechaEntrega(e.target.value)}
-            min={hoy}
-          />
-
-          <label>Tipo de servicio</label>
-          <input
-            type="text"
-            value={tipoServicio}
-            onChange={(e) => setTipoServicio(e.target.value)}
-            placeholder="Ej. Reparación, mantenimiento, revisión..."
-          />
-        </div>
-
-        <div className="modal-actions">
-          <button className="btn-cancel darkable" onClick={onClose}>
-            <i className="bi bi-x-circle me-1"></i> Cancelar
-          </button>
-          <button className="btn-save" onClick={handleSubmit}>
-            <i className="bi bi-check-circle me-1"></i> Guardar
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-
+import DiagnosticoModal from "../components/DiagnosticoModal";
 
 /* 
 --------------------------------------------------
@@ -400,7 +296,6 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         );
       })}
 
-      {/* Modal de diagnóstico */}
       <DiagnosticoModal
         show={modalData.show}
         trabajadorNombre={
@@ -413,16 +308,10 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         showModal={showModal}
       />
 
-      {/* Modal de alertas */}
-      <ModalAlert
-        show={modal.show}
-        title={modal.title}
-        message={modal.message}
-        type={modal.type}
-        onClose={closeModal}
-      />
+      
     </>
   );
+
 };
 
 export default WorkerTurnCard;
