@@ -71,6 +71,31 @@
   transform: scale(1.05);     /* efecto de leve zoom */
 }
 
+.hero-dashboard {
+  width: 100vw; /* ocupa todo el ancho */
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  padding: 2rem 2rem; /* altura del hero */
+  border-radius: 0; /* si quieres curvas, solo abajo */
+  margin: 0rem -2rem 1rem; /* nada de margen */
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Hero en modo oscuro */
+body.dark-mode .hero-dashboard.darkable {
+  background: linear-gradient(135deg, #961515, #5f0404);
+}
+
+
+
 /* Responsive: apilar todo verticalmente en pantallas pequeñas */
 @media (max-width: 1200px) {
   .dashboard-grid {
