@@ -214,7 +214,7 @@ const Historial = () => {
       >
 
         {/* HERO */}
-        <div className="hero-section">
+        <div className="hero-section darkable">
           <div className="seccion-hero">
             <div className="row-hero">
               <button

@@ -128,9 +128,16 @@ const Graficas = () => {
       <main style={backgroundStyle}>
         <div className="container">
 
-          <h1 className="text-center mb-5 mt-5 text-light" style={{ fontWeight: "700", fontSize: "3.5rem" }}>
-            Dashboard de Turnos
-          </h1>
+          <div className="hero-dashboard darkable">
+            <div className="hero-content text-center">
+              <h1 className="text-light mb-3" style={{ fontWeight: 700, fontSize: "3.5rem" }}>
+                Dashboard de Turnos
+              </h1>
+              <p className="text-light lead" style={{ fontSize: "1.25rem" }}>
+                Gestiona tus turnos de manera rápida y eficiente
+              </p>
+            </div>
+          </div>
 
           <div className="dashboard-grid">
 
