@@ -535,7 +535,7 @@ export default function AdministrarEmpleados() {
         transition={{ duration: 0.5 }}
       >
         {/* HERO */}
-        <div className="hero-section">
+        <div className="hero-section darkable">
           <div className="hero-seccion">
             <div className="hero-row">
               <button className="btn_volver hero-back" onClick={goBack} title="Regresar">

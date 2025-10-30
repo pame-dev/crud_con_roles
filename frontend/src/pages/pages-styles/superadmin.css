@@ -36,6 +36,16 @@
   z-index: 0;
 }
 
+/* Hero section en modo oscuro */
+body.dark-mode .hero-section.darkable {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+body.dark-mode .hero-section.darkable::after {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+
 /* ===== Contenedor full ===== */
 .full-width-container {
   width: 100%;

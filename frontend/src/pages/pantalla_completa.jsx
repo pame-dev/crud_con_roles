@@ -39,7 +39,7 @@ const PantallaCompleta = () => {
           transition={{ duration: 0.5 }}
         >
           {/* Hero Section */}
-          <div className="hero-section-pc">
+          <div className="hero-section-pc darkable">
             <button
               className="btn_regresar hero-backk"
               onClick={handleExit}
