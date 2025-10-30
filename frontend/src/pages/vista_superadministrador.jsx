@@ -91,7 +91,7 @@ const VistaSuperadministrador = () => {
     <>
     <div className="full-width-container superadmin-page">
       {/* HERO */}
-      <div className="hero-section">
+      <div className="hero-section darkable">
         <div className="container text-center mt-3">
           <h2 className="display-4 fw-bold mb-1">Administración</h2>
           <h3 className="display-13 fw-bold mb-1">Área general</h3>

@@ -29,6 +29,18 @@
     clip-path: ellipse(70% 100% at 50% 0%);
 }
 
+/* Hero section en modo oscuro */
+/* Hero section-pc en modo oscuro */
+body.dark-mode .hero-section-pc.darkable {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .hero-section-pc.darkable::after {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+}
+
+
 .btn_regresar.hero-backk {
   position: relative;
   top: 80px; /* ajusta la distancia hacia abajo */

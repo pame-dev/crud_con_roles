@@ -55,7 +55,7 @@ const Dashboard = () => {
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-        <div className="hero-section">
+        <div className="hero-section darkable">
           <div className="text-center mt-3">
             <h3 className="display-3 fw-bold mb-1">PitLine les da la Bienvenida</h3>
             <p className="lead opacity-75">
