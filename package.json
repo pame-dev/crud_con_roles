@@ -5,6 +5,7 @@
     "jspdf": "^3.0.3",
     "lucide-react": "^0.544.0",
     "qrcode": "^1.5.4",
-    "react-i18next": "^16.1.5"
+    "react-i18next": "^16.1.5",
+    "swiper": "^12.0.3"
   }
 }
