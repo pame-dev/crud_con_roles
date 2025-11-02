@@ -153,13 +153,14 @@
 }
 
 /* Botón de regresar arriba */
+/* Botón de regresar */
 .back-btn {
   position: absolute;
-  top: 1.5rem;
+  top: 80px; /* baja el botón para que no se meta debajo del header fijo */
   left: 1.5rem;
   width: 48px;
   height: 48px;
-  border-radius:50%; /* círculo perfecto */
+  border-radius: 50%;
   background: var(--login-field-bg);
   color: white;
   border: none;
@@ -167,26 +168,36 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-sizing: border-box; /* asegura medidas exactas */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   transition: all 0.25s ease;
-  
 }
 
-/* Hover con efecto gradiente y movimiento */
 .back-btn:hover {
-  background: linear-gradient(
-    135deg,
-    var(--login-grad-start)
-  );
+  background: linear-gradient(135deg, var(--login-grad-start));
   transform: translateX(-3px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
 }
 
-/* Ícono centrado correctamente */
 .back-btn i {
   font-size: 20px;
 }
+
+@media (max-width: 768px) {
+  .back-btn {
+    top: 70px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 420px) {
+  .back-btn {
+    top: 65px;
+    width: 40px;
+    height: 40px;
+  }
+}
+
 
 .login-btn-secondary:hover {
   background-color: rgba(255, 255, 255, 0.15);
@@ -260,11 +271,4 @@
   margin-top: 14px;
   text-align: center;
   color: var(--login-muted);
-}
-
-/* Responsive */
-@media (max-width: 420px){
-  .login-card.glass { 
-    padding: 22px 16px 16px; 
-  }
 }
