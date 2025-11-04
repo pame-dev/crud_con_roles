@@ -35,6 +35,107 @@ h1 {
   line-height: 1.1;
 }
 
+/* Cambios de color solo en elementos darkable */
+.dark-mode .darkable {
+  background-color: #1a1a1ace !important; /* gris oscuro */
+  color: #e0e0e0 !important;           /* texto claro */
+  border-color: #333 !important;       /* si tiene borde */
+}
+
+/* Inputs y botones dentro de darkable */
+.dark-mode .darkable input,
+.dark-mode .darkable .btn {
+  background-color: #2a2a2a !important;
+  color: #e0e0e0 !important;
+  border-color: #555 !important;
+}
+.dark-mode .darkable input::placeholder {
+  color: #cdc7c7 !important; /* placeholder más claro */
+}
+
+/* Etiquetas y títulos dentro de darkable */
+.dark-mode .darkable label,
+.dark-mode .darkable h1,
+.dark-mode .darkable h2,
+.dark-mode .darkable h4,
+.dark-mode .darkable h5,
+.dark-mode .darkable h3 {
+  color: #fff !important;
+}
+
+.light-mode .darkable {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  color: #000 !important;
+}
+
+.light-mode .darkable label,
+.light-mode .darkable h4,
+.light-mode .darkable h5,
+.light-mode .darkable h3 {
+  color: #000 !important;
+}
+.dark-mode .queue-item-dark {
+  background-color: #2b2b2b !important; /* gris más claro solo para QueueItem */
+  color: #ffffff !important;           /* texto blanco */
+  border-color: #444 !important;
+}
+
+/* Forzar que todos los textos internos sean blancos también */
+.dark-mode .queue-item-dark h6,
+.dark-mode .queue-item-dark small,
+.dark-mode .queue-item-dark div {
+  color: #ffffff !important;
+}
+
+/* Texto dentro de darkable en modo oscuro */
+.dark-mode .darkable p,
+.dark-mode .darkable span,
+.dark-mode .darkable small {
+  color: #ffffff !important;
+}
+
+.dark-mode .keep-light-text,
+.dark-mode .keep-light-text span {
+  background-color: #f8f9fa !important; /* mismo que bg-light de bootstrap */
+  color: #212529 !important; /* mismo que text-dark de bootstrap */
+}
+
+/* ICONOS (Lucide React) en modo oscuro */
+.dark-mode .darkable svg,
+.dark-mode .darkable .lucide {
+  stroke: #ffffff !important; /* hace blancos los trazos */
+  color: #ffffff !important;  /* por si usan color */
+}
+
+/* Modo claro (restaurar) */
+.light-mode .darkable svg,
+.light-mode .darkable .lucide {
+  stroke: #000000 !important;
+  color: #000000 !important;
+}
+
+/* 🔥 Afecta también los contenedores internos dentro de darkable */
+.dark-mode .darkable .card,
+.dark-mode .darkable .grupo-col,
+.dark-mode .darkable .trabajadores-col,
+.dark-mode .darkable .empleado-card,
+.dark-mode .darkable .card-body {
+  background-color: #1a1a1a54 !important; /* gris oscuro */
+  color: #e0e0e0 !important;
+  border-color: #333 !important;
+}
+
+/* 🔹 Textos internos dentro de esas tarjetas */
+.dark-mode .darkable .card h4,
+.dark-mode .darkable .card h5,
+.dark-mode .darkable .card p,
+.dark-mode .darkable .card span {
+  color: #ffffff !important;
+}
+
+
+
+
 button {
   border-radius: 8px;
   border: 1px solid transparent;

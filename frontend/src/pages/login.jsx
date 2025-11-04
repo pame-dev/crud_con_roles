@@ -87,7 +87,17 @@ const Login = () => {
         transition={{ duration: 0.35 }}
       >
         {/* Solo la tarjeta del formulario (una columna) */}
-        <main className="login-card glass">
+        <main className="login-card glass darkable">
+          {/* Botón de regresar (solo flecha) */}
+          <button
+            className="back-btn"
+            type="button"
+            onClick={() => navigate("/")}   // 🔹 Cambiado aquí
+            aria-label="Regresar"
+            title="Regresar"
+          >
+            <i className="fa-solid fa-arrow-left"></i>
+          </button>
           <div className="login-card-header">
             <div className="login-avatar">
               <i className="fa-regular fa-user"></i>
@@ -172,11 +182,11 @@ const Login = () => {
                 </>
               )}
             </button>
-
+            
             <AnimatePresence>
               {error && (
                 <motion.p
-                  className="login-error"
+                  className="login-error darkable"
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}

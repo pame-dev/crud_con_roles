@@ -6,6 +6,7 @@ use App\Http\Middleware\CorsMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TurnController;
+use App\Http\Controllers\EstadisticasController;
 
 // Definición de rutas API para la aplicación.
 // Incluye rutas protegidas y rutas públicas con CORS para empleados y login.
@@ -24,6 +25,7 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::delete('/empleados/{id}', [EmpleadoController::class, 'destroy']);
     Route::put('empleados/{id}/recuperar', [EmpleadoController::class, 'recuperar']);
     Route::put('/empleados/{id}', [EmpleadoController::class, 'update']);
+    Route::post('/empleados/{id}/verificar-contrasena', [EmpleadoController::class, 'verificarContrasena']);
     Route::post('/turnos', [TurnController::class, 'store']);
     Route::get('/turnos/ultimo', [TurnController::class, 'ultimo']);
     Route::get('/turnos/historial', [TurnController::class, 'historial']);
@@ -40,5 +42,14 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::post('/empleados/correo-existe', [EmpleadoController::class, 'correoExiste']);
     Route::get('/empleados/ausentes', [EmpleadoController::class, 'ausentes']);
     Route::put('/empleados/{id}/estado', [EmpleadoController::class, 'actualizarEstado']);
+    Route::put('/turnos/{idTurno}/diagnostico', [TurnController::class, 'guardarDiagnostico']);
+    Route::post('/enviar-codigo', [AuthController::class, 'enviarCodigo']);
+    Route::post('/empleados/registrar-con-codigo', [EmpleadoController::class, 'registrarConCodigo']);
+    Route::post('/empleados/{id}/verificar-contrasena', [EmpleadoController::class, 'verificarContrasena']);
+    Route::get('/turnos/por-empleado', [EstadisticasController::class, 'turnosPorEmpleado']);
+    Route::get('/turnos/tiempos', [EstadisticasController::class, 'tiemposPromedio']);
+    Route::get('/turnos/dias', [EstadisticasController::class, 'turnosPorDia']);
+    Route::get('/turnos/por-tipo', [EstadisticasController::class, 'turnosPorTipo']);
+    Route::get('/turnos/tiempo-empleado', [EstadisticasController::class, 'tiempoPorEmpleado']);
 
 });

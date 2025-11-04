@@ -12,7 +12,7 @@ const VistaGerente = () => {
   const [trabajadores, setTrabajadores] = useState([]);
   const [nombreEmpleado, setNombreEmpleado] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const [vistaLista, setVistaLista] = useState(false);
+  const [vistaMosaico, setVistaMosaico] = useState(false);
   const [cargo, setCargo] = useState(""); // cargo del gerente
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -97,7 +97,7 @@ const VistaGerente = () => {
       {/* CONTENIDO */}
       <div className="container main-content">
         {/* Panel de filtros */}
-        <div className="filtros-panel mb-4">
+        <div className="filtros-panel mb-4 darkable">
           <div className="filtros-grid">
             <div>
               <label className="filtro-label">Buscar empleado</label>
@@ -124,7 +124,7 @@ const VistaGerente = () => {
         <div className="row g-4 full-width-row">
           {/* Turnos en atención */}
           <div className="col-md-8 mb-4">
-            <div className="card shadow turnos-card">
+            <div className="card shadow turnos-card darkable">
               <div className="card-body d-flex justify-content-between align-items-center">
                 <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
                   <Zap size={20} className="text-danger me-2" /> Turnos en Atención
@@ -134,21 +134,21 @@ const VistaGerente = () => {
                 <div className="d-flex align-items-center gap-2">
                   <button
                     className="btn btn-outline-secondary btn-sm py-1 px-2"
-                    onClick={() => setVistaLista(!vistaLista)}
-                    title={vistaLista ? "Vista mosaico" : "Vista lista"}
+                    onClick={() => setVistaMosaico(!vistaMosaico)}
+                    title={vistaMosaico ? "Vista lista" : "Vista mosaico"}
                   >
-                    {vistaLista ? <Grid size={14} /> : <List size={14} />}
+                    {vistaMosaico ? <Grid size={14} /> : <List size={14} />}
                   </button>
                 </div>
               </div>
 
               {/* Contenedor dinámico */}
-              <div className={vistaLista ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
+              <div className={vistaMosaico ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
                 <WorkerTurnCard
                   trabajadores={trabajadores}
                   filtroBusqueda={busqueda}
                   mostrarCargo={true}
-                  modoLista={vistaLista}
+                  modoMosaico={vistaMosaico}
                   onRefresh={handleRefresh} 
                 />
               </div>

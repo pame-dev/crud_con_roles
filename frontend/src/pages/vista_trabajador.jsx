@@ -63,7 +63,7 @@ const VistaTrabajador = () => {
 
       <div className="row g-3 justify-content-center px-4 mb-3">
         <div className="col-md-8 mb-4 text-align-center">
-          <div className="card shadow">
+          <div className="card shadow darkable">
             <div className="card-body">
               <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-4">
                 <Zap size={20} className="text-danger me-2" /> Turno en Atención

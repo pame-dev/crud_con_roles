@@ -2,14 +2,11 @@
 import React, { useState, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
-import "./pages-styles/login.css";
+import "./pages-styles/olvide_contraseña.css";
 import ReestablecerContrasena from "./reestablecer_contrasena";
 
-
 const OlvideMiContrasena = () => {
-  const [form, setForm] = useState({
-    user: "",
-  });
+  const [form, setForm] = useState({ user: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -19,10 +16,7 @@ const OlvideMiContrasena = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // Validación: correo mínimo 6 caracteres
-  const isValid = useMemo(() => {
-    return form.user.trim().length >= 6;
-  }, [form]);
+  const isValid = useMemo(() => form.user.trim().length >= 6, [form]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -33,8 +27,6 @@ const OlvideMiContrasena = () => {
 
     try {
       setSubmitting(true);
-
-      // 🔹 Aquí mandas el correo al backend
       const response = await axios.post("http://127.0.0.1:8000/api/forgot-password", {
         email: form.user,
       });
@@ -42,16 +34,9 @@ const OlvideMiContrasena = () => {
       setSuccess(response.data.message || "Se envió un código a tu correo.");
       setStep("code");
     } catch (err) {
-      // Verifica status y mensajes
       if (err.response?.status === 422) {
-        // Validación de Laravel: podría venir aquí si el email no es válido o falta
-        // Laravel puede devolver errores en err.response.data.errors.email
         const emailErrors = err.response?.data?.errors?.email;
-        if (emailErrors && Array.isArray(emailErrors)) {
-          setError(emailErrors[0]);
-        } else {
-          setError(err.response?.data?.message || "Error de validación.");
-        }
+        setError(emailErrors?.[0] || err.response?.data?.message || "Error de validación.");
       } else if (err.response?.status === 404) {
         setError("El correo no está registrado en el sistema.");
       } else {
@@ -65,7 +50,7 @@ const OlvideMiContrasena = () => {
   return (
     <AnimatePresence>
       <motion.div
-        className="full-width-container"
+        className="login-page one-column"
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -50 }}
@@ -73,60 +58,56 @@ const OlvideMiContrasena = () => {
       >
         <div className="login-wrap">
           <main className="login-main">
-            <section className="login-card">
-              <div className="avatar">
+            <section className="login-card glass darkable">
+              <div className="login-avatar">
                 <i className="fa-regular fa-envelope"></i>
               </div>
-              <h1 className="title">Recuperar contraseña</h1>
+              <h1 className="login-card-header">Recuperar contraseña</h1>
 
-              
               {step === "email" && (
-  <form onSubmit={onSubmit} className="login-form" noValidate>
-    <label className="input-group">
-      <span className="icon">
-        <i className="fa-solid fa-envelope"></i>
-      </span>
-      <input
-        type="email"
-        name="user"
-        placeholder="Correo"
-        value={form.user}
-        onChange={handleChange}
-        required
-        autoComplete="email"
-      />
-    </label>
+                <form onSubmit={onSubmit} className="login-form" noValidate>
+                  <div className="login-input-group">
+                    <span className="icon">
+                      <i className="fa-solid fa-envelope"></i>
+                    </span>
+                    <input
+                      type="email"
+                      name="user"
+                      placeholder="Correo"
+                      value={form.user}
+                      onChange={handleChange}
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
 
-    <button
-      className="btn-primary"
-      type="submit"
-      disabled={!isValid || submitting}
-    >
-      {submitting ? (
-        <>
-          <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
-        </>
-      ) : (
-        <>
-          <i className="fa-solid fa-paper-plane"></i> Enviar código
-        </>
-      )}
-    </button>
+                  <button
+                    className="login-btn"
+                    type="submit"
+                    disabled={!isValid || submitting}
+                  >
+                    {submitting ? (
+                      <>
+                        <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-paper-plane"></i> Enviar código
+                      </>
+                    )}
+                  </button>
 
-    {error && <p className="error-msg">{error}</p>}
-    {success && <p className="success-msg">{success}</p>}
-  </form>
-)}
+                  {error && <p className="login-error">{error}</p>}
+                  {success && <p className="login-footer">{success}</p>}
+                </form>
+              )}
 
-{step === "code" && (
-  <ReestablecerContrasena email={form.user} />
-)}
-
-        </section>
-      </main>
-    </div>
-  </motion.div>
-</AnimatePresence>
+              {step === "code" && <ReestablecerContrasena email={form.user} />}
+            </section>
+          </main>
+        </div>
+      </motion.div>
+    </AnimatePresence>
   );
 };
 

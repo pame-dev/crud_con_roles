@@ -12,6 +12,23 @@ const ESTADO_BADGE = {
   completado: "success",
 };
 
+// Función para formatear la duración
+const formatDuracion = (duracion) => {
+  if (!duracion) return "—";
+  
+  // Si ya viene en formato HH:MM desde la base de datos
+  if (duracion.includes(':')) {
+    const [horas, minutos] = duracion.split(':').map(Number);
+    if (horas > 0) {
+      return `${horas}h ${minutos}m`;
+    } else {
+      return `${minutos}m`;
+    }
+  }
+  
+  return duracion;
+};
+
 function EstadoBadge({ estado }) {
   const color = ESTADO_BADGE[estado] || "secondary";
   const text = (estado || "desconocido").replaceAll("_", " ");
@@ -29,7 +46,7 @@ function TurnoCard({ turno }) {
   return (
     <div className="col">
       <div
-        className="card shadow-sm historial-card position-relative"
+        className="card shadow-sm historial-card position-relative darkable"
         style={{ borderRadius: "15px", transition: "transform 0.2s", cursor: "pointer" }}
         onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-5px)")}
         onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
@@ -41,26 +58,31 @@ function TurnoCard({ turno }) {
           </div>
 
           <div className="d-flex align-items-center mb-2 gap-2">
-            <User size={16} className="text-dark" />
+            <User size={16} className="text-dark darkable" />
             <span className="fw-semibold">{turno.cliente}</span>
           </div>
 
           <div className="d-flex align-items-center mb-2 gap-2">
-            <Wrench size={16} className="text-muted" />
+            <Wrench size={16} className="text-muted darkable" />
             <span>{turno.servicio || "—"}</span>
           </div>
 
           <div className="d-flex align-items-center gap-2 text-muted">
-            <Calendar size={16} />
+            <Calendar size={16} className="darkable"/>
             <span>{turno.fecha} {turno.hora ? `· ${turno.hora}` : ""}</span>
           </div>
+
         </div>
 
         {turno.estado?.toLowerCase() === "completado" && turno.NOMBRE_EMPLEADO && (
           <div className="tooltip-empleado">
             <strong>Atendido por:</strong> {turno.NOMBRE_EMPLEADO} <br />
             <strong>ID:</strong> {turno.ID_EMPLEADO} <br />
-            <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"}
+            <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"} <br />
+            <strong>Duración:</strong> {formatDuracion(turno.duracion) || "—"} <br />
+            <strong>Descripción:</strong> {turno.DESCRIPCION || "—"} <br />
+            <strong>Tiempo de entrega:</strong> {turno.TIEMPO_ENTREGA} <br />
+            <strong>Tipo de Servicio:</strong> {turno.TIPO_SERVICIO || "—"} <br />
           </div>
         )}
       </div>
@@ -192,7 +214,7 @@ const Historial = () => {
       >
 
         {/* HERO */}
-        <div className="hero-section">
+        <div className="hero-section darkable">
           <div className="seccion-hero">
             <div className="row-hero">
               <button
@@ -220,7 +242,7 @@ const Historial = () => {
 
         {/* CONTENIDO PRINCIPAL */}
         <div className="container px-3 px-md-5" style={{ marginTop: "-2rem", paddingBottom: "3rem" }}>
-          <div className="card shadow mb-4" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
+          <div className="card shadow mb-4 darkable" style={{ borderRadius: "12px", backgroundColor: "rgba(255,255,255,0.85)" }}>
             <div className="card-body">
               <div className="row g-3 align-items-end">
                 <div className="col-12 col-md-4">
@@ -233,10 +255,10 @@ const Historial = () => {
                     style={{ borderRadius: "10px" }}
                   />
                 </div>
-                <div className="col-6 col-md-2">
+                <div className="col-6 col-md-2 ">
                   <label className="form-label fw-semibold text-dark">Estado</label>
                   <select
-                    className="form-select"
+                    className="form-select darkable"
                     value={estado}
                     onChange={(e) => { setEstado(e.target.value); setPage(1); }}
                     style={{ borderRadius: "10px" }}
@@ -292,7 +314,7 @@ const Historial = () => {
                   </div>
                 </>
               ) : (
-                <div className="card shadow-sm mt-4" style={{ borderRadius: "12px" }}>
+                <div className="card shadow-sm mt-4 darkable" style={{ borderRadius: "12px" }}>
                   <div className="card-body text-center py-5">
                     <CheckCircle size={32} className="text-muted mb-2" />
                     <h5 className="mb-1">Sin turnos coincidentes</h5>

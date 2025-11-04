@@ -39,7 +39,7 @@ const PantallaCompleta = () => {
           transition={{ duration: 0.5 }}
         >
           {/* Hero Section */}
-          <div className="hero-section-pc">
+          <div className="hero-section-pc darkable">
             <button
               className="btn_regresar hero-backk"
               onClick={handleExit}
@@ -62,7 +62,7 @@ const PantallaCompleta = () => {
 
               {/* Turno en atención */}
               <div className="col-lg-8">
-                <div className="card shadow-lg full-width-card">
+                <div className="card shadow-lg full-width-card darkable">
                   <div className="card-body p-4">
                     <h3 className="card-title fw-bold text-dark mb-5 d-flex align-items-center">
                       <Wrench size={24} className="text-danger me-3" />
