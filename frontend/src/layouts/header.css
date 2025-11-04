@@ -1,47 +1,69 @@
+/* ====== NAV LINKS ====== */
 .navbar-nav .nav-link {
-    border-radius: 0.5rem;
-    margin: 0 0.25rem;
-    transition: all 0.2s ease;
-    color: rgba(255, 255, 255, 0.8) !important;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  margin: 0 0.25rem;
+  transition: all 0.2s ease;
+  color: rgba(255, 255, 255, 0.8) !important;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
 }
-          
 .navbar-nav .nav-link.active {
-    background-color: #dc3545;
-    color: white !important;
+  background-color: #dc3545;
+  color: white !important;
 }
-          
 .navbar-nav .nav-link:hover {
-    background-color: rgba(220, 53, 69, 0.3);
-    color: white !important;
+  background-color: rgba(220, 53, 69, 0.3);
+  color: white !important;
 }
-          
 .navbar-brand {
-    text-decoration: none !important;
-}
-          
-.btn-login {
-    white-space: nowrap;
-}
-          
-.logo-image {
-    width: 100px;
-    height: 70px;
-    object-fit: contain;
-    margin-right: 0.75rem;
+  text-decoration: none !important;
 }
 
-/* Estilos personalizados para el modal */
+/* ====== AJUSTE DEL MENÚ DESPLEGABLE ====== */
+
+/* Aumenta la altura y separación cuando el menú se abre */
+.navbar-collapse.collapse.show {
+  padding-bottom: 10px;
+  border-radius: 0 0 10px 10px;
+  transition: all 0.3s ease;
+}
+
+/* mejora el padding interno de los links */
+.navbar-nav .nav-item {
+  margin: 6px 0;
+}
+
+
+/* Botón de login: animación suave como el globo */
+.btn-login {
+  white-space: nowrap;
+  transition: transform .2s ease, background-color .2s ease, box-shadow .2s ease; /* <– clave */
+  will-change: transform;
+}
+
+.btn-login:hover {
+  background: #ff4e4e !important; /* sobrepone el hover de Bootstrap */
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,.2);
+}
+
+.logo-image {
+  width: 100px;
+  height: 70px;
+  object-fit: contain;
+  margin-right: 0.75rem;
+}
+
+/* ====== MODAL PERFIL ====== */
 .custom-modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: transparent; /* sin negro */
+  background: transparent;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,140 +79,288 @@
 .eye-btn:hover {
   color: #000;
 }
-
-
 .custom-modal {
-    position: absolute;
-    top: 60px; /* Ajusta según el tamaño del botón de perfil */
-    right: 20px; /* Ajusta margen derecho */
-    background: #fff;
-    border-radius: 16px;
-    width: 350px;
-    overflow: hidden;
-    box-shadow:  0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
-    animation: modalFade 0.3s ease-in-out;
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  background: #fff;
+  border-radius: 16px;
+  width: 350px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
+  animation: modalFade 0.3s ease-in-out;
 }
 
-/* Encabezado con fondo rojo-naranja */
+/* ====== ETIQUETA MODO EDICIÓN FIJA ====== */
+.edit-mode {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: #ffc107 !important;
+  color: #fff;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  z-index: 2;
+}
+
 .modal-header-profile {
-    background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    color: white;
+  position: relative;
+  background: linear-gradient(135deg, #ff3b3b, #ff8a3d);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: white;
 }
-
 .profile-name {
-    font-size: 1.1rem;
-    font-weight: bold;
-    margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0;
 }
-
 .profile-email {
-    font-size: 0.9rem;
-    opacity: 0.85;
-    margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin: 0;
 }
-
-/* Opciones */
 .modal-options {
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
 }
-
 .profile-label {
-    display: block;
-    font-size: 0.7rem; /* más pequeño */
-    color: #888;       /* gris suave */
-    font-weight: 500;
-    line-height: 1.1;
-    margin-bottom: 2px;
+  display: block;
+  font-size: 0.7rem;
+  color: #888;
+  font-weight: 500;
+  line-height: 1.1;
+  margin-bottom: 2px;
 }
-
 .content-profile-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
 }
-
 .profile-row {
-    background: #fff5f0; /* Fondo suave */
-    padding: 8px 12px;
-    border-radius: 8px;
-    width: 90%;
+  background: #fff5f0;
+  padding: 8px 12px;
+  border-radius: 8px;
+  width: 90%;
 }
-
 .profile-data {
-    font-size: 1rem;
-    font-weight: 500;
-    color: #333;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
 }
-
 .profile-input {
-    background: #fff5f0; /* Fondo suave */
-    padding: 8px 12px;
-    color:#000;
-    border-radius: 8px;
-    width: 90%;
-    border: 0px; /*  define tu propio borde */
-    
+  background: #fff5f0;
+  padding: 8px 12px;
+  color: #000;
+  border-radius: 8px;
+  width: 90%;
+  border: 0;
 }
-
 .profile-input:focus {
   outline: none;
-  border-color: #dc3545; /* rojo estilo Bootstrap */
+  border-color: #dc3545;
   box-shadow: 0 0 4px rgba(220, 53, 69, 0.5);
 }
-
-
 .edit-btn {
-    margin-left: 8px; /* separación del recuadro */
-    background: #ff4e4e;
-    border: none;
-    padding: 8px;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  margin-left: 8px;
+  background: #ff4e4e;
+  border: none;
+  padding: 8px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
 .edit-btn:hover {
-    background: #e63d3d;
+  background: #e63d3d;
 }
-
-
-/* Footer del modal*/
 .modal-footer-profile {
-    padding: 15px;
-    border-top: 1px solid #eee;
-    text-align: center;
+  padding: 15px;
+  border-top: 1px solid #eee;
+  text-align: center;
 }
-
 .logout-btn {
-    background: #ff4e4e;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.2s ease;
+  background: #ff4e4e;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
 .logout-btn:hover {
-    background: #e63d3d;
+  background: #e63d3d;
 }
 
-/* Animación */
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
 @keyframes modalFade {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ====== GOOGLE TRANSLATE (VERSIÓN FINAL RESPONSIVE) ====== */
+
+/* Contenedor del traductor integrado al grupo de botones */
+.translate-wrapper {
+  position: relative; /* mantiene la caja bajo el botón */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 12000;
+}
+
+/* Botón del globo */
+.translate-wrapper .translate-btn {
+  background: #dc3545;
+  border: none;
+  border-radius: 6px;
+  width: 42px;
+  height: 29px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
+}
+
+.translate-wrapper .translate-btn:hover {
+  background: #ff4e4e;
+  transform: translateY(-2px);
+}
+
+/* Caja del traductor — fija para que no se corte */
+#google_translate_element {
+  display: none;
+  position: fixed;
+  top: 65px;
+  right: 12px;
+  background: linear-gradient(135deg, #ff3b3b, #ff7b42);
+  border-radius: 12px;
+  padding: 14px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  animation: fadeSlide 0.25s ease-out;
+  z-index: 13000 !important;
+}
+
+/* Mostrar al activar */
+#google_translate_element.show {
+  display: block !important;
+}
+
+/* Flechita decorativa */
+#google_translate_element::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  right: 12px;
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #ff3b3b transparent;
+}
+
+/* Ocultar texto innecesario del gadget */
+.goog-te-gadget {
+  color: transparent !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+/* Combo de idiomas */
+.goog-te-combo {
+  appearance: none !important;
+  background: #fff url("data:image/svg+xml;utf8,<svg fill='%23ff3b3b' height='24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+  background-size: 16px;
+  color: #222 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 10px 35px 10px 15px !important;
+  font-size: 0.95rem !important;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+.goog-te-combo:hover {
+  background-color: #fff7f5 !important;
+  box-shadow: 0 4px 10px rgba(255, 59, 59, 0.3);
+  transform: scale(1.03);
+}
+
+/* Scrollbar personalizada */
+.goog-te-combo option {
+  background-color: #fff;
+  color: #222;
+}
+
+select::-webkit-scrollbar {
+  width: 8px;
+}
+select::-webkit-scrollbar-thumb {
+  background-color: #ff3b3b;
+  border-radius: 4px;
+}
+
+/* Menú del traductor sobre todo */
+.goog-te-menu-frame,
+.goog-te-menu2 {
+  z-index: 14000 !important;
+  pointer-events: auto !important;
+}
+
+/* Animación de aparición */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== AJUSTES RESPONSIVE ====== */
+@media (max-width: 992px) {
+  #google_translate_element {
+    top: 120px; /* un poco más bajo en móvil */
+    right: 10px;
+    padding: 12px;
+  }
+
+  .translate-wrapper .translate-btn {
+    width: 42px;
+    height: 29px;
+  }
+
+  .custom-modal {
+    top: 140px;
+    right: 20px;
+  }
+}
+
+@media(max-width: 576px) {
+  #google_translate_element {
+    top: 130px; /* aún más bajo en pantallas muy pequeñas */
+    right: 8px;
+    padding: 10px;
+  }
+
+  .translate-wrapper .translate-btn {
+    width: 42px;
+    height: 29px;
+  }
+
+  .navbar-collapse.collapse.show {
+    margin-top: 5px;
+    padding-top: 5px;
+  }
 }

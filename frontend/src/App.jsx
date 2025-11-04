@@ -7,7 +7,6 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import Header from './layouts/Header';
 import Footer from './layouts/Footer';
 import './styles/custom.css';
-import './i18n/i18n';
 import Equipo from "./pages/equipo";
 
 import { useLocation } from 'react-router-dom';
@@ -30,8 +29,9 @@ import OlvideMiContrasena from './pages/olvide_mi_contrasena';
 import ReestablecerContrasena from './pages/reestablecer_contrasena';
 import EditarEmpleado from './pages/editar_empleado';
 import TerminosYCondiciones from './pages/terminos_y_condiciones';
-
-
+import { DarkModeProvider, useDarkMode } from "./layouts/DarkModeContext";
+import {AudioProvider} from "./components/AudioContext";
+import Graficas from "./pages/graficas";
 // Layout condicional
 const AppLayout = ({ children }) => {
   const location = useLocation();
@@ -40,7 +40,7 @@ const AppLayout = ({ children }) => {
   const noHeaderFooterRoutes = ['/pantalla_completa'];
   
   // Rutas que solo deben mostrar header pero no footer
-  const noFooterRoutes = ['/formulario_turno']; // Agrega aquí otras rutas si es necesario
+  const noFooterRoutes = ['#']; // Agrega aquí otras rutas si es necesario
   
   const hideHeaderFooter = noHeaderFooterRoutes.includes(location.pathname);
   const hideFooterOnly = noFooterRoutes.includes(location.pathname);
@@ -54,36 +54,43 @@ const AppLayout = ({ children }) => {
   );
 };
 
-
 const PitLineApp = () => {
   return (
     <EmpleadoProvider>
-      <Router>
-        <AppLayout>
-          <Routes>
-            <Route path="/equipo" element={<Equipo />} />
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/pantalla_completa" element={<PantallaCompleta />} />
-            <Route path="/formulario_turno" element={<FormularioTurno />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/vista_gerente" element={<VistaGerente />} />
-            <Route path="/vista_trabajador" element={<VistaTrabajador />} />
-            <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
-            <Route path="/historial" element={<Historial />} />
-            <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
-            <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
-            <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
-            <Route path="/administrar_empleados" element={<RequireRoleLocal roles={['superadmin', 'gerente']}><AdministrarEmpleados /></RequireRoleLocal>}/>
-            <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
-            <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
-            <Route path='/editar_empleado' element={<EditarEmpleado />} />
-            <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
-            <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
-
-          </Routes>
-        </AppLayout>
-      </Router>
+      <DarkModeProvider>
+        <AudioProvider> {/* Se agregó aquí el proveedor global de audio */}
+          <Router>
+            <AppLayout>
+              <Routes>
+                <Route path="/equipo" element={<Equipo />} />
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/pantalla_completa" element={<PantallaCompleta />} />
+                <Route path="/formulario_turno" element={<FormularioTurno />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/vista_gerente" element={<VistaGerente />} />
+                <Route path="/vista_trabajador" element={<VistaTrabajador />} />
+                <Route path="/vista_superadministrador" element={<VistaSuperadministrador />} />
+                <Route path="/historial" element={<Historial />} />
+                <Route path="/register_gerentes_y_trabajadores" element={<RegisterGerentes />} />
+                <Route path="/register_trabajadores" element={<RegisterTrabajadores />} />
+                <Route path="/administrar_empleados" element={<AdministrarEmpleados />} />
+                <Route path="/administrar_empleados" element={
+                  <RequireRoleLocal roles={['superadmin', 'gerente']}>
+                    <AdministrarEmpleados />
+                  </RequireRoleLocal>
+                }/>
+                <Route path="/olvide_mi_contrasena" element={<OlvideMiContrasena />} />
+                <Route path='/reestablecer_contrasena' element={<ReestablecerContrasena />} />
+                <Route path='/editar_empleado' element={<EditarEmpleado />} />
+                <Route path="/editar_empleado/:id" element={<EditarEmpleado />} />
+                <Route path="/terminos_y_condiciones" element={<TerminosYCondiciones />} />
+                <Route path="/graficas" element={<Graficas />} />
+              </Routes>
+            </AppLayout>
+          </Router>
+        </AudioProvider> {/*cierre del proveedor */}
+      </DarkModeProvider>
     </EmpleadoProvider>
   );
 };

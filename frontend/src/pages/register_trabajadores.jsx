@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import "./pages-styles/register_gerentes_y_trabajadores.css";
+import ModalAlert from "../components/ModalAlert"; 
 
 const empleadoLogueado = JSON.parse(localStorage.getItem("empleado") || "null");
 
@@ -10,7 +11,7 @@ function normalizaCargo(c) {
   const s = (c || "").toLowerCase();
   if (s.includes("repar")) return "Reparacion";
   if (s.includes("cotiz")) return "Cotizacion";
-  return c || ""; // por si ya viene correcto
+  return c || "";
 }
 
 const RegisterTrabajadores = () => {
@@ -26,6 +27,23 @@ const RegisterTrabajadores = () => {
   const [submitting, setSubmitting] = useState(false);
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
+  const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  // Nuevos estados para verificación por código
+  const [codigoEnviado, setCodigoEnviado] = useState(null);
+  const [codigoIngresado, setCodigoIngresado] = useState("");
+  const [esperandoCodigo, setEsperandoCodigo] = useState(false);
+
+  const showModal = (title, message, type = "info") => {
+    setModal({ show: true, title, message, type });
+  };
+
+  const closeModal = () => setModal({ ...modal, show: false });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -37,27 +55,23 @@ const RegisterTrabajadores = () => {
     e.preventDefault();
     if (submitting) return;
 
-    // Validaciones básicas
+    // Validaciones en orden correcto
     if (!formData.nombre || formData.nombre.trim().length < 3) {
-      alert("El nombre debe tener al menos 3 caracteres.");
+      showModal("Nombre inválido", "El nombre debe tener al menos 3 caracteres.", "error");
       return;
     }
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      alert("Las contraseñas no coinciden.");
-      return;
-    }
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$/;
-    if (!passwordRegex.test(formData.contrasena)) {
-      alert(
-        "La contraseña debe tener mínimo 8 caracteres, incluir 1 mayúscula, 1 minúscula y 1 carácter especial."
-      );
+
+    // Validar correo (formato correcto)
+    const correoRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.correo || !correoRegex.test(formData.correo)) {
+      showModal("Correo inválido", "Por favor, ingresa un correo electrónico válido.", "error");
       return;
     }
 
     try {
       setSubmitting(true);
 
-      // Verificar correo único
+      // 1. Verificar si el correo ya existe en la base de datos
       const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -65,39 +79,125 @@ const RegisterTrabajadores = () => {
       }).then((r) => r.json());
 
       if (v.existe) {
-        setCorreoError("El correo ya está registrado por otro empleado.");
+        showModal(
+          "Correo ya registrado", 
+          "El correo ya está registrado por otro empleado. Por favor, usa un correo diferente.",
+          "error"
+        );
         setSubmitting(false);
         return;
       }
 
-      // Construir payload: cargo heredado del gerente e id_rol = 2
+    // ✅ AGREGADO: Validar fortaleza de contraseña (antes de verificar correo en BD)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(formData.contrasena)) {
+      showModal(
+        "Contraseña insegura", 
+        "La contraseña debe tener:\n• Mínimo 8 caracteres\n• 1 letra mayúscula\n• 1 letra minúscula\n• 1 número\n• 1 carácter especial (@$!%*?&)",
+        "error"
+      );
+      return;
+    }
+
+    // Validar que las contraseñas coincidan
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      showModal("Contraseñas no coinciden", "Las contraseñas deben ser idénticas.", "error");
+      return;
+    }
+
+      // 2. Si no estamos esperando código aún → enviarlo
+      if (!esperandoCodigo) {
+        const codigo = Math.floor(100000 + Math.random() * 900000); // código 6 dígitos
+
+        try {
+          // Llamar al backend para enviar código
+          await axios.post("http://127.0.0.1:8000/api/enviar-codigo", {
+            correo: formData.correo,
+            codigo,
+          });
+
+          // Si la respuesta es correcta, guardamos el código y mostramos el input
+          setCodigoEnviado(codigo);
+          setEsperandoCodigo(true);
+
+          showModal(
+            "Código enviado",
+            "Se ha enviado un código de verificación a tu correo. Ingrésalo para continuar.",
+            "info"
+          );
+
+        } catch (err) {
+          console.error(err);
+          showModal(
+            "Error",
+            "No se pudo enviar el código. Revisa tu correo o intenta nuevamente.",
+            "error"
+          );
+        } finally {
+          setSubmitting(false);
+        }
+        return;
+      }
+
+      // 3. Si ya estamos esperando código → validar
+      if (!codigoIngresado) {
+        showModal("Código requerido", "Por favor, ingresa el código de verificación.", "error");
+        setSubmitting(false);
+        return;
+      }
+
+      if (codigoIngresado.toString() !== codigoEnviado.toString()) {
+        showModal("Código incorrecto", "El código ingresado no coincide. Revisa tu correo.", "error");
+        setSubmitting(false);
+        return;
+      }
+
+      // 4. Registro final
       const cargoGerente = normalizaCargo(empleadoLogueado?.CARGO);
+      
+      // Verificar que el cargo no sea null o vacío
+      if (!cargoGerente) {
+        showModal("Error", "No se pudo determinar el cargo del gerente. Contacta al administrador.", "error");
+        setSubmitting(false);
+        return;
+      }
+
       const payload = {
         nombre: formData.nombre,
         correo: formData.correo,
         contrasena: formData.contrasena,
         cargo: cargoGerente,
         id_rol: 2,
+        codigo: codigoIngresado
       };
 
-      await axios.post("http://127.0.0.1:8000/api/empleados", payload);
-      alert("Empleado registrado correctamente");
-      navigate("/administrar_empleados");
+      console.log("Payload a enviar:", payload); // Para debugging
+
+      await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
+      showModal(
+        "Registro exitoso", 
+        "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", 
+        "success"
+      );
+      setTimeout(() => navigate("/administrar_empleados"), 1500);
+
     } catch (err) {
-      console.error(err);
-      alert("Error al registrar empleado");
+      console.error("Error completo:", err);
+      console.error("Datos de respuesta:", err.response?.data);
+      
+      const errorMessage = err.response?.data?.message || "Error al registrar empleado.";
+      showModal("Error", errorMessage, "error");
     } finally {
       setSubmitting(false);
     }
   };
 
-  const areaUI =
-    (empleadoLogueado?.CARGO || "")
-      .toString()
-      .replace(/^[a-z]/, (m) => m.toUpperCase());
+  const areaUI = (empleadoLogueado?.CARGO || "")
+    .toString()
+    .replace(/^[a-z]/, (m) => m.toUpperCase());
 
   return (
-    <AnimatePresence>
+    <><AnimatePresence>
       <motion.div
         className="reg-page one-column"
         initial={{ opacity: 0, x: 50 }}
@@ -105,7 +205,7 @@ const RegisterTrabajadores = () => {
         exit={{ opacity: 0, x: -50 }}
         transition={{ duration: 0.5 }}
       >
-        <section className="reg-card glass">
+        <section className="reg-card glass darkable">
           <header className="reg-header">
             <div className="reg-avatar">
               <i className="fa-solid fa-user-plus"></i>
@@ -113,7 +213,7 @@ const RegisterTrabajadores = () => {
             <h1>Nuevo trabajador</h1>
             <p className="reg-subtitle">El trabajador se registrará en tu área</p>
             {areaUI && (
-              <div className="reg-badge">
+              <div className="reg-badge darkable">
                 <i className="fa-solid fa-wrench"></i> Área: {areaUI}
               </div>
             )}
@@ -133,7 +233,7 @@ const RegisterTrabajadores = () => {
                 onChange={handleChange}
                 required
                 minLength={3}
-              />
+                disabled={esperandoCodigo} />
             </label>
 
             {/* Correo */}
@@ -149,7 +249,7 @@ const RegisterTrabajadores = () => {
                 onChange={handleChange}
                 required
                 autoComplete="email"
-              />
+                disabled={esperandoCodigo} />
             </label>
             {correoError && <p className="reg-error">{correoError}</p>}
 
@@ -167,12 +267,13 @@ const RegisterTrabajadores = () => {
                 required
                 minLength={8}
                 autoComplete="new-password"
-              />
+                disabled={esperandoCodigo} />
               <button
                 type="button"
                 className="eye"
                 onClick={() => setShowPwd((s) => !s)}
                 aria-label={showPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+                disabled={esperandoCodigo}
               >
                 <i className={`fa-solid ${showPwd ? "fa-eye-slash" : "fa-eye"}`}></i>
               </button>
@@ -192,14 +293,13 @@ const RegisterTrabajadores = () => {
                 required
                 minLength={8}
                 autoComplete="new-password"
-              />
+                disabled={esperandoCodigo} />
               <button
                 type="button"
                 className="eye"
                 onClick={() => setShowConfirmPwd((s) => !s)}
-                aria-label={
-                  showConfirmPwd ? "Ocultar contraseña" : "Mostrar contraseña"
-                }
+                aria-label={showConfirmPwd ? "Ocultar contraseña" : "Mostrar contraseña"}
+                disabled={esperandoCodigo}
               >
                 <i
                   className={`fa-solid ${showConfirmPwd ? "fa-eye-slash" : "fa-eye"}`}
@@ -207,32 +307,84 @@ const RegisterTrabajadores = () => {
               </button>
             </label>
 
+            {/* Campo para código de verificación */}
+            {submitting && !esperandoCodigo && (
+              <p className="reg-info">Enviando código a tu correo…</p>
+            )}
+            
+            {esperandoCodigo && (
+              <label className="reg-group">
+                <span className="icon"><i className="fa-solid fa-key"></i></span>
+                <input
+                  type="text"
+                  name="codigo"
+                  placeholder="Ingresa el código de verificación"
+                  value={codigoIngresado}
+                  onChange={(e) => setCodigoIngresado(e.target.value)}
+                  required
+                  maxLength={6}
+                  pattern="[0-9]*"
+                  inputMode="numeric"
+                />
+              </label>
+            )}
+
+            <div className="reg-info-box">
+              <i className="fa-solid fa-shield-alt"></i>
+              <span>Al registrarse, el empleado recibirá un correo con las políticas de privacidad y términos de servicio.</span>
+            </div>
+
             {/* Acciones */}
             <div className="reg-actions">
               <button className="reg-btn" type="submit" disabled={submitting}>
                 {submitting ? (
                   <>
-                    <i className="fa-solid fa-spinner fa-spin"></i> Registrando…
+                    <i className="fa-solid fa-spinner fa-spin"></i> 
+                    {esperandoCodigo ? "Registrando…" : "Enviando código…"}
                   </>
                 ) : (
                   <>
-                    <i className="fa-solid fa-user-check"></i> Registrar
+                    <i className="fa-solid fa-user-check"></i> 
+                    {esperandoCodigo ? "Confirmar registro" : "Registrar"}
                   </>
                 )}
               </button>
-              <button
-                type="button"
-                className="reg-btn outline"
-                onClick={() => navigate(-1)}
-                disabled={submitting}
-              >
-                <i className="fa-solid fa-arrow-left"></i> Cancelar
-              </button>
+              
+              {!esperandoCodigo && (
+                <button
+                  type="button"
+                  className="reg-btn outline darkable"
+                  onClick={() => navigate(-1)}
+                  disabled={submitting}
+                >
+                  <i className="fa-solid fa-arrow-left"></i> Cancelar
+                </button>
+              )}
+              
+              {esperandoCodigo && (
+                <button
+                  type="button"
+                  className="reg-btn outline darkable"
+                  onClick={() => {
+                    setEsperandoCodigo(false);
+                    setCodigoIngresado("");
+                    setSubmitting(false);
+                  }}
+                  disabled={submitting}
+                >
+                  <i className="fa-solid fa-arrow-left"></i> Volver
+                </button>
+              )}
             </div>
           </form>
         </section>
       </motion.div>
-    </AnimatePresence>
+    </AnimatePresence><ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal} /></>
   );
 };
 
