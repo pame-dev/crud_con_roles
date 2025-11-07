@@ -1,0 +1,132 @@
+/* Estilos generales del card */
+.current-turn-card {
+  background: linear-gradient(135deg, #fd0d0dff 0%, #750b0bff 100%);
+  color: white;
+  border-radius: 1rem;
+  padding: 0.6rem 1rem;  
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.current-turn-card:hover {
+  transform: translateY(-2px);
+}
+
+/* Modo lista compacto */
+.turno-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.9rem;
+  line-height: 1.2;
+}
+
+/* Columna izquierda */
+.turno-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+
+/* Nombre del trabajador */
+.turno-nombre {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Cargo y área */
+.turno-cargo,
+.turno-area,
+.turno-numero,
+.turno-sin {
+  font-size: 1rem;
+  color: #f0f0f0;
+}
+
+/* Texto "sin turno" */
+.turno-sin {
+  font-style: italic;
+  color: #ffdcdc;
+}
+
+/* Columna derecha */
+.turno-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+/* Hora */
+.turno-hora {
+  font-size: 1rem;
+  color: #fff;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Botón compacto */
+.btn-pass-turn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.7rem;
+  background: #ee1c1c;
+  border: none;
+  color: #fff;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.btn-pass-turn:hover {
+  background: #e22323;
+  transform: scale(1.05);
+}
+
+/* Modo mosaico (card grande) */
+.turn-number-display {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.customer-name {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.turn-details {
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.turno-procesando {
+  opacity: 0.7;
+  animation: pulso 1s infinite;
+}
+
+@keyframes pulso {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+/* Reloj giratorio */
+.spin {
+  display: inline-block;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+/*Fin de giratorio */

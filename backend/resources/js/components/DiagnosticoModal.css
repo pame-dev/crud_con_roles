@@ -1,0 +1,178 @@
+/* Fondo borroso que cubre toda la pantalla */
+.modal-overlayy {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  background: rgba(0, 0, 0, 0.6) !important;
+  backdrop-filter: blur(5px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 999999 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Modal centrado en la pantalla completa */
+.modal-diagnostico {
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-radius: 1rem !important;
+  color: #111 !important;
+  width: 520px !important;
+  max-width: 90vw !important;
+  padding: 2rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35) !important;
+  animation: modalFadeIn 0.3s ease !important;
+  z-index: 1000000 !important;
+  
+  /* Centrado absoluto en la pantalla */
+  position: fixed !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+@keyframes modalFadeIn {
+  from { 
+    opacity: 0; 
+    transform: translate(-50%, -48%); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translate(-50%, -50%); 
+  }
+}
+
+/* Título */
+.modal-title {
+  font-weight: bold;
+  margin-bottom: 1.5rem;
+  color: #111;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  text-align: center;
+}
+
+/* Cuerpo del modal */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.modal-body label {
+  font-size: 0.95rem;
+  color: #333;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Campos */
+.modal-body input,
+.modal-body textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  padding: 0.8rem;
+  background: rgba(0, 0, 0, 0.05);
+  color: #111;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.2s ease;
+  resize: none;
+  box-sizing: border-box;
+}
+
+.modal-body input:focus,
+.modal-body textarea:focus {
+  background: rgba(0, 0, 0, 0.08);
+  border: 1px solid #ff4d4d;
+  box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.1);
+}
+
+/* Botones */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancel,
+.btn-save {
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  min-width: 100px;
+  justify-content: center;
+}
+
+/* Botón cancelar */
+.btn-cancel {
+  background: rgba(0, 0, 0, 0.1);
+  color: #222;
+}
+
+.btn-cancel:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Botón guardar */
+.btn-save {
+  background: #ff4d4d;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #e63939;
+  transform: scale(1.05);
+}
+
+/* Scroll para textarea */
+textarea {
+  max-height: 120px;
+  min-height: 80px;
+}
+
+/* Estilos para input date */
+input[type="date"] {
+  color-scheme: light;
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #111;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0);
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: brightness(0.5);
+}
+
+/* Placeholder */
+.modal-body input::placeholder,
+.modal-body textarea::placeholder {
+  color: #666;
+  opacity: 0.7;
+}
+
+/* Reset completo para evitar herencia */
+.modal-diagnostico * {
+  box-sizing: border-box !important;
+  font-family: inherit !important;
+  line-height: normal !important;
+}
