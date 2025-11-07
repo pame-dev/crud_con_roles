@@ -1,0 +1,163 @@
+:root{
+  /* 1 = opaco, 0 = totalmente transparente */
+  --filtros-alpha: .85;
+  --turnos-card-alpha: .78;   /* ← mueve este valor para más/menos transparencia */
+}
+
+/* ===== Hero ===== */
+.hero-section {
+  background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  padding: 4rem 0;
+  margin-top: 56px;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  left: 0;
+  right: 0;
+  z-index: 0;
+}
+
+.hero-section .text-center {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+  clip-path: ellipse(70% 100% at 50% 0%);
+  z-index: 0;
+}
+
+/* Hero section en modo oscuro */
+body.dark-mode .hero-section.darkable {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+body.dark-mode .hero-section.darkable::after {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+
+/* ===== Contenedor full ===== */
+.full-width-container {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* El contenido va por encima de la panza del hero */
+.main-content {
+  position: relative;
+  z-index: 1;
+  margin-top: -3rem; /* lo que tenías inline */
+}
+
+/* ===== Grid del listado ===== */
+.turnos-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.turnos-grid {
+  grid-auto-rows: min-content !important;
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+
+/* Evitar que el .container global limite de más */
+.container {
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+/* ===== Panel de filtros / acciones (mismo look que Historial) ===== */
+.filtros-panel {
+  background: rgba(255,255,255,var(--filtros-alpha));
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.08);
+  padding: 16px 18px;
+}
+
+/* Grid responsivo de controles */
+.filtros-grid {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, minmax(140px, 1fr)); /* input + 3 botones */
+  gap: 12px;
+  align-items: end;
+}
+@media (max-width: 992px) { .filtros-grid { grid-template-columns: 1fr 1fr 1fr; } }
+@media (max-width: 576px) { .filtros-grid { grid-template-columns: 1fr; } }
+
+/* Label y campos */
+.filtro-label {
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 6px;
+}
+.filtro-input,
+.filtro-select {
+  border-radius: 10px;
+  height: 44px;
+}
+
+/* Botón rojo igual al “Limpiar” de Historial */
+.filtro-btn {
+  border: none;
+  border-radius: 10px;
+  height: 44px;
+  background: #dc3545;
+  color: #fff;
+  font-weight: 700;
+  padding: 0 .9rem;
+  transition: filter .15s ease;
+}
+.filtro-btn:hover { filter: brightness(0.92); }
+
+/* ===== Extras opcionales que ya usabas ===== */
+.btn-custom {
+  margin: 0 8rem;
+  background-color: #d52e2e;
+  border: none;
+  color: white;
+}
+.btn-custom:hover {
+  background-color: #e93838;
+  color: white;
+}
+
+.acciones-centradas {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+}
+
+.btn-compacto {
+  display: inline-block;
+  min-width: 140px;
+  padding: 8px 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 576px){
+  .btn-compacto{
+    min-width: 120px;
+    padding: 7px 14px;
+    font-size: 0.9rem;
+  }
+}
