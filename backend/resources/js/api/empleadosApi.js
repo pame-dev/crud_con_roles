@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/api/empleados";
+const API_URL = import.meta.env.VITE_API_URL;
 
 // Función para actualizar un empleado
 export const actualizarEmpleado = async (id, datos) => {
