@@ -1,0 +1,296 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Scope solo para esta página */
+.editar-empleado-page {
+  font-family: 'Poppins', sans-serif;
+  min-height: calc(100vh - 120px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 90px 16px 24px;
+  background: url('../../assets/5331579.jpg') no-repeat center / cover fixed;
+}
+
+.editar-empleado-card {
+  width: 100%;
+  max-width: 760px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(50, 50, 93, 0.1), 0 3px 10px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+/* Header */
+.editar-empleado-header {
+  background: linear-gradient(135deg, #d80808 0%, #b20606 100%);
+  color: white;
+  padding: 20px;
+  text-align: center;
+  position: relative;
+}
+.editar-empleado-header::after {
+  content: '';
+  position: absolute;
+  bottom: -8px; left: 50%;
+  transform: translateX(-50%);
+  width: 16px; height: 16px;
+  background: linear-gradient(135deg, #d80808 0%, #b20606 100%);
+  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+}
+.header-compact-icon { 
+  font-size: 2rem; 
+  margin-bottom: 8px; 
+}
+
+.editar-empleado-header h2 { 
+  font-size: 1.5rem; 
+  font-weight: 600; 
+  margin: 0; 
+}
+
+/* Formulario */
+.editar-empleado-form { 
+  padding: 20px; 
+}
+
+.editar-empleado-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+.editar-empleado-group { 
+  flex: 1 1 300px; 
+}
+
+.editar-empleado-label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.92rem;
+}
+
+/* Controles */
+.editar-empleado-control,
+.editar-empleado-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 2px solid #e1e8ed;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  color: #2c3e50;
+  transition: all 0.25s ease;
+  outline: none;
+  font-family: 'Poppins', sans-serif;
+}
+.editar-empleado-control:focus,
+.editar-empleado-select:focus {
+  border-color: #d80808;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(216, 8, 8, 0.1);
+}
+.editar-empleado-control::placeholder { color: #aab7c2; }
+.editar-empleado-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 14px;
+}
+
+/* Errores debajo del input */
+.input-error {
+  margin-top: 6px;
+  color: #dc3545;
+  font-size: 0.85rem;
+}
+
+/* Footer */
+.editar-empleado-footer {
+  margin-top: 8px;
+  border-top: 1px solid #e1e8ed;
+  padding-top: 15px;
+}
+.editar-empleado-note {
+  font-size: 0.8rem;
+  color: #7f8c8d;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+/* Botones */
+.botones-editar-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.submit-compact-button,
+.cancel-compact-button {
+  padding: 10px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: 1 1 220px;
+  min-height: 44px;
+}
+.submit-compact-button {
+  background: linear-gradient(135deg, #d80808 0%, #b20606 100%);
+  color: white;
+  box-shadow: 0 3px 5px rgba(216, 8, 8, 0.2);
+}
+.submit-compact-button:hover { 
+  filter: brightness(0.95); 
+  transform: translateY(-1px); 
+}
+.cancel-compact-button {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  border: 1px solid #dee2e6;
+}
+.cancel-compact-button:hover { 
+  background-color: #e9ecef; 
+  color: #495057; 
+  transform: translateY(-1px); 
+}
+
+/* Overlay de carga */
+.loading-overlay {
+  position: fixed; 
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex; 
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  z-index: 9999; 
+  color: white;
+  font-size: 18px; 
+  font-weight: bold;
+}
+
+.spinner {
+  width: 60px; 
+  height: 60px;
+  border: 6px solid #ddd; 
+  border-top: 6px solid #ff4d4f;
+  border-radius: 50%; 
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } } /*significa: “desde el estado inicial (from/0%, implícito) hasta el final (to/100%) rota 360 grados”.*/
+
+/* Codigo para que cuando cargue la pagina se muestre un efecto de carga */
+
+.skeleton {
+  animation: pulse 1.5s infinite;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(50, 50, 93, 0.1), 0 3px 10px rgba(0, 0, 0, 0.07);
+  padding: 20px;
+  height: 430px;
+}
+
+.skeleton-line {
+  height: 18px;
+  margin: 12px 0;
+  background-color: #e9ecef;
+  border-radius: 6px;
+}
+
+.skeleton-box {
+  width: 40px;
+  height: 40px;
+  background-color: #dee2e6; 
+  border-radius: 8px;
+  margin: 0 auto 10px;
+}
+
+.skeleton-header {
+  background: linear-gradient(135deg, #d80808 0%, #b20606 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 12px 12px 0 0;
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.skeleton-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 70px;
+  justify-content: center;
+}
+
+.skeleton-button {
+  flex: 1 1 120px;
+  height: 40px;
+  background-color: #ebe5e5;
+  border-radius: 8px;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.7; }
+  50% { opacity: 1; }
+  100% { opacity: 0.7; }
+}
+
+.skeleton-body {
+  padding: 20px;
+}
+
+/* Fila con dos “inputs” falsos */
+.skeleton-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+}
+
+/* Cada input falso */
+.skeleton-input {
+  flex: 1 1 300px;
+  height: 42px;
+  background-color: #dbdbdb;
+  border-radius: 8px;
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 600px) {
+  .skeleton-input {
+    flex: 1 1 100%;
+  }
+}
+
+/* Fin del efecto del codigo de efecto carga */
+
+/* Responsive */
+@media (max-width: 576px){
+  .editar-empleado-page { 
+    padding-top: 80px; 
+  }
+  
+  .editar-empleado-form { 
+    padding: 16px; 
+  }
+
+  .editar-empleado-row { 
+    flex-direction: column; 
+    gap: 0; 
+  }
+
+  .botones-editar-container { 
+    flex-direction: column; 
+  }
+}
