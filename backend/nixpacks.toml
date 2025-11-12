@@ -3,10 +3,14 @@ nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Ex
 
 [phases.install]
 cmds = [
-  "composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
+  # Install Composer (in case the base image doesn't include it) and run composer install
+  "curl -sS https://getcomposer.org/installer | php",
+  "php composer.phar install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
   "mkdir -p storage/framework/{sessions,views,cache}",
   "mkdir -p storage/logs",
-  "chmod -R 775 storage bootstrap/cache"
+  "chmod -R 775 storage bootstrap/cache",
+  "mv composer.phar /usr/local/bin/composer || true",
+  "chmod +x /usr/local/bin/composer || true"
 ]
 
 [phases.build]
