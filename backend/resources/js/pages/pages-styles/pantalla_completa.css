@@ -1,0 +1,67 @@
+.hero-section-pc {
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 4rem 0;
+    margin-top: -3rem ; 
+    margin-bottom: auto;
+    position: relative;
+    width: 100%;
+    max-width: 100vw;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    
+}
+  
+.hero-section-pc .text-center {
+    max-width: 1200px;         /* opcional: limita contenido centrado */
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.hero-section-pc::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);
+    clip-path: ellipse(70% 100% at 50% 0%);
+}
+
+/* Hero section en modo oscuro */
+/* Hero section-pc en modo oscuro */
+body.dark-mode .hero-section-pc.darkable {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+  color: #ffffff !important;
+}
+
+body.dark-mode .hero-section-pc.darkable::after {
+  background: linear-gradient(90deg, #961515 0%, #5f0404 100%) !important;
+}
+
+
+.btn_regresar.hero-backk {
+  position: relative;
+  top: 80px; /* ajusta la distancia hacia abajo */
+  margin-left: 2rem; /* si también quieres moverlo a la derecha */
+  width: var(--hero-btn-d);
+  height: var(--hero-btn-d);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  padding: 0;
+  line-height: 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+  transition: background .2s ease, transform .1s ease;
+}
+
+.btn_regresar.hero-backk:hover {
+  background: rgba(255,255,255,.1);
+  transform: scale(1.05);
+}
+
