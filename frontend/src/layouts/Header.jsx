@@ -5,6 +5,7 @@ import {
   Volume2, VolumeX, BarChart3, Home
 } from "lucide-react";
 import logo from "../assets/logo-rojo.png";
+import API_URL from "../api/config";
 import "./header.css";
 import { EmpleadoContext } from "./EmpleadoContext";
 import { actualizarEmpleado } from "../api/empleadosApi";
@@ -178,7 +179,7 @@ const Header = () => {
 
     setLoadingVerify(true);
 
-    fetch(`http://127.0.0.1:8000/api/empleados/${empleado.ID_EMPLEADO}/verificar-contrasena`, {
+    fetch(`${API_URL}/empleados/${empleado.ID_EMPLEADO}/verificar-contrasena`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contrasena: currentPassword }),
@@ -250,7 +251,7 @@ const Header = () => {
 
     setLoadingSave(true);
 
-    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+    fetch(`${API_URL}/empleados/correo-existe`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

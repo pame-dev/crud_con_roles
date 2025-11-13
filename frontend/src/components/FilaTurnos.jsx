@@ -2,6 +2,7 @@ import React from "react";
 import { Clock, Flag } from '../iconos';
 import QueueItem from './QueueItem';
 import { fetchFilaActual } from "../api/turnosApi";
+import API_URL from "../api/config";
 
 //Componente de la Fila de turnos, maneja la logica de datos para la fila 
 //mapea el array de turnos y crea multiples componentes de QueueItem
@@ -39,7 +40,7 @@ export class FilaTurnos extends React.Component {
     try {
       const { cargo } = this.props;
       //construye url con parametro de filtro
-      const url = new URL("http://127.0.0.1:8000/api/turnos/fila");
+      const url = new URL(`${API_URL}/turnos/fila`);
       if (cargo) {
         url.searchParams.append('cargo', cargo);
       }

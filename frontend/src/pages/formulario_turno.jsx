@@ -1,6 +1,7 @@
 // src/pages/formulario_turno.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../api/config";
 import "./pages-styles/formulario_turno.css";
 import { jsPDF } from "jspdf";
 import logoImg from "../assets/logo-fondo-negro.png";
@@ -70,7 +71,7 @@ const FormularioTurno = () => {
         timeZone: "America/Mexico_City",
       });
 
-      const response = await fetch("http://127.0.0.1:8000/api/turnos", {
+      const response = await fetch(`${API_URL}/turnos`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({

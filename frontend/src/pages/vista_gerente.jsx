@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap, List, Grid } from "lucide-react";
+import API_URL from "../api/config";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import FilaTurnos from "../components/FilaTurnos";
 import "./pages-styles/admin.css";
@@ -38,7 +39,7 @@ const VistaGerente = () => {
   const fetchTrabajadores = async () => {
     if (!cargo) return;
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${cargo}`);
+      const res = await fetch(`${API_URL}/trabajadores/con-turno?cargo=${cargo}`);
       const data = await res.json();
       setTrabajadores(data);
     } catch (err) {
@@ -60,7 +61,7 @@ const VistaGerente = () => {
     setLoading(true);
     setErr("");
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/turnos/fila?cargo=${cargo}`);
+      const res = await fetch(`${API_URL}/turnos/fila?cargo=${cargo}`);
       const data = await res.json();
       setTurnos(data);
     } catch (e) {

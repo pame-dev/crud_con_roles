@@ -2,6 +2,7 @@
 import React, { useState, useMemo } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+import API_URL from "../api/config";
 import "./pages-styles/olvide_contraseña.css";
 import ReestablecerContrasena from "./reestablecer_contrasena";
 
@@ -27,7 +28,7 @@ const OlvideMiContrasena = () => {
 
     try {
       setSubmitting(true);
-      const response = await axios.post("http://127.0.0.1:8000/api/forgot-password", {
+      const response = await axios.post(`${API_URL}/forgot-password`, {
         email: form.user,
       });
 

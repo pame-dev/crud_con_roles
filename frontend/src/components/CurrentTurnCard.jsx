@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Wrench, Clock } from '../iconos';
 import { motion, AnimatePresence } from 'framer-motion';
+import API_URL from "../api/config";
 import './CurrentTurnCard.css';
 import { useAudio } from "../components/AudioContext";
 
@@ -26,7 +27,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
   // Traer el turno en atención
   const fetchTurnoEnAtencion = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/turnos/en_atencion');
+      const response = await fetch(`${API_URL}/turnos/en_atencion`);
       const data = await response.json();
 
       if (response.ok && data.turno) {
