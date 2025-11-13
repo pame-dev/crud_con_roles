@@ -43,7 +43,8 @@
     "vite": "^7.1.2"
   },
   "optionalDependencies": {
-    "@rollup/rollup-linux-x64-gnu": "^4.28.1"
+    "@rollup/rollup-linux-x64-gnu": "^4.28.1",
+    "react-is": "^19.2.0"
   },
   "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
   "main": "eslint.config.js",
