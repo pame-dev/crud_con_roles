@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://pitline.site/api";
+const BASE_URL = import.meta.env.VITE_API_URL || 'https://crudconroles-production.up.railway.app/api';
 
 // Función para actualizar un empleado
 export const actualizarEmpleado = async (id, datos) => {
