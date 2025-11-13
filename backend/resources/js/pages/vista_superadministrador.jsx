@@ -34,7 +34,7 @@ const VistaSuperadministrador = () => {
 
   const cargarTrabajadores = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno`);
+      const res = await fetch(`https://crudconroles-production.up.railway.app/api/trabajadores/con-turno`);
       const data = await res.json();
       setTrabajadores(data);
       return data;

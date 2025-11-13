@@ -18,7 +18,7 @@ const Dashboard = () => {
   // Función para cargar la fila desde la API
   const fetchFila = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/turnos/fila");
+      const res = await fetch("https://crudconroles-production.up.railway.app/api/turnos/fila");
       if (!res.ok) throw new Error("Error al cargar la fila");
       const data = await res.json();
       setFila(data);

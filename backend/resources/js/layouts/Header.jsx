@@ -178,7 +178,7 @@ const Header = () => {
 
     setLoadingVerify(true);
 
-    fetch(`http://127.0.0.1:8000/api/empleados/${empleado.ID_EMPLEADO}/verificar-contrasena`, {
+    fetch(`https://crudconroles-production.up.railway.app/api/empleados/${empleado.ID_EMPLEADO}/verificar-contrasena`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ contrasena: currentPassword }),
@@ -250,7 +250,7 @@ const Header = () => {
 
     setLoadingSave(true);
 
-    fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+    fetch("https://crudconroles-production.up.railway.app/api/empleados/correo-existe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

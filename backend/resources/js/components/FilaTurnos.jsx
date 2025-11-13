@@ -39,7 +39,7 @@ export class FilaTurnos extends React.Component {
     try {
       const { cargo } = this.props;
       //construye url con parametro de filtro
-      const url = new URL("http://127.0.0.1:8000/api/turnos/fila");
+      const url = new URL("https://crudconroles-production.up.railway.app/api/turnos/fila");
       if (cargo) {
         url.searchParams.append('cargo', cargo);
       }

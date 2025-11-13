@@ -27,7 +27,7 @@ const OlvideMiContrasena = () => {
 
     try {
       setSubmitting(true);
-      const response = await axios.post("http://127.0.0.1:8000/api/forgot-password", {
+      const response = await axios.post("https://crudconroles-production.up.railway.app/api/forgot-password", {
         email: form.user,
       });
 

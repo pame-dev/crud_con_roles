@@ -22,7 +22,7 @@ const VistaTrabajador = () => {
       setLoading(true);
       setErr("");
     
-      fetch(`http://127.0.0.1:8000/api/turnos/fila?cargo=${cargo}`)
+      fetch(`https://crudconroles-production.up.railway.app/api/turnos/fila?cargo=${cargo}`)
         .then(res => res.json())
         .then(data => setTurnos(data))
         .catch(e => setErr(e.message || "Error al obtener turnos"))

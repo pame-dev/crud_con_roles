@@ -26,7 +26,7 @@ const ReestablecerContrasena = ({ email }) => {
     setError(""); setSuccess("");
     try {
       setSubmitting(true);
-      await axios.post("http://127.0.0.1:8000/api/verify-code", { email, code });
+      await axios.post("https://crudconroles-production.up.railway.app/api/verify-code", { email, code });
       setStep("passwords");
     } catch (err) {
       setError(err.response?.data?.error || "Código incorrecto");
@@ -49,7 +49,7 @@ const ReestablecerContrasena = ({ email }) => {
 
     try {
       setSubmitting(true);
-      await axios.post("http://127.0.0.1:8000/api/reset-password", {
+      await axios.post("https://crudconroles-production.up.railway.app/api/reset-password", {
         email,
         code,
         new_password: newPassword,
