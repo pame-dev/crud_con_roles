@@ -36,7 +36,7 @@ export const EmpleadoProvider = ({ children }) => {
     const closeModal = () => setModal({ ...modal, show: false });
   const cargarAusentes = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/empleados/ausentes");
+      const res = await fetch("https://crudconroles-production.up.railway.app/api/empleados/ausentes");
       if (!res.ok) throw new Error("Error al obtener empleados ausentes");
       const data = await res.json();
       setEmpleadosAusentes(new Set(data.map(e => e.ID_EMPLEADO)));
@@ -48,7 +48,7 @@ export const EmpleadoProvider = ({ children }) => {
   // Actualizar estado del empleado en la API
   const actualizarEstadoEmpleado = async (id, estado) => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/estado`, {
+      const res = await fetch(`https://crudconroles-production.up.railway.app/api/empleados/${id}/estado`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ estado }) // true = presente, false = ausente

@@ -111,7 +111,7 @@ const TurnoEmpleadoInd = () => {
       await apiPasarTurno(empleado.ID_EMPLEADO, empleado.CARGO.toLowerCase());
       
       // Buscar inmediatamente el nuevo turno
-      const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api';
+      const API_URL = import.meta.env.VITE_API_URL || 'https://crudconroles-production.up.railway.app/api';
       const res = await axios.get(
         `${API_URL}/trabajadores/con-turno?cargo=${empleado.CARGO}`
       );

@@ -69,7 +69,7 @@ const RegisterGerentes = () => {
       setSubmitting(true);
 
       // 1. Validar que el correo no exista
-      const v = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      const v = await fetch("https://crudconroles-production.up.railway.app/api/empleados/correo-existe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: formData.correo }),
@@ -122,7 +122,7 @@ const RegisterGerentes = () => {
 
         try {
           // Llamar al backend
-          await axios.post("http://127.0.0.1:8000/api/enviar-codigo", {
+          await axios.post("https://crudconroles-production.up.railway.app/api/enviar-codigo", {
             correo: formData.correo,
             codigo,
           });
@@ -170,7 +170,7 @@ const RegisterGerentes = () => {
         id_rol: Number(formData.id_rol) 
       };
       
-      await axios.post("http://127.0.0.1:8000/api/empleados/registrar-con-codigo", payload);
+      await axios.post("https://crudconroles-production.up.railway.app/api/empleados/registrar-con-codigo", payload);
       showModal(
         "Registro exitoso", 
         "Empleado registrado correctamente. Se ha enviado un correo de confirmación con las políticas de privacidad.", 

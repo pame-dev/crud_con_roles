@@ -26,7 +26,7 @@ const CurrentTurnCard = ({ variant, onPasarTurno }) => {
   // Traer el turno en atención
   const fetchTurnoEnAtencion = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/turnos/en_atencion');
+      const response = await fetch('https://crudconroles-production.up.railway.app/api/turnos/en_atencion');
       const data = await response.json();
 
       if (response.ok && data.turno) {

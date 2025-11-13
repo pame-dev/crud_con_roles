@@ -21,7 +21,7 @@ const PantallaCompleta = () => {
 
   // Cargar la fila desde la API
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/turnos/fila")
+    fetch("https://crudconroles-production.up.railway.app/api/turnos/fila")
       .then(res => res.json())
       .then(data => setFila(data))
       .catch(e => setErr(e.message || "Error al cargar la fila"))

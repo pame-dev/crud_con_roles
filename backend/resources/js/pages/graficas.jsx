@@ -31,11 +31,11 @@ const Graficas = () => {
         setError(null);
 
         const urls = [
-          "http://127.0.0.1:8000/api/turnos/por-empleado",
-          "http://127.0.0.1:8000/api/turnos/tiempos",
-          "http://127.0.0.1:8000/api/turnos/dias",
-          "http://127.0.0.1:8000/api/turnos/por-tipo",      
-          "http://127.0.0.1:8000/api/turnos/tiempo-empleado" 
+          "https://crudconroles-production.up.railway.app/api/turnos/por-empleado",
+          "https://crudconroles-production.up.railway.app/api/turnos/tiempos",
+          "https://crudconroles-production.up.railway.app/api/turnos/dias",
+          "https://crudconroles-production.up.railway.app/api/turnos/por-tipo",      
+          "https://crudconroles-production.up.railway.app/api/turnos/tiempo-empleado" 
         ];
 
         const responses = await Promise.all(urls.map(url => fetch(url)));
