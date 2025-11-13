@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "../iconos";
+import API_URL from "../api/config";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
 import { List, Grid } from "lucide-react";
@@ -34,7 +35,7 @@ const VistaSuperadministrador = () => {
 
   const cargarTrabajadores = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/trabajadores/con-turno`);
+      const res = await fetch(`${API_URL}/trabajadores/con-turno`);
       const data = await res.json();
       setTrabajadores(data);
       return data;

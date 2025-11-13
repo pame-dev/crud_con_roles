@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import { EmpleadoContext } from "../layouts/EmpleadoContext";
+import API_URL from "../api/config";
 import "./pages-styles/login.css";
 
 const Login = () => {
@@ -41,7 +42,7 @@ const Login = () => {
 
     try {
       setSubmitting(true);
-      const response = await axios.post("http://127.0.0.1:8000/api/login", {
+      const response = await axios.post(`${API_URL}/login`, {
         user: form.user,
         pass: form.pass,
       });

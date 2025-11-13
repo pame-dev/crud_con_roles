@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { pasarTurno } from "../api/turnosApi";
 import { useNavigate } from "react-router-dom";
+import API_URL from "../api/config";
 import "./WorkerTurnCard.css";
 import "./DiagnosticoModal.css";
 import ModalAlert from "../components/ModalAlert"; 
@@ -114,7 +115,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
     if (!turnoId) return showModal("Error", "No hay turno seleccionado.", "error");
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/turnos/${turnoId}/diagnostico`, {
+      const response = await fetch(`${API_URL}/turnos/${turnoId}/diagnostico`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

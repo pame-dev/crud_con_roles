@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ChevronLeft, Wrench, Flag } from "../iconos";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import API_URL from "../api/config";
 import './pages-styles/pantalla_completa.css';
 import CurrentTurnCard from '../components/CurrentTurnCard';
 import FilaTurnos from "../components/FilaTurnos";
@@ -21,7 +22,7 @@ const PantallaCompleta = () => {
 
   // Cargar la fila desde la API
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/api/turnos/fila")
+    fetch(`${API_URL}/turnos/fila`)
       .then(res => res.json())
       .then(data => setFila(data))
       .catch(e => setErr(e.message || "Error al cargar la fila"))

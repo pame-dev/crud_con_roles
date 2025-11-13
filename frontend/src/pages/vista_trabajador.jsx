@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Flag, Zap } from "../iconos";
+import API_URL from "../api/config";
 import './pages-styles/admin.css';  
 import TurnoEmpleadoInd from "../components/TurnoEmpleadoInd";
 import FilaTurnos from "../components/FilaTurnos";
@@ -22,7 +23,7 @@ const VistaTrabajador = () => {
       setLoading(true);
       setErr("");
     
-      fetch(`http://127.0.0.1:8000/api/turnos/fila?cargo=${cargo}`)
+      fetch(`${API_URL}/turnos/fila?cargo=${cargo}`)
         .then(res => res.json())
         .then(data => setTurnos(data))
         .catch(e => setErr(e.message || "Error al obtener turnos"))

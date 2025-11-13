@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { pasarTurno as apiPasarTurno } from "../api/turnosApi";
+import API_URL from "../api/config";
 
 
 const TurnoEmpleadoInd = () => {
@@ -38,7 +39,7 @@ const TurnoEmpleadoInd = () => {
   const fetchTurno = async (emp) => {
     try {
       const res = await axios.get(
-        `http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${emp.CARGO}`
+        `${API_URL}/trabajadores/con-turno?cargo=${emp.CARGO}`
       );
       const miTurno = res.data.find(t => t.ID_EMPLEADO === emp.ID_EMPLEADO)?.turnos[0] || null;
 
@@ -112,7 +113,7 @@ const TurnoEmpleadoInd = () => {
       
       // Buscar inmediatamente el nuevo turno
       const res = await axios.get(
-        `http://127.0.0.1:8000/api/trabajadores/con-turno?cargo=${empleado.CARGO}`
+        `${API_URL}/trabajadores/con-turno?cargo=${empleado.CARGO}`
       );
       
       const miNuevoTurno = res.data.find(t => t.ID_EMPLEADO === empleado.ID_EMPLEADO)?.turnos[0] || null;
