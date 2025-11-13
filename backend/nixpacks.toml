@@ -1,16 +1,12 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.xml", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.bcmath", "php82Extensions.ctype", "php82Extensions.fileinfo", "php82Extensions.tokenizer"]
+nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.xml", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.bcmath", "php82Extensions.ctype", "php82Extensions.fileinfo", "php82Extensions.tokenizer", "php82Packages.composer"]
 
 [phases.install]
 cmds = [
-  # Install Composer (in case the base image doesn't include it) and run composer install
-  "curl -sS https://getcomposer.org/installer | php",
-  "php composer.phar install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
+  "composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
   "mkdir -p storage/framework/{sessions,views,cache}",
   "mkdir -p storage/logs",
-  "chmod -R 775 storage bootstrap/cache",
-  "mv composer.phar /usr/local/bin/composer || true",
-  "chmod +x /usr/local/bin/composer || true"
+  "chmod -R 775 storage bootstrap/cache"
 ]
 
 [phases.build]
