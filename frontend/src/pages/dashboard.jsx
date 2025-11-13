@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Wrench, Calendar } from '../iconos';
+import API_URL from "../api/config";
 import CurrentTurnCard from '../components/CurrentTurnCard';
 import FilaTurnos from "../components/FilaTurnos";
 import { useDiaFinalizado } from '../hooks/useDiaFinalizado';
@@ -18,7 +19,7 @@ const Dashboard = () => {
   // Función para cargar la fila desde la API
   const fetchFila = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/turnos/fila");
+      const res = await fetch(`${API_URL}/turnos/fila`);
       if (!res.ok) throw new Error("Error al cargar la fila");
       const data = await res.json();
       setFila(data);

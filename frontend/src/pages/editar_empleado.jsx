@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCurrentUserRole } from "../hooks/auth";
+import API_URL from "../api/config";
 import "./pages-styles/editar_empleado.css";
 import ModalAlert from "../components/ModalAlert";
 
@@ -30,7 +31,7 @@ export default function EditarEmpleado() {
   const closeModal = () => setModal({ ...modal, show: false });
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/empleados/${id}`)
+    fetch(`${API_URL}/empleados/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setEmpleado(data);
@@ -72,7 +73,7 @@ export default function EditarEmpleado() {
 
     try {
       // 🟢 Validar si el correo ya existe antes de actualizar
-      const res = await fetch("http://127.0.0.1:8000/api/empleados/correo-existe", {
+      const res = await fetch(`${API_URL}/empleados/correo-existe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ correo: empleado.CORREO, id }),
@@ -96,7 +97,7 @@ export default function EditarEmpleado() {
       }
 
       // 🟢 Enviar actualización
-      const updateRes = await fetch(`http://127.0.0.1:8000/api/empleados/${id}`, {
+      const updateRes = await fetch(`${API_URL}/empleados/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(datos),
