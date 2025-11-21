@@ -46,16 +46,43 @@ const Graficas = () => {
 
         const [dataEmp, dataTiempo, dataDias, dataTipo, dataTiempoEmp] = await Promise.all(responses.map(res => res.json()));
 
-        const tiemposNormalizados = dataTiempo.map(item => ({
-          ...item,
-          promedio: Math.abs(item.promedio / 60)
-        }));
+        const parseToMinutes = (tiempo) => {
+          if (typeof tiempo === "string" && tiempo.includes(":")) {
+            const [hh, mm, ss] = tiempo.split(":").map(Number);
+            return hh * 60 + mm + ss / 60;
+          }
+          // Si viene inflado (3000, 1800, etc.) asumimos que son minutos
+          if (typeof tiempo === "number" && tiempo > 200) {
+            return tiempo; 
+          }
+          return tiempo; 
+        };
+
+        const tiemposNormalizados = dataTiempo.map(item => {
+          const minutos = parseToMinutes(item.promedio);
+          const horas = minutos / 60;
+        
+          return {
+            ...item,
+            promedio: horas
+          };
+        });
+
+        const tiempoEmpleadoNormalizado = dataTiempoEmp.map(item => {
+          const minutos = parseToMinutes(item.promedio);
+          const horas = minutos / 60;
+
+          return {
+            ...item,
+            promedio: horas
+          };
+        });
 
         setTurnosPorEmpleado(dataEmp);
         setTiemposTurnos(tiemposNormalizados);
         setTurnosPorDia(dataDias);
         setTurnosPorTipo(dataTipo);
-        setTiempoPorEmpleado(dataTiempoEmp);
+        setTiempoPorEmpleado(tiempoEmpleadoNormalizado);
 
         setLoading(false);
       } catch (err) {

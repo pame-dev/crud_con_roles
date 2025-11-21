@@ -66,12 +66,22 @@ const Graficas = () => {
             promedio: horas
           };
         });
+
+        const tiempoEmpleadoNormalizado = dataTiempoEmp.map(item => {
+          const minutos = parseToMinutes(item.promedio);
+          const horas = minutos / 60;
+
+          return {
+            ...item,
+            promedio: horas
+          };
+        });
         
         setTurnosPorEmpleado(dataEmp);
         setTiemposTurnos(tiemposNormalizados);
         setTurnosPorDia(dataDias);
         setTurnosPorTipo(dataTipo);
-        setTiempoPorEmpleado(dataTiempoEmp);
+        setTiempoPorEmpleado(tiempoEmpleadoNormalizado);
 
         setLoading(false);
       } catch (err) {
