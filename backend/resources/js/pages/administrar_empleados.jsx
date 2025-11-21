@@ -345,6 +345,14 @@ export default function AdministrarEmpleados() {
   const prevTrashPage = () => setTrashPage((p) => Math.max(1, p - 1));
   const nextTrashPage = () => setTrashPage((p) => Math.min(totalPagesTrash, p + 1));
 
+  useEffect(() => {
+    if (isSuper) {
+      document.body.classList.add("is-superadmin");
+    } else {
+      document.body.classList.remove("is-superadmin");
+    }
+  }, [isSuper]);
+
   // =========================
   // Render
   // =========================
