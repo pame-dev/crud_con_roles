@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Edit, Trash2, ArrowLeft } from "../iconos";
 import { getCurrentUserRole } from "../hooks/auth";
-import API_URL from "../api/config";
 import "./pages-styles/administrar_empleados.css";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEmpleados } from "../layouts/EmpleadoContext";
@@ -120,7 +119,7 @@ export default function AdministrarEmpleados() {
   // Cargar empleados y ausentes
   // =========================
   useEffect(() => {
-    fetch(`${API_URL}/empleados`)
+    fetch("http://127.0.0.1:8000/api/empleados")
       .then((res) => {
         if (!res.ok) throw new Error("Error al cargar empleados");
         return res.json();
@@ -185,7 +184,7 @@ export default function AdministrarEmpleados() {
     const emp = empleadoToDelete;
     
     try {
-      const res = await fetch(`${API_URL}/empleados/${emp.id}`, { 
+      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${emp.id}`, { 
         method: "DELETE" 
       });
       
@@ -233,7 +232,7 @@ export default function AdministrarEmpleados() {
     const item = trashData.items.find((i) => i.ID_EMPLEADO === id);
 
     try {
-      const res = await fetch(`${API_URL}/empleados/${id}/recuperar`, {
+      const res = await fetch(`http://127.0.0.1:8000/api/empleados/${id}/recuperar`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -242,7 +241,7 @@ export default function AdministrarEmpleados() {
 
       if (!res.ok) throw new Error("No se pudo restaurar el empleado");
 
-      const r2 = await fetch(`${API_URL}/empleados`);
+      const r2 = await fetch("http://127.0.0.1:8000/api/empleados");
       if (!r2.ok) throw new Error("No se pudo recargar empleados");
 
       const data = await r2.json();
@@ -345,6 +344,15 @@ export default function AdministrarEmpleados() {
   };
   const prevTrashPage = () => setTrashPage((p) => Math.max(1, p - 1));
   const nextTrashPage = () => setTrashPage((p) => Math.min(totalPagesTrash, p + 1));
+
+  useEffect(() => {
+    if (isSuper) {
+      document.body.classList.add("is-superadmin");
+    } else {
+      document.body.classList.remove("is-superadmin");
+    }
+  }, [isSuper]);
+
 
   // =========================
   // Render
