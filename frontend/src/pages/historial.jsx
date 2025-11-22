@@ -205,35 +205,24 @@ const Historial = () => {
       // Filtro por estado
       if (estado !== "todos" && t.estado.toLowerCase() !== estado.toLowerCase()) return false;
 
-      // Búsqueda extendida
+      // Búsqueda simplificada - solo 4 campos
       if (q) {
         const busqueda = q.toLowerCase();
         
-        // Campos básicos
+        // 1. Folio del turno
         const coincideFolio = t.folio.toString().toLowerCase().includes(busqueda);
+        
+        // 2. Nombre del cliente
         const coincideCliente = t.cliente.toLowerCase().includes(busqueda);
-        const coincideServicio = (t.servicio || "").toLowerCase().includes(busqueda);
         
-        // Campos del tooltip (solo para turnos completados)
+        // 3. Nombre del empleado que atendió
         const coincideEmpleado = (t.NOMBRE_EMPLEADO || "").toLowerCase().includes(busqueda);
-        const coincideCorreo = (t.CORREO_EMPLEADO || "").toLowerCase().includes(busqueda);
-        const coincideDuracion = formatDuracion(t.duracion).toLowerCase().includes(busqueda);
-        const coincideDescripcion = (t.DESCRIPCION || "").toLowerCase().includes(busqueda);
-        const coincideTiempoEntrega = (t.TIEMPO_ENTREGA || "").toLowerCase().includes(busqueda);
-        const coincideTipoServicio = (t.TIPO_SERVICIO || "").toLowerCase().includes(busqueda);
         
-        // Si no coincide con ningún campo, filtrar el turno
-        if (
-          !coincideFolio && 
-          !coincideCliente && 
-          !coincideServicio &&
-          !coincideEmpleado && 
-          !coincideCorreo && 
-          !coincideDuracion &&
-          !coincideDescripcion && 
-          !coincideTiempoEntrega && 
-          !coincideTipoServicio
-        ) {
+        // 4. Descripción del problema
+        const coincideDescripcion = (t.DESCRIPCION || "").toLowerCase().includes(busqueda);
+        
+        // Si no coincide con ninguno de estos 4 campos, filtrar el turno
+        if (!coincideFolio && !coincideCliente && !coincideEmpleado && !coincideDescripcion) {
           return false;
         }
       }
@@ -291,7 +280,7 @@ const Historial = () => {
                   <label className="form-label fw-semibold text-dark">Buscar</label>
                   <input
                     className="form-control"
-                    placeholder="Folio, cliente, empleado, correo…"
+                    placeholder="Folio, cliente, empleado, descripción…"
                     value={q}
                     onChange={(e) => { setQ(e.target.value); setPage(1); }}
                     style={{ borderRadius: "10px" }}
