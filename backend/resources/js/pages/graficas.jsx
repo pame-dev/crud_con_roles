@@ -46,20 +46,45 @@ const Graficas = () => {
         const [dataEmp, dataTiempo, dataDias, dataTipo, dataTiempoEmp] = await Promise.all(responses.map(res => res.json()));
 
         const parseToMinutes = (tiempo) => {
+          // Si es string en formato HH:MM:SS
           if (typeof tiempo === "string" && tiempo.includes(":")) {
             const [hh, mm, ss] = tiempo.split(":").map(Number);
-            return hh * 60 + mm + ss / 60;
+            return hh * 60 + mm + (ss / 60);
           }
-          // Si viene inflado (3000, 1800, etc.) asumimos que son minutos
-          if (typeof tiempo === "number" && tiempo > 200) {
-            return tiempo; 
+          
+          // Si es número pequeño (probablemente ya en minutos correctos o decimales)
+          if (typeof tiempo === "number") {
+            // Si el número está entre 0 y 120, asumimos que ya está en minutos
+            if (tiempo <= 120) {
+              return tiempo;
+            }
+            // Si es muy grande (ej: 3000), probablemente son segundos
+            if (tiempo > 200) {
+              return tiempo / 60; // Convertir de segundos a minutos
+            }
           }
+          
           return tiempo; 
+        };
+
+        // Función para traducir días al español
+        const traducirDia = (dia) => {
+          const traducciones = {
+            'Monday': 'Lunes',
+            'Tuesday': 'Martes',
+            'Wednesday': 'Miércoles',
+            'Thursday': 'Jueves',
+            'Friday': 'Viernes',
+            'Saturday': 'Sábado',
+            'Sunday': 'Domingo'
+          };
+          return traducciones[dia] || dia;
         };
 
         // Para tiempos de turnos: dejar en MINUTOS
         const tiemposNormalizados = dataTiempo.map(item => {
           const minutos = parseToMinutes(item.promedio);
+          console.log('Tiempo original:', item.promedio, 'Minutos calculados:', minutos);
           return {
             ...item,
             promedio: minutos
@@ -74,10 +99,16 @@ const Graficas = () => {
             promedio: minutos
           };
         });
+
+        // Traducir los días de la semana al español
+        const diasTraducidos = dataDias.map(item => ({
+          ...item,
+          dia: traducirDia(item.dia)
+        }));
         
         setTurnosPorEmpleado(dataEmp);
         setTiemposTurnos(tiemposNormalizados);
-        setTurnosPorDia(dataDias);
+        setTurnosPorDia(diasTraducidos);
         setTurnosPorTipo(dataTipo);
         setTiempoPorEmpleado(tiempoEmpleadoNormalizado);
 
@@ -150,7 +181,7 @@ const Graficas = () => {
         }}>
           <p><strong>{label}</strong></p>
           <p style={{ color: "#ff7f0e" }}>
-            Promedio: {value.toFixed(1)} minutos
+            Promedio: {value.toFixed(0)} minutos
           </p>
         </div>
       );
@@ -294,7 +325,7 @@ const Graficas = () => {
                       <LabelList
                         dataKey="promedio"
                         position="right"
-                        formatter={val => val.toFixed(1) + " min"}
+                        formatter={val => val.toFixed(0) + " min"}
                       />
                     </Bar>
                   </BarChart>
