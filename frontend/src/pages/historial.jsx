@@ -43,6 +43,9 @@ function EstadoBadge({ estado }) {
 }
 
 function TurnoCard({ turno }) {
+  // Determinar si es cotización (empieza con C) o reparación (empieza con R)
+  const esCotizacion = turno.folio.toUpperCase().startsWith('C');
+  
   return (
     <div className="col">
       <div
@@ -80,9 +83,15 @@ function TurnoCard({ turno }) {
             <strong>ID:</strong> {turno.ID_EMPLEADO} <br />
             <strong>Correo:</strong> {turno.CORREO_EMPLEADO || "—"} <br />
             <strong>Duración:</strong> {formatDuracion(turno.duracion) || "—"} <br />
-            <strong>Descripción:</strong> {turno.DESCRIPCION || "—"} <br />
-            <strong>Tiempo de entrega:</strong> {turno.TIEMPO_ENTREGA} <br />
-            <strong>Tipo de Servicio:</strong> {turno.TIPO_SERVICIO || "—"} <br />
+            
+            {/* Solo mostrar estos campos si NO es cotización (es decir, si empieza con R) */}
+            {!esCotizacion && (
+              <>
+                <strong>Descripción:</strong> {turno.DESCRIPCION || "—"} <br />
+                <strong>Tiempo de entrega:</strong> {turno.TIEMPO_ENTREGA} <br />
+                <strong>Tipo de Servicio:</strong> {turno.TIPO_SERVICIO || "—"} <br />
+              </>
+            )}
           </div>
         )}
       </div>
