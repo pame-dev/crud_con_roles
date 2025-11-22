@@ -205,26 +205,35 @@ const Historial = () => {
       // Filtro por estado
       if (estado !== "todos" && t.estado.toLowerCase() !== estado.toLowerCase()) return false;
 
-      // Búsqueda simplificada - solo 4 campos
+      // Búsqueda mejorada - 4 campos con validación robusta
       if (q) {
-        const busqueda = q.toLowerCase();
+        const busqueda = q.toLowerCase().trim();
+        
+        // Si la búsqueda está vacía después del trim, no filtrar
+        if (!busqueda) return true;
         
         // 1. Folio del turno
-        const coincideFolio = t.folio.toString().toLowerCase().includes(busqueda);
+        const folio = t.folio ? String(t.folio).toLowerCase() : "";
+        const coincideFolio = folio.includes(busqueda);
         
         // 2. Nombre del cliente
-        const coincideCliente = t.cliente.toLowerCase().includes(busqueda);
+        const cliente = t.cliente ? String(t.cliente).toLowerCase() : "";
+        const coincideCliente = cliente.includes(busqueda);
         
-        // 3. Nombre del empleado que atendió
-        const coincideEmpleado = (t.NOMBRE_EMPLEADO || "").toLowerCase().includes(busqueda);
+        // 3. Nombre del empleado que atendió (puede ser null en turnos no completados)
+        const empleadoNombre = t.NOMBRE_EMPLEADO ? String(t.NOMBRE_EMPLEADO).toLowerCase() : "";
+        const coincideEmpleado = empleadoNombre.includes(busqueda);
         
-        // 4. Descripción del problema
-        const coincideDescripcion = (t.DESCRIPCION || "").toLowerCase().includes(busqueda);
+        // 4. Descripción del problema (puede ser null)
+        const descripcion = t.DESCRIPCION ? String(t.DESCRIPCION).toLowerCase() : "";
+        const coincideDescripcion = descripcion.includes(busqueda);
         
-        // Si no coincide con ninguno de estos 4 campos, filtrar el turno
-        if (!coincideFolio && !coincideCliente && !coincideEmpleado && !coincideDescripcion) {
-          return false;
-        }
+        // También buscar en servicio por si acaso
+        const servicio = t.servicio ? String(t.servicio).toLowerCase() : "";
+        const coincideServicio = servicio.includes(busqueda);
+        
+        // Retornar true si coincide con al menos uno de los campos
+        return coincideFolio || coincideCliente || coincideEmpleado || coincideDescripcion || coincideServicio;
       }
 
       return true;
