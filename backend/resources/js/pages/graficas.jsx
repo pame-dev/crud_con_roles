@@ -57,23 +57,21 @@ const Graficas = () => {
           return tiempo; 
         };
 
+        // Para tiempos de turnos: dejar en MINUTOS
         const tiemposNormalizados = dataTiempo.map(item => {
           const minutos = parseToMinutes(item.promedio);
-          const horas = minutos / 60;
-        
           return {
             ...item,
-            promedio: horas
+            promedio: minutos
           };
         });
 
+        // Para tiempo por empleado: dejar en MINUTOS
         const tiempoEmpleadoNormalizado = dataTiempoEmp.map(item => {
           const minutos = parseToMinutes(item.promedio);
-          const horas = minutos / 60;
-
           return {
             ...item,
-            promedio: horas
+            promedio: minutos
           };
         });
         
@@ -118,7 +116,8 @@ const Graficas = () => {
     border: "1px solid rgba(255, 255, 255, 0.18)",
   };
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  // Tooltip para TURNOS (empleados con más turnos, distribución por tipo, turnos por día)
+  const CustomTooltipTurnos = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
       const { value } = payload[0];
       return (
@@ -130,7 +129,28 @@ const Graficas = () => {
         }}>
           <p><strong>{label}</strong></p>
           <p style={{ color: "#ff7f0e" }}>
-            Promedio: {value.toFixed(1)} horas
+            Promedio: {value} turnos
+          </p>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  // Tooltip para MINUTOS (tiempo promedio por tipo, empleado más eficiente)
+  const CustomTooltipMinutos = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      const { value } = payload[0];
+      return (
+        <div className="custom-tooltip darkable" style={{
+          background: "white",
+          border: "1px solid #ccc",
+          padding: "10px",
+          borderRadius: "8px",
+        }}>
+          <p><strong>{label}</strong></p>
+          <p style={{ color: "#ff7f0e" }}>
+            Promedio: {value.toFixed(1)} minutos
           </p>
         </div>
       );
@@ -187,7 +207,7 @@ const Graficas = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltipTurnos />} />
                     <Legend
                       verticalAlign="bottom"
                       height={50}
@@ -208,7 +228,7 @@ const Graficas = () => {
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0ff" />
                     <XAxis dataKey="dia" tick={{ fontSize: 12 }} />
                     <YAxis />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltipTurnos />} />
                     <Legend verticalAlign="top" height={36} />
                     <Line type="monotone" dataKey="turnos" stroke="#2ca02c" strokeWidth={3} dot={{ r: 5 }} />
                   </LineChart>
@@ -219,13 +239,13 @@ const Graficas = () => {
             {/* Centro */}
             <div className="grid-center">
               <div className="card darkable" style={cardStyle}>
-                <h4 style={{ fontWeight: "600", color: "#222" }}>Tiempo promedio por tipo de turno (horas)</h4>
+                <h4 style={{ fontWeight: "600", color: "#222" }}>Tiempo promedio por tipo de turno (minutos)</h4>
                 <ResponsiveContainer width="100%" height={640}>
                   <BarChart data={tiemposTurnos}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0ff" />
                     <XAxis dataKey="tipo" tick={{ fontSize: 15 }} />
                     <YAxis allowDecimals={false} />
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltipMinutos />} />
                     <Bar dataKey="promedio" fill="#ff7f0e" radius={[5, 5, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
@@ -251,7 +271,7 @@ const Graficas = () => {
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltipTurnos />} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -269,12 +289,12 @@ const Graficas = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis type="number" />
                     <YAxis type="category" dataKey="empleado" />
-                    <Tooltip content={<CustomTooltip tipo="horas" />} />
+                    <Tooltip content={<CustomTooltipMinutos />} />
                     <Bar dataKey="promedio" fill="#fa4444ff" radius={[0, 5, 5, 0]}>
                       <LabelList
                         dataKey="promedio"
                         position="right"
-                        formatter={val => val.toFixed(1) + "h"}
+                        formatter={val => val.toFixed(1) + " min"}
                       />
                     </Bar>
                   </BarChart>
