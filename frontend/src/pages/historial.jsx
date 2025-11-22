@@ -195,15 +195,48 @@ const Historial = () => {
     if (!data?.data) return [];
 
     return data.data.filter((t) => {
+      // Filtro por cargo del empleado (gerente)
       if (empleado?.ID_ROL === 1 && empleado?.CARGO) {
         const cargo = empleado.CARGO.toLowerCase().trim();
         if (cargo === "reparacion" && t.folio.startsWith("C")) return false;
         if (cargo === "cotizacion" && t.folio.startsWith("R")) return false;
       }
 
+      // Filtro por estado
       if (estado !== "todos" && t.estado.toLowerCase() !== estado.toLowerCase()) return false;
 
-      if (q && !t.folio.toString().includes(q) && !t.cliente.toLowerCase().includes(q.toLowerCase())) return false;
+      // Búsqueda extendida
+      if (q) {
+        const busqueda = q.toLowerCase();
+        
+        // Campos básicos
+        const coincideFolio = t.folio.toString().toLowerCase().includes(busqueda);
+        const coincideCliente = t.cliente.toLowerCase().includes(busqueda);
+        const coincideServicio = (t.servicio || "").toLowerCase().includes(busqueda);
+        
+        // Campos del tooltip (solo para turnos completados)
+        const coincideEmpleado = (t.NOMBRE_EMPLEADO || "").toLowerCase().includes(busqueda);
+        const coincideCorreo = (t.CORREO_EMPLEADO || "").toLowerCase().includes(busqueda);
+        const coincideDuracion = formatDuracion(t.duracion).toLowerCase().includes(busqueda);
+        const coincideDescripcion = (t.DESCRIPCION || "").toLowerCase().includes(busqueda);
+        const coincideTiempoEntrega = (t.TIEMPO_ENTREGA || "").toLowerCase().includes(busqueda);
+        const coincideTipoServicio = (t.TIPO_SERVICIO || "").toLowerCase().includes(busqueda);
+        
+        // Si no coincide con ningún campo, filtrar el turno
+        if (
+          !coincideFolio && 
+          !coincideCliente && 
+          !coincideServicio &&
+          !coincideEmpleado && 
+          !coincideCorreo && 
+          !coincideDuracion &&
+          !coincideDescripcion && 
+          !coincideTiempoEntrega && 
+          !coincideTipoServicio
+        ) {
+          return false;
+        }
+      }
 
       return true;
     });
@@ -258,7 +291,7 @@ const Historial = () => {
                   <label className="form-label fw-semibold text-dark">Buscar</label>
                   <input
                     className="form-control"
-                    placeholder="Folio, cliente…"
+                    placeholder="Folio, cliente, empleado, correo…"
                     value={q}
                     onChange={(e) => { setQ(e.target.value); setPage(1); }}
                     style={{ borderRadius: "10px" }}
