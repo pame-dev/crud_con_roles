@@ -289,7 +289,7 @@ const Historial = () => {
                   <label className="form-label fw-semibold text-dark">Buscar</label>
                   <input
                     className="form-control"
-                    placeholder="Folio, cliente, empleado, descripción…"
+                    placeholder="Folio, cliente…"
                     value={q}
                     onChange={(e) => { setQ(e.target.value); setPage(1); }}
                     style={{ borderRadius: "10px" }}
