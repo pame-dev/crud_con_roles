@@ -86,10 +86,26 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
   const handlePasarTurno = async (idEmpleado, cargo) => {
     setTurnoEnProceso(idEmpleado);
     try {
-      await pasarTurno(idEmpleado, cargo);
+      const resultado = await pasarTurno(idEmpleado, cargo);
+      
+      // Si no hay turnos pendientes, muestra el alert
+      if (resultado && resultado.message && resultado.message.includes("No hay turnos pendientes")) {
+        showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
+        setTurnoEnProceso(null);
+        return;
+      }
+      
       setTimeout(() => onRefresh && onRefresh(), 300);
     } catch (err) {
       console.error("Error al pasar turno:", err);
+      
+      // Verificar si el error es por falta de turnos
+      if (err.message && (err.message.includes("No hay turnos pendientes") || err.message.includes("sin turnos"))) {
+        showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
+      } else {
+        showModal("Error", "Ocurrió un error al pasar el turno: " + err.message, "error");
+      }
+      
       setTurnoEnProceso(null);
     }
   };
@@ -309,7 +325,13 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         showModal={showModal}
       />
 
-      
+      <ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal}
+      />
     </>
   );
 
