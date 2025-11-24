@@ -84,32 +84,36 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
   --------------------------------------------------
   */
   const handlePasarTurno = async (idEmpleado, cargo) => {
-    setTurnoEnProceso(idEmpleado);
+  setTurnoEnProceso(idEmpleado);
+  
+  try {
+    console.log("🟢 handlePasarTurno - Iniciando para:", idEmpleado, cargo);
     
-    try {
-      console.log("Intentando pasar turno para empleado:", idEmpleado, "Cargo:", cargo);
-      
-      const resultado = await pasarTurno(idEmpleado, cargo);
-      
-      console.log("Resultado de pasar turno:", resultado);
-      
-      // Verificar diferentes formatos de respuesta cuando no hay turnos
-      if (resultado) {
-        // Si hay un mensaje específico
-        if (resultado.message) {
-          const mensaje = resultado.message.toLowerCase();
-          if (mensaje.includes("no hay turnos") || 
-              mensaje.includes("sin turnos") || 
-              mensaje.includes("pendientes")) {
-            showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
-            setTurnoEnProceso(null);
-            setTimeout(() => onRefresh && onRefresh(), 300);
-            return;
-          }
-        }
+    const resultado = await pasarTurno(idEmpleado, cargo);
+    
+    console.log("🟢 handlePasarTurno - Resultado recibido:", resultado);
+    
+    // Verificar si tiene el flag noTurnos
+    if (resultado && resultado.noTurnos === true) {
+      console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos");
+      showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
+      setTurnoEnProceso(null);
+      setTimeout(() => onRefresh && onRefresh(), 300);
+      return;
+    }
+    
+    // Verificar diferentes formatos de respuesta cuando no hay turnos
+    if (resultado) {
+      // Si hay un mensaje específico
+      if (resultado.message) {
+        const mensaje = resultado.message.toLowerCase();
+        console.log("🟢 handlePasarTurno - Mensaje en resultado:", mensaje);
         
-        // Si la respuesta indica éxito explícito
-        if (resultado.success === false) {
+        if (mensaje.includes("no hay turnos") || 
+            mensaje.includes("sin turnos") || 
+            mensaje.includes("pendientes") ||
+            mensaje.includes("no hay más turnos")) {
+          console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos (por mensaje)");
           showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
           setTurnoEnProceso(null);
           setTimeout(() => onRefresh && onRefresh(), 300);
@@ -117,31 +121,46 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         }
       }
       
-      // Si llegamos aquí, el turno se pasó exitosamente
-      setTimeout(() => {
-        onRefresh && onRefresh();
-        setTurnoEnProceso(null);
-      }, 300);
-      
-    } catch (err) {
-      console.error("Error capturado al pasar turno:", err);
-      
-      // Verificar el mensaje de error
-      const errorMsg = err.message ? err.message.toLowerCase() : "";
-      
-      if (errorMsg.includes("no hay turnos") || 
-          errorMsg.includes("sin turnos") || 
-          errorMsg.includes("pendientes") ||
-          errorMsg.includes("404")) {
+      // Si la respuesta indica éxito explícito = false
+      if (resultado.success === false) {
+        console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos (success false)");
         showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
-      } else {
-        showModal("Error", "Ocurrió un error al pasar el turno: " + err.message, "error");
+        setTurnoEnProceso(null);
+        setTimeout(() => onRefresh && onRefresh(), 300);
+        return;
       }
-      
-      setTurnoEnProceso(null);
-      setTimeout(() => onRefresh && onRefresh(), 300);
     }
-  };
+    
+    // Si llegamos aquí, el turno se pasó exitosamente
+    console.log("✅ handlePasarTurno - Turno pasado exitosamente");
+    setTimeout(() => {
+      onRefresh && onRefresh();
+      setTurnoEnProceso(null);
+    }, 300);
+    
+  } catch (err) {
+    console.error("🔴 handlePasarTurno - Error capturado:", err);
+    
+    // Verificar el mensaje de error
+    const errorMsg = err.message ? err.message.toLowerCase() : "";
+    console.log("🔴 handlePasarTurno - Mensaje de error:", errorMsg);
+    
+    if (errorMsg.includes("no hay turnos") || 
+        errorMsg.includes("sin turnos") || 
+        errorMsg.includes("pendientes") ||
+        errorMsg.includes("no hay más turnos") ||
+        errorMsg.includes("404")) {
+      console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos (por error)");
+      showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
+    } else {
+      console.log("🔴 handlePasarTurno - Mostrando modal: Error real");
+      showModal("Error", "Ocurrió un error al pasar el turno: " + err.message, "error");
+    }
+    
+    setTurnoEnProceso(null);
+    setTimeout(() => onRefresh && onRefresh(), 300);
+  }
+};
 
   /* 
   --------------------------------------------------
