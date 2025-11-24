@@ -27,8 +27,35 @@ export async function pasarTurno(empleadoId, cargo, options = {}) {
     ...options,
   });
 
-  if (!res.ok) throw new Error("Error al pasar turno");
-  return res.json();
+  // Intentar parsear la respuesta JSON primero
+  let data;
+  try {
+    data = await res.json();
+  } catch (err) {
+    // Si no hay JSON, lanzar error genérico
+    if (!res.ok) throw new Error("Error al pasar turno");
+    return {};
+  }
+
+  // Si la respuesta no es OK, verificar si es por falta de turnos
+  if (!res.ok) {
+    // Si el servidor devuelve un mensaje específico
+    if (data && data.message) {
+      const mensaje = data.message.toLowerCase();
+      if (mensaje.includes("no hay turnos") || 
+          mensaje.includes("sin turnos") || 
+          mensaje.includes("pendientes")) {
+        // Retornar el objeto con el mensaje en lugar de lanzar error
+        return { success: false, message: data.message };
+      }
+    }
+    
+    // Si es otro tipo de error, lanzarlo
+    throw new Error(data.message || "Error al pasar turno");
+  }
+
+  // Si todo está bien, retornar los datos
+  return data;
 }
 
 export async function fetchTurnoEnAtencion(options = {}) {
