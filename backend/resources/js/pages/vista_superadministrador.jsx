@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Zap } from "../iconos";
+import API_URL from "../api/config";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import { useDiaFinalizado } from "../hooks/useDiaFinalizado";
 import { List, Grid } from "lucide-react";
@@ -16,6 +17,8 @@ const VistaSuperadministrador = () => {
   const [diaFinalizado, setDiaFinalizado] = useDiaFinalizado();
   const [vistaLista, setVistaLista] = useState(true);
   const [trabajadores, setTrabajadores] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showLoader, setShowLoader] = useState(false);
   
   const [modal, setModal] = useState({
     show: false,
@@ -32,8 +35,18 @@ const VistaSuperadministrador = () => {
     setModal(prev => ({ ...prev, show: false }));
   };
 
-  const cargarTrabajadores = async () => {
+  const cargarTrabajadores = async (mostrarCarga = false) => {
+    let loaderTimeout;
+    
     try {
+      if (mostrarCarga) {
+        setLoading(true);
+        // Solo mostrar el loader si tarda más de 500ms
+        loaderTimeout = setTimeout(() => {
+          setShowLoader(true);
+        }, 500);
+      }
+      
       const res = await fetch(`https://crudconroles-production.up.railway.app/api/trabajadores/con-turno`);
       const data = await res.json();
       setTrabajadores(data);
@@ -42,6 +55,12 @@ const VistaSuperadministrador = () => {
       console.error("Error al obtener trabajadores:", error);
       setTrabajadores([]);
       return [];
+    } finally {
+      if (mostrarCarga) {
+        clearTimeout(loaderTimeout);
+        setShowLoader(false);
+        setLoading(false);
+      }
     }
   };
 
@@ -56,11 +75,11 @@ const VistaSuperadministrador = () => {
     window.history.pushState(null, "", window.location.href);
     window.onpopstate = () => window.history.go(1);
 
-    // Primer fetch inmediato
-    cargarTrabajadores();
+    // Primer fetch inmediato con loading
+    cargarTrabajadores(true);
 
-    // Polling cada 5 segundos
-    const interval = setInterval(cargarTrabajadores, 5000);
+    // Polling cada 5 segundos (sin mostrar loading)
+    const interval = setInterval(() => cargarTrabajadores(false), 5000);
     return () => clearInterval(interval);
   }, [navigate]);
 
@@ -83,7 +102,7 @@ const VistaSuperadministrador = () => {
 
   const handleRefresh = async () => {
     // Recargar los datos de trabajadores desde la API
-    const nuevosDatos = await cargarTrabajadores();
+    const nuevosDatos = await cargarTrabajadores(true);
     setTrabajadores(nuevosDatos);
   };
 
@@ -150,18 +169,34 @@ const VistaSuperadministrador = () => {
                 </div>
               </div>
 
-              {/* Listado dinámico */}
+              {/* Listado dinámico con loading inteligente */}
               <div
                 className={vistaLista ? "turnos-list" : "turnos-grid"}
                 style={{ padding: "1rem" }}
               >
-                <WorkerTurnCard
-                  trabajadores={trabajadores} 
-                  onRefresh={handleRefresh}
-                  filtroBusqueda={busqueda}
-                  mostrarCargo={true}
-                  modoLista={vistaLista}
-                />
+                {loading && showLoader ? (
+                  <div className="loading-container" style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '300px',
+                    gap: '1rem'
+                  }}>
+                    <div className="spinner-border text-danger" role="status" style={{ width: '3rem', height: '3rem' }}>
+                      <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="text-muted fw-semibold">Cargando turnos en atención...</p>
+                  </div>
+                ) : (
+                  <WorkerTurnCard
+                    trabajadores={trabajadores} 
+                    onRefresh={handleRefresh}
+                    filtroBusqueda={busqueda}
+                    mostrarCargo={true}
+                    modoLista={vistaLista}
+                  />
+                )}
               </div>
             </div>
           </div>
