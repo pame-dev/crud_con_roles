@@ -93,6 +93,17 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
     
     console.log("🟢 handlePasarTurno - Resultado recibido:", resultado);
     
+    // ✨ NUEVO: Verificar si success es true pero no hay turnos (null)
+    if (resultado && resultado.success === true) {
+      if (resultado.nuevo_turno === null && resultado.turno_atendido === null) {
+        console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos (turnos null)");
+        showModal("Sin turnos pendientes", "No hay más turnos en la fila de espera.", "info");
+        setTurnoEnProceso(null);
+        setTimeout(() => onRefresh && onRefresh(), 300);
+        return;
+      }
+    }
+    
     // Verificar si tiene el flag noTurnos
     if (resultado && resultado.noTurnos === true) {
       console.log("🟡 handlePasarTurno - Mostrando modal: Sin turnos");
