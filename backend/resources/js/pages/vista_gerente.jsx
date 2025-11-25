@@ -4,6 +4,7 @@ import { Zap, List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import FilaTurnos from "../components/FilaTurnos";
 import "./pages-styles/admin.css";
+import ModalAlert from "../components/ModalAlert";
 
 const VistaGerente = () => {
   const navigate = useNavigate();
@@ -16,6 +17,17 @@ const VistaGerente = () => {
   const [cargo, setCargo] = useState(""); // cargo del gerente
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+
+  const [modal, setModal] = useState({
+    show: false,
+    title: "",
+    message: "",
+    type: "info"
+  });
+
+  const closeModal = () => {
+    setModal(prev => ({ ...prev, show: false }));
+  };
 
   // Protege la vista y bloquea retroceso
   useEffect(() => {
