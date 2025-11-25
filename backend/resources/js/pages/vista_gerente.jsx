@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Zap, List, Grid } from "lucide-react";
+import { Zap } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import FilaTurnos from "../components/FilaTurnos";
 import { List, Grid } from "lucide-react";
@@ -157,7 +157,7 @@ const VistaGerente = () => {
                 </div>
 
                 {/* Contenedor dinámico */}
-                <div className={vistaMosaico ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
+                <div className={vistaLista ? "turnos-grid" : "turnos-list"} style={{ padding: "1rem" }}>
                   <WorkerTurnCard
                     trabajadores={trabajadores} 
                     onRefresh={handleRefresh}
