@@ -144,14 +144,14 @@ const VistaGerente = () => {
                     <Zap size={20} className="text-danger me-2" /> Turnos en Atención
                   </h4>
 
-                  {/* Toggle vista */}
+                  {/* Toggle vista (lista / mosaico) */}
                   <div className="d-flex align-items-center gap-2">
                     <button
                       className="btn btn-outline-secondary btn-sm py-1 px-2"
-                      onClick={() => setVistaMosaico(!vistaMosaico)}
-                      title={vistaMosaico ? "Vista lista" : "Vista mosaico"}
+                      onClick={() => setVistaLista(!vistaLista)}
+                      title={vistaLista ? "Vista mosaico" : "Vista lista"}
                     >
-                      {vistaMosaico ? <Grid size={14} /> : <List size={14} />}
+                      {vistaLista ? <Grid size={14} /> : <List size={14} />}
                     </button>
                   </div>
                 </div>
@@ -159,11 +159,11 @@ const VistaGerente = () => {
                 {/* Contenedor dinámico */}
                 <div className={vistaMosaico ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
                   <WorkerTurnCard
-                    trabajadores={trabajadores}
+                    trabajadores={trabajadores} 
+                    onRefresh={handleRefresh}
                     filtroBusqueda={busqueda}
                     mostrarCargo={true}
-                    modoMosaico={vistaMosaico}
-                    onRefresh={handleRefresh} 
+                    modoLista={vistaLista}
                   />
                 </div>
               </div>
