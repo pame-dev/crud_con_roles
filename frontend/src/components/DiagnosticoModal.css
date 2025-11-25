@@ -13,6 +13,7 @@
   z-index: 999999 !important;
   margin: 0 !important;
   padding: 0 !important;
+  isolation: isolate !important;
 }
 
 /* Modal centrado en la pantalla completa */
