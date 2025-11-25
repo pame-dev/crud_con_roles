@@ -1,8 +1,8 @@
 // src/pages/OlvideMiContrasena.jsx
 import React, { useState, useMemo } from "react";
-import axios from "axios";
+import { axiosInstance } from "../api/config";
 import { motion, AnimatePresence } from "framer-motion";
-import API_URL from "../api/config";
+import { useNavigate } from "react-router-dom";
 import "./pages-styles/olvide_contraseña.css";
 import ReestablecerContrasena from "./reestablecer_contrasena";
 
@@ -12,12 +12,17 @@ const OlvideMiContrasena = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [step, setStep] = useState("email");
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const isValid = useMemo(() => form.user.trim().length >= 6, [form]);
+
+  const handleCancel = () => {
+    navigate(-1); // Regresa a la vista anterior
+  };
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -28,7 +33,7 @@ const OlvideMiContrasena = () => {
 
     try {
       setSubmitting(true);
-      const response = await axios.post(`${API_URL}/forgot-password`, {
+      const response = await axiosInstance.post("/forgot-password", {
         email: form.user,
       });
 
@@ -82,21 +87,37 @@ const OlvideMiContrasena = () => {
                     />
                   </div>
 
-                  <button
-                    className="login-btn"
-                    type="submit"
-                    disabled={!isValid || submitting}
-                  >
-                    {submitting ? (
-                      <>
-                        <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
-                      </>
-                    ) : (
-                      <>
-                        <i className="fa-solid fa-paper-plane"></i> Enviar código
-                      </>
-                    )}
-                  </button>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button
+                      className="login-btn"
+                      type="submit"
+                      disabled={!isValid || submitting}
+                      style={{ flex: 1 }}
+                    >
+                      {submitting ? (
+                        <>
+                          <i className="fa-solid fa-spinner fa-spin"></i> Enviando…
+                        </>
+                      ) : (
+                        <>
+                          <i className="fa-solid fa-paper-plane"></i> Enviar código
+                        </>
+                      )}
+                    </button>
+
+                    <button
+                      className="login-btn"
+                      type="button"
+                      onClick={handleCancel}
+                      style={{ 
+                        flex: 1,
+                        backgroundColor: '#6c757d',
+                        borderColor: '#6c757d'
+                      }}
+                    >
+                      <i className="fa-solid fa-times"></i> Cancelar
+                    </button>
+                  </div>
 
                   {error && <p className="login-error">{error}</p>}
                   {success && <p className="login-footer">{success}</p>}
