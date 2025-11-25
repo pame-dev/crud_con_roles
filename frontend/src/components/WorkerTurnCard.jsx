@@ -23,6 +23,28 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
 
   const navigate = useNavigate();
 
+  // DEBUG CRÍTICO - Verificar si el Portal se está renderizando
+  useEffect(() => {
+    console.log("🔍 WorkerTurnCard montado en:", window.location.pathname);
+  }, []);
+
+  useEffect(() => {
+    if (modalData.show) {
+      console.log("🚨 MODAL ABIERTO - Debug info:");
+      console.log("📍 modalData:", modalData);
+      console.log("🏠 Portal root exists:", !!document.getElementById('portal-root'));
+      console.log("📦 DiagnosticoModal should render:", modalData.show);
+      
+      // Verificar después de un pequeño delay
+      setTimeout(() => {
+        const modalElement = document.querySelector('.modal-overlayy');
+        console.log("🎯 Modal in DOM:", !!modalElement);
+        console.log("📍 Modal parent:", modalElement?.parentElement);
+        console.log("📍 Modal parent classes:", modalElement?.parentElement?.className);
+      }, 100);
+    }
+  }, [modalData.show]);
+
   //  Modal genérico de alertas
   const [modal, setModal] = useState({
     show: false,
@@ -376,17 +398,24 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         );
       })}
 
-      <DiagnosticoModal
-        show={modalData.show}
-        trabajadorNombre={
-          modalData.trabajador 
-            ? `turno #${modalData.trabajador.turnos?.[0]?.ID_TURNO || "—"}`
-            : ""
-        }
-        onClose={() => setModalData({ show: false, trabajador: null })}
-        onSubmit={handleGuardarDiagnostico}
-        showModal={showModal}
-      />
+      {modalData.show && (
+        <Portal>
+          <DiagnosticoModal
+            show={true}  // ← Forzar true
+            trabajadorNombre={
+              modalData.trabajador 
+                ? `turno #${modalData.trabajador.turnos?.[0]?.ID_TURNO || "—"}`
+                : ""
+            }
+            onClose={() => {
+              console.log("🔒 Closing modal");
+              setModalData({ show: false, trabajador: null });
+            }}
+            onSubmit={handleGuardarDiagnostico}
+            showModal={showModal}
+          />
+        </Portal>
+      )}
 
       <ModalAlert
         show={modal.show}
