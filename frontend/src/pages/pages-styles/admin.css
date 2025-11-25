@@ -1,3 +1,9 @@
+:root{
+  /* 1 = opaco, 0 = totalmente transparente */
+  --filtros-alpha: .85;
+  --turnos-card-alpha: .78;   /* ← mueve este valor para más/menos transparencia */
+}
+
 /* ===== Hero ===== */
 .hero-section {
   background: linear-gradient(90deg, #dc3545 0%, #c82333 100%);

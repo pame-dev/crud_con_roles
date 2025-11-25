@@ -1,13 +1,12 @@
 // src/pages/reestablecer_contrasena.jsx
 import React, { useState } from "react";
-import axios from "axios";
-import API_URL from "../api/config";
+import { axiosInstance } from "../api/config";
 import "./pages-styles/olvide_contraseña.css";
 import { useNavigate } from "react-router-dom"; 
 import ModalAlert from "../components/ModalAlert"; 
 
 const ReestablecerContrasena = ({ email }) => {
-  const [step, setStep] = useState("code"); // "code" o "passwords"
+  const [step, setStep] = useState("code");
   const [code, setCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -22,12 +21,20 @@ const ReestablecerContrasena = ({ email }) => {
   const showModal = (title, message, type = "info") => setModal({ show: true, title, message, type });
   const closeModal = () => setModal({ ...modal, show: false });
 
+  const handleBack = () => {
+    if (step === "passwords") {
+      setStep("code"); // Regresa al paso anterior
+    } else {
+      navigate(-1); // Regresa a la vista anterior
+    }
+  };
+
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     setError(""); setSuccess("");
     try {
       setSubmitting(true);
-      await axios.post(`${API_URL}/verify-code`, { email, code });
+      await axiosInstance.post("/verify-code", { email, code });
       setStep("passwords");
     } catch (err) {
       setError(err.response?.data?.error || "Código incorrecto");
@@ -50,7 +57,7 @@ const ReestablecerContrasena = ({ email }) => {
 
     try {
       setSubmitting(true);
-      await axios.post(`${API_URL}/reset-password`, {
+      await axiosInstance.post("/reset-password", { 
         email,
         code,
         new_password: newPassword,
@@ -78,9 +85,31 @@ const ReestablecerContrasena = ({ email }) => {
                 required
               />
             </div>
-            <button type="submit" className="login-btn" disabled={submitting}>
-              {submitting ? "Verificando…" : "Verificar código"}
-            </button>
+            
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                type="submit" 
+                className="login-btn" 
+                disabled={submitting}
+                style={{ flex: 1 }}
+              >
+                {submitting ? "Verificando…" : "Verificar código"}
+              </button>
+              
+              <button 
+                type="button" 
+                className="login-btn" 
+                onClick={handleBack}
+                style={{ 
+                  flex: 1,
+                  backgroundColor: '#6c757d',
+                  borderColor: '#6c757d'
+                }}
+              >
+                <i className="fa-solid fa-arrow-left"></i> Regresar
+              </button>
+            </div>
+            
             {error && <p className="login-error">{error}</p>}
             {success && <p className="login-footer">{success}</p>}
           </form>
@@ -118,9 +147,30 @@ const ReestablecerContrasena = ({ email }) => {
               </button>
             </div>
 
-            <button type="submit" className="login-btn" disabled={submitting}>
-              {submitting ? "Actualizando…" : "Actualizar contraseña"}
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                type="submit" 
+                className="login-btn" 
+                disabled={submitting}
+                style={{ flex: 1 }}
+              >
+                {submitting ? "Actualizando…" : "Actualizar contraseña"}
+              </button>
+              
+              <button 
+                type="button" 
+                className="login-btn" 
+                onClick={handleBack}
+                style={{ 
+                  flex: 1,
+                  backgroundColor: '#6c757d',
+                  borderColor: '#6c757d'
+                }}
+              >
+                <i className="fa-solid fa-arrow-left"></i> Regresar
+              </button>
+            </div>
+            
             {error && <p className="login-error">{error}</p>}
             {success && <p className="login-footer">{success}</p>}
           </form>
