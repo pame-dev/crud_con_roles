@@ -591,22 +591,6 @@ export default function AdministrarEmpleados() {
                           <button className="btn btn-light btn-sm" onClick={() => solicitarEliminacion(emp)}>
                             <Trash2 size={18} />
                           </button>
-                          <button
-                            className={`btn btn-sm ${emp.estado === 1 ? "btn-warning" : "btn-success"}`}
-                            onClick={() => toggleAusente(emp)}
-                          >
-                            {emp.estado === 1 ? (
-                              <span>
-                                <img src={deleteUserIcon} alt="Ausente" width="20" height="20" />
-                                Ausente
-                              </span>
-                            ) : (
-                              <span>
-                                <img src={userCheckIcon} alt="Presente" width="20" height="20" />
-                                Presente
-                              </span>
-                            )}
-                          </button>
                         </div>
                       </div>
                     </article>
