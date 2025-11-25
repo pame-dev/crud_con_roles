@@ -81,85 +81,94 @@ const VistaGerente = () => {
   };
 
   return (
-    <div className="full-width-container gerente-page">
-      {/* HERO */}
-      <div className="hero-section darkable">
-        <div className="container text-center mt-4">
-          <h2 className="display-4 fw-bold mb-1">
-            {nombreEmpleado} - Área de {cargo === "reparacion" ? "Reparación" : "Cotización"}
-          </h2>
-          <p className="lead opacity-75">
-            Área de gestión de turnos para {cargo === "reparacion" ? "reparaciones" : "cotizaciones"}.
-          </p>
-        </div>
-      </div>
-
-      {/* CONTENIDO */}
-      <div className="container main-content">
-        {/* Panel de filtros */}
-        <div className="filtros-panel mb-4 darkable">
-          <div className="filtros-grid">
-            <div>
-              <label className="filtro-label">Buscar empleado</label>
-              <input
-                className="form-control filtro-input"
-                placeholder="Buscar empleado…"
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-              />
-            </div>
-
-            <button className="filtro-btn" onClick={() => navigate("/historial")}>
-              Historial
-            </button>
-
-            <button className="filtro-btn" onClick={() => navigate("/administrar_empleados")}>
-              Administrar
-            </button>
-
-            
+    <>
+      <div className="full-width-container gerente-page">
+        {/* HERO */}
+        <div className="hero-section darkable">
+          <div className="container text-center mt-4">
+            <h2 className="display-4 fw-bold mb-1">
+              {nombreEmpleado} - Área de {cargo === "reparacion" ? "Reparación" : "Cotización"}
+            </h2>
+            <p className="lead opacity-75">
+              Área de gestión de turnos para {cargo === "reparacion" ? "reparaciones" : "cotizaciones"}.
+            </p>
           </div>
         </div>
 
-        <div className="row g-4 full-width-row">
-          {/* Turnos en atención */}
-          <div className="col-md-8 mb-4">
-            <div className="card shadow turnos-card darkable">
-              <div className="card-body d-flex justify-content-between align-items-center">
-                <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
-                  <Zap size={20} className="text-danger me-2" /> Turnos en Atención
-                </h4>
-
-                {/* Toggle vista */}
-                <div className="d-flex align-items-center gap-2">
-                  <button
-                    className="btn btn-outline-secondary btn-sm py-1 px-2"
-                    onClick={() => setVistaMosaico(!vistaMosaico)}
-                    title={vistaMosaico ? "Vista lista" : "Vista mosaico"}
-                  >
-                    {vistaMosaico ? <Grid size={14} /> : <List size={14} />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Contenedor dinámico */}
-              <div className={vistaMosaico ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
-                <WorkerTurnCard
-                  trabajadores={trabajadores}
-                  filtroBusqueda={busqueda}
-                  mostrarCargo={true}
-                  modoMosaico={vistaMosaico}
-                  onRefresh={handleRefresh} 
+        {/* CONTENIDO */}
+        <div className="container main-content">
+          {/* Panel de filtros */}
+          <div className="filtros-panel mb-4 darkable">
+            <div className="filtros-grid">
+              <div>
+                <label className="filtro-label">Buscar empleado</label>
+                <input
+                  className="form-control filtro-input"
+                  placeholder="Buscar empleado…"
+                  value={busqueda}
+                  onChange={(e) => setBusqueda(e.target.value)}
                 />
               </div>
+
+              <button className="filtro-btn" onClick={() => navigate("/historial")}>
+                Historial
+              </button>
+
+              <button className="filtro-btn" onClick={() => navigate("/administrar_empleados")}>
+                Administrar
+              </button>
+
+              
             </div>
           </div>
 
-          {/* Cola de turnos */}
-          {cargo && <FilaTurnos cargo={cargo} />}
+          <div className="row g-4 full-width-row">
+            {/* Turnos en atención */}
+            <div className="col-md-8 mb-4">
+              <div className="card shadow turnos-card darkable">
+                <div className="card-body d-flex justify-content-between align-items-center">
+                  <h4 className="d-flex align-items-center card-title fw-bold text-dark mb-0">
+                    <Zap size={20} className="text-danger me-2" /> Turnos en Atención
+                  </h4>
+
+                  {/* Toggle vista */}
+                  <div className="d-flex align-items-center gap-2">
+                    <button
+                      className="btn btn-outline-secondary btn-sm py-1 px-2"
+                      onClick={() => setVistaMosaico(!vistaMosaico)}
+                      title={vistaMosaico ? "Vista lista" : "Vista mosaico"}
+                    >
+                      {vistaMosaico ? <Grid size={14} /> : <List size={14} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Contenedor dinámico */}
+                <div className={vistaMosaico ? "turnos-list" : "turnos-grid"} style={{ padding: "1rem" }}>
+                  <WorkerTurnCard
+                    trabajadores={trabajadores}
+                    filtroBusqueda={busqueda}
+                    mostrarCargo={true}
+                    modoMosaico={vistaMosaico}
+                    onRefresh={handleRefresh} 
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Cola de turnos */}
+            {cargo && <FilaTurnos cargo={cargo} />}
+          </div>
         </div>
       </div>
-    </div>
+      <ModalAlert
+        show={modal.show}
+        title={modal.title}
+        message={modal.message}
+        type={modal.type}
+        onClose={closeModal}
+      />
+    </>
   );
 };
 
