@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Zap, List, Grid } from "lucide-react";
 import WorkerTurnCard from "../components/WorkerTurnCard";
 import FilaTurnos from "../components/FilaTurnos";
+import { List, Grid } from "lucide-react";
 import "./pages-styles/admin.css";
 import ModalAlert from "../components/ModalAlert";
 
@@ -14,7 +15,7 @@ const VistaGerente = () => {
   const [trabajadores, setTrabajadores] = useState([]);
   const [nombreEmpleado, setNombreEmpleado] = useState("");
   const [busqueda, setBusqueda] = useState("");
-  const [vistaMosaico, setVistaMosaico] = useState(false);
+  const [vistaLista, setVistaLista] = useState(false);
   const [cargo, setCargo] = useState(""); // cargo del gerente
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
