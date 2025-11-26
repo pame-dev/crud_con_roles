@@ -157,7 +157,7 @@ class AuthController extends Controller
 
         // ⚠️ Si quieres encriptar: usa bcrypt
         Empleado::where('CORREO', $request->email)->update([
-        'CONTRASENA' => $request->new_password
+            'CONTRASENA' => Hash::make($request->new_password)
     ]);
 
         // Borrar el token usado
