@@ -37,7 +37,8 @@ const AppLayout = ({ children }) => {
   const location = useLocation();
   
   // Rutas que no deben mostrar header ni footer
-  const noHeaderFooterRoutes = ['/pantalla_completa'];
+  const noHeaderFooterRoutes = ['/pantalla_completa', '/olvide_mi_contrasena', '/reestablecer_contrasena'];
+  
   
   // Rutas que solo deben mostrar header pero no footer
   const noFooterRoutes = ['#']; // Agrega aquí otras rutas si es necesario
