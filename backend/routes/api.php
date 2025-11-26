@@ -18,6 +18,12 @@ Route::get('/user', function (Request $request) {
 
 // API con CORS
 Route::middleware([CorsMiddleware::class])->group(function () {
+
+    // Manejo de OPTIONS dentro del middleware
+    Route::options('/{any}', function () {
+        return response()->json([], 200);
+    })->where('any', '.*');
+
     Route::get('/empleados', [EmpleadoController::class, 'index']);
     Route::post('/empleados/correo-existe', [EmpleadoController::class, 'correoExiste']);
     Route::get('/empleados/{id}', [EmpleadoController::class, 'show']);
@@ -45,11 +51,9 @@ Route::middleware([CorsMiddleware::class])->group(function () {
     Route::put('/turnos/{idTurno}/diagnostico', [TurnController::class, 'guardarDiagnostico']);
     Route::post('/enviar-codigo', [AuthController::class, 'enviarCodigo']);
     Route::post('/empleados/registrar-con-codigo', [EmpleadoController::class, 'registrarConCodigo']);
-    Route::post('/empleados/{id}/verificar-contrasena', [EmpleadoController::class, 'verificarContrasena']);
     Route::get('/turnos/por-empleado', [EstadisticasController::class, 'turnosPorEmpleado']);
     Route::get('/turnos/tiempos', [EstadisticasController::class, 'tiemposPromedio']);
     Route::get('/turnos/dias', [EstadisticasController::class, 'turnosPorDia']);
     Route::get('/turnos/por-tipo', [EstadisticasController::class, 'turnosPorTipo']);
     Route::get('/turnos/tiempo-empleado', [EstadisticasController::class, 'tiempoPorEmpleado']);
-
 });
