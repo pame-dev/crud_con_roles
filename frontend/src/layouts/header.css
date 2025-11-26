@@ -86,8 +86,18 @@
   background: #fff;
   border-radius: 16px;
   width: 350px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1), 0 8px 24px rgba(0,0,0,0.1);
+  max-height: 90vh;
+
+  /* HABILITA SCROLL */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  /* Estética */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1),
+              0 8px 24px rgba(0,0,0,0.1);
+  scrollbar-width: thin;
+  scrollbar-color: #888 transparent;
+
   animation: modalFade 0.3s ease-in-out;
 }
 
