@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import ReactDOM from "react-dom";
 import { pasarTurno } from "../api/turnosApi";
 import { useNavigate } from "react-router-dom";
 import API_URL from "../api/config";
@@ -6,6 +7,23 @@ import "./WorkerTurnCard.css";
 import "./DiagnosticoModal.css";
 import ModalAlert from "../components/ModalAlert"; 
 import DiagnosticoModal from "../components/DiagnosticoModal";
+
+/* 
+--------------------------------------------------
+ COMPONENTE AUXILIAR: Portal
+Renderiza componentes hijos en un nodo DOM específico (portal-root)
+--------------------------------------------------
+*/
+const Portal = ({ children }) => {
+  const portalRoot = document.getElementById('portal-root');
+  
+  if (!portalRoot) {
+    console.error('❌ portal-root no encontrado en el DOM');
+    return null;
+  }
+  
+  return ReactDOM.createPortal(children, portalRoot);
+};
 
 /* 
 --------------------------------------------------
@@ -402,7 +420,7 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
       {modalData.show && (
         <Portal>
           <DiagnosticoModal
-            show={true}  // ← Forzar true
+            show={true}
             trabajadorNombre={
               modalData.trabajador 
                 ? `turno #${modalData.trabajador.turnos?.[0]?.ID_TURNO || "—"}`
