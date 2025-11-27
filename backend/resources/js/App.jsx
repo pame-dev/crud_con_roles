@@ -1,6 +1,6 @@
 // App incluye router y rutas, tambien algunas configuraciones globales
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
@@ -56,6 +56,26 @@ const AppLayout = ({ children }) => {
 };
 
 const PitLineApp = () => {
+  // Crear el portal-root si no existe
+  useEffect(() => {
+    let portalRoot = document.getElementById('portal-root');
+    
+    if (!portalRoot) {
+      portalRoot = document.createElement('div');
+      portalRoot.id = 'portal-root';
+      document.body.appendChild(portalRoot);
+      console.log('✅ portal-root creado dinámicamente');
+    }
+    
+    // Cleanup al desmontar
+    return () => {
+      const existingPortal = document.getElementById('portal-root');
+      if (existingPortal && existingPortal.childNodes.length === 0) {
+        existingPortal.remove();
+      }
+    };
+  }, []);
+
   return (
     <EmpleadoProvider>
       <DarkModeProvider>
