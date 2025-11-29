@@ -436,13 +436,17 @@ const WorkerTurnCard = ({ trabajadores = [], filtroBusqueda = "", mostrarCargo =
         </Portal>
       )}
 
-      <ModalAlert
-        show={modal.show}
-        title={modal.title}
-        message={modal.message}
-        type={modal.type}
-        onClose={closeModal}
-      />
+      {modal.show && (
+        <Portal>
+          <ModalAlert
+            show={modal.show}
+            title={modal.title}
+            message={modal.message}
+            type={modal.type}
+            onClose={closeModal}
+          />
+        </Portal>
+      )}
     </>
   );
 
